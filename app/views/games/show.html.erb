@@ -1,0 +1,8 @@
+<h1>Placeholder text to represent a chess game</h1>
+
+<% @game.pieces.each do |piece| %>
+   <%= piece.x_position %>, <%= piece.y_position %>
+   <br>
+<% end %>
+<p>Game turn: </p>
+<%= @game.turn %>

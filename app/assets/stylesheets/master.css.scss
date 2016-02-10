@@ -1,7 +1,12 @@
+
+.create_game {
+    text-decoration: none !important;
+}
+
 @import url(https://fonts.googleapis.com/css?family=Raleway);
 
 /*
-a { text-decoration: none; 
+a { text-decoration: none;
     color: #ffffff;
 }
 
@@ -24,12 +29,12 @@ button {
 */
 
 .carousel-caption {
-    z-index: 10;    
+    z-index: 10;
 }
 
 .carousel-inner > .item > img{
-      top: 0; 
-      left: 0; 
+      top: 0;
+      left: 0;
       min-width: 100%;
       min-height: 100%;
 }
@@ -47,7 +52,7 @@ button {
 
 a.logo, a:visited.logo, a:active.logo {
 
-    
+
     color: #424242;
     font-family: "Adobe Caslon Pro", "Hoefler Text", Georgia, Garamond, Times, serif;
     letter-spacing:0.1em;
@@ -79,7 +84,7 @@ a.logo.extra-blue {
 }
 
 .clear {
-    clear:both; 
+    clear:both;
 }
 
 .intro-box {
@@ -90,7 +95,7 @@ a.logo.extra-blue {
 
 .intro-box2 {
         background: url('1.jpg') repeat;
-        padding: 100px 15px 60px; 
+        padding: 100px 15px 60px;
         height: 500px;
         color: #fff;
         background-color: #e9e6df;
@@ -103,7 +108,7 @@ a.logo.extra-blue {
 
 .horse {
     padding: 0px;
-} 
+}
 
 .navbar {
     background: url('argyle.png');
@@ -148,7 +153,7 @@ div#icon {
   padding-left:10px;
   padding-right:10px;
   margin-left:10px;
-  margin-right:10px; 
+  margin-right:10px;
 }
 
 div#icon a {
