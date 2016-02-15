@@ -31,25 +31,17 @@ RSpec.describe GamesController, type: :controller do
   end
 
   describe "Action: games#create" do
+    subject { post :create, :game => { :white_player_id => "", :black_player_id => "", :turn => "", :winner => "" } }
+
     it "should require users to be logged in" do
-      post :create, :game => {}
-      expect(response).to redirect_to new_user_session_path
+      expect(subject).to redirect_to new_user_session_path
     end
 
     it "should redirect a user to the show page upon creation (pressing the
       'Start Game' button in the Games lobby)" do
-      user = FactoryGirl.create(:user)
-      sign_in user
-
-      game = post :create, :game => { :turn => "" }
-
-      expect(response).to redirect_to game_path(:id => game.id)
-
+      user_sign_in
+      expect(subject).to redirect_to("/games/#{assigns(:game).id}")
       expect(Game.count).to eq 1
-
-      # *** Consider making a database association between Game and User ***
-      game = Game.last
-      expect(game.user).to eq(user)
     end
   end
 

@@ -12,16 +12,13 @@ FactoryGirl.define do
   end
 
   factory :game do
-    # *** Consider making a database association between Game and User ***
-    # association :user
+    association :white_player, factory: :user
+    association :black_player, factory: :user
+    turn "white"
   end
 
   factory :piece do
 
   end
-
-  # factory :game_params do
-
-  # end
 
 end
