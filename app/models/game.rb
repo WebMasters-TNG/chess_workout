@@ -39,4 +39,19 @@ class Game < ActiveRecord::Base
 		game.update_attributes(black_player_id: user.id)
 		game.pieces.where(color: "black").join_as_black(game, user)
 	end
+
+	def self.next_turn(game)
+		next_turn = game.turn + 1
+		game.update_attributes(turn: next_turn)
+	end
+
+	def self.your_turn?(game, piece)
+		case game.turn % 2
+		when 1
+			return true if piece.color == "white"
+		when 0
+			return true if piece.color == "black"
+		end
+		false
+	end
 end
