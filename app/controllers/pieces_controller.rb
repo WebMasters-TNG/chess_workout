@@ -2,8 +2,6 @@ require 'pry'
 
 class PiecesController < ApplicationController
   before_action :authenticate_user!
-
-
   before_action :require_authorized_for_current_game, only: [:update]
   before_action :require_authorized_for_current_piece, only: [:update]
   before_action :your_turn?, only: [:update]
