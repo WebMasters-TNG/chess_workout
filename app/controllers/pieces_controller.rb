@@ -11,6 +11,7 @@ class PiecesController < ApplicationController
     @piece = Piece.find(params[:id])
     if @piece.valid_move?(piece_params, @piece)
       current_piece.update_attributes(piece_params)
+      # Send a message back to the JS after the update (after the data object is defined in the AJAX request) to confirm successful update or an error:
       respond_to do |format|
         format.js { render json: {success: true, status: :success} }
       end
