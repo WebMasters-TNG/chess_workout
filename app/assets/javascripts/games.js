@@ -78,6 +78,9 @@ function initPage() {
     var leftOffset = null;
     var topOffset = null;
 
+// <% x_position = Number(this.id.charAt(1)) %>
+
+// if (<%= @piece.valid_move?(Number(this.id.charAt(1)), Number(this.id.charAt(0)) %>) {
     if (oldPosition.left > newPosition.left) {
       leftOffset = (oldPosition.left - newPosition.left);
     } else {
@@ -89,6 +92,7 @@ function initPage() {
     } else {
       topOffset = -(newPosition.top - oldPosition.top);
     }
+// }
 
     ui.draggable.animate({
       left: '+=' + leftOffset,

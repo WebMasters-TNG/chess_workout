@@ -2,20 +2,25 @@ require 'pry'
 
 class PiecesController < ApplicationController
   before_action :authenticate_user!
-  before_action :require_authorized_for_current_game
+  # before_action :require_authorized_for_current_game
   # before_action :require_authorized_for_current_piece
 
   def update
     # if move is valid. Call back methods from model.
-    current_piece.update_attributes(piece_params)
-    render text: 'updated!'
+    @piece = Piece.find(params[:id])
+    if @piece.valid_move?(piece_params)
+      current_piece.update_attributes(piece_params)
+      render text: 'updated!'
+    else
+      render text: "not updated!"
+    end
   end
-
-  private
 
   def current_piece
     @current_piece ||= Piece.find(params[:id])
   end
+
+  private
 
   def require_authorized_for_current_piece
     if @current_piece.player_id != current_user.id && @current_piece.player_id != current_user.id
