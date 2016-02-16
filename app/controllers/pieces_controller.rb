@@ -10,9 +10,15 @@ class PiecesController < ApplicationController
     @piece = Piece.find(params[:id])
     if @piece.valid_move?(piece_params)
       current_piece.update_attributes(piece_params)
-      render text: 'updated!'
+      render json: 'updated!'
+      # respond_to do |format|
+      #   format.json { render json: => status: "valid"}
+      # end
     else
-      render text: 'not updated!'
+      render json: 'invalid'
+      # respond_to do |format|
+      #   format.json { render json: => status: "invalid"}
+      # end
     end
   end
 
