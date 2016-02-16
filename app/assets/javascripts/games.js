@@ -35,11 +35,15 @@ function initPage() {
   var start_sq = 99;
   var pieceColor = '';
 
-  if (userID == whiteID) {
+  if (userID == whiteID && userID == blackID) {
+    pieceColor = 'piece'
+  } else if (userID == whiteID) {
     pieceColor = 'white_piece'
-  } else {
+  }
+  else {
     pieceColor = 'black_piece'
   };
+  
   $('.' + pieceColor).draggable({
     cursor: "pointer",
     containment: ".board",

@@ -8,11 +8,13 @@ class PiecesController < ApplicationController
 
   def update
     # if move is valid. Call back methods from model.
+    @piece = Piece.find(params[:id])
+    if @piece.valid_move?(piece_params, @piece)
       current_piece.update_attributes(piece_params)
-      Game.next_turn(current_game)
       respond_to do |format|
         format.js { render json: {success: true, status: :success} }
       end
+    end
   end
 
   private
