@@ -3,6 +3,9 @@ class Piece < ActiveRecord::Base
   belongs_to :game
   # Have the game keep track of which user a piece belongs to, instead of directly associating the pieces with a user.
 
+  # Check if move is valid for selected piece
+  def valid_move?
+  end
   # Check if the piece is a knight, for purposes of passing over another piece on the board:
   def is_knight?
   end
@@ -24,7 +27,7 @@ class Piece < ActiveRecord::Base
   def is_turn?
   end
 
-  belongs_to :player, class_name: "User", foreign_key: :player_id
+  # belongs_to :player, class_name: "User", foreign_key: :player_id
 
   def self.join_as_black(game, user)
     self.all.each do |black_piece|

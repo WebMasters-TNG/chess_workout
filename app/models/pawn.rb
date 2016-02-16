@@ -52,6 +52,23 @@ class Pawn < Piece
   #   end
   # end
 
+  def valid_move?(params, piece)
+  	x = params[:x_position].to_i
+  	y = params[:y_position].to_i
+    captured_piece = Piece.where( x_position:  x, y_position: y ).first
+
+    return false if !backwards_move?(y)
+  	Game.next_turn(game)
+  end
+
+  def backwards_move?(y)
+    if self.color == "white"
+      self.y_position > y
+    elsif self.color == "black"
+      self.y_position < y
+    end
+  end
+
   # # Check to see if the piece is able to capture another:
   # # I thought that this method should be written for each type of piece because it must check that the piece's move is valid, which differs for each type of piece.
   # def is_capturing?
