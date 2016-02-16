@@ -14,7 +14,7 @@ class GamesController < ApplicationController
   end
 
   def create
-    defaults = {white_player_id: current_user.id ,turn: 1}
+    defaults = {white_player_id: current_user.id , black_player_id: current_user.id, turn: 1}
     @game = Game.create(defaults)
     if @game.valid?
       redirect_to game_path(@game)
