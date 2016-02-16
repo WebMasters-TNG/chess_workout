@@ -6,5 +6,6 @@ RSpec.describe Game, type: :model do
     game = Game.create(game_params)
 
     expect(game.pieces.count).to eq 32
+    expect(game.turn).to eq 1
   end
 end

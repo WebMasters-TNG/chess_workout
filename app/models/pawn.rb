@@ -53,12 +53,12 @@ class Pawn < Piece
   # end
 
   def valid_move?(params, piece)
-  	x = params[:x_position].to_i
-  	y = params[:y_position].to_i
+    x = params[:x_position].to_i
+    y = params[:y_position].to_i
     captured_piece = Piece.where( x_position:  x, y_position: y ).first
 
     return false if !backwards_move?(y)
-  	Game.next_turn(game)
+    Game.next_turn(game)
   end
 
   def backwards_move?(y)
