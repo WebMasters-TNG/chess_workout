@@ -58,6 +58,7 @@ class Pawn < Piece
     captured_piece = Piece.where( x_position:  x, y_position: y ).first
 
     return false if !backwards_move?(y)
+    return false if move_size?(y) == nil
     Game.next_turn(game)
   end
 
@@ -66,6 +67,21 @@ class Pawn < Piece
       self.y_position > y
     elsif self.color == "black"
       self.y_position < y
+    end
+  end
+
+  # Ensure that the pawns do not move more than:
+  # (a) 2 vertical spaces on THE PAWN's (not the player's) first turn.
+  # (b) 1 vertical space beyond their first turn.
+  def move_size?(y)
+    if self.color == "white"
+      # Check if the white pawn is at its starting y position.
+      return true if (self.y_position - y) <= 2 && self.y_position == 7
+      true if (self.y_position - y) <= 1
+    else
+      # Check if the black pawn is at its starting y position.
+      return true if (y - self.y_position) <= 2 && self.y_position == 2
+      true if (y - self.y_position) <= 1
     end
   end
 
