@@ -31,7 +31,7 @@ class PiecesController < ApplicationController
   end
 
   def piece_params
-    params.require(:piece).permit(:x_position, :y_position, :type, :captured)
+    params.require(:piece).permit(:x_position, :y_position, :type, :captured, :game_id)
   end
 
   def current_game

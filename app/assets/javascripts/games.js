@@ -1,3 +1,4 @@
+// Equivalent to $(document).ready:
 $(function() {
   initPage();
 });

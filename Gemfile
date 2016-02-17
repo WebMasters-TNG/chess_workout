@@ -22,6 +22,10 @@ gem 'jbuilder', '~> 1.2'
 
 gem 'pry-rails', :group => :development
 
+# Allows much nicer formatting of listed objects in the Rails console.
+# Troubleshooting: michelegera's answer from https://github.com/michaeldv/awesome_print/issues/136
+gem 'awesome_print'
+
 # Added rspec for testing
 group :development, :test do
   gem 'rspec-rails', '~> 3.0'
