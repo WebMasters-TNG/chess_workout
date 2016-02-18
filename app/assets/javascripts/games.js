@@ -36,9 +36,13 @@ function initPage() {
   var start_sq = 99;
   var pieceColor = '';
 
-  if (userID == whiteID) {
+// Check which color the current user is playing as:
+  if (userID == whiteID && userID == blackID) {
     pieceColor = 'white_piece'
-  } else if (userID == blackID) {
+  } else if (userID == whiteID) {
+    pieceColor = 'white_piece'
+  }
+  else {
     pieceColor = 'black_piece'
   };
 

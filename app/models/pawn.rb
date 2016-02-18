@@ -71,8 +71,8 @@ class Pawn < Piece
   end
 
   # Ensure that the pawns do not move more than:
-  # (a) 2 vertical spaces on THE PAWN's (not the player's) first turn.
-  # (b) 1 vertical space beyond their first turn.
+  # (a) 2 vertical spaces on THE PAWN's (not the player's) first move.
+  # (b) 1 vertical space beyond their first move.
   def move_size?(y)
     if self.color == "white"
       # Check if the white pawn is at its starting y position.
