@@ -6,6 +6,14 @@ class Piece < ActiveRecord::Base
 
   # Check if move is valid for selected piece
   def valid_move?(params)
+    @x0 = self.x_position
+    @y0 = self.y_position
+    @x1 = params[:x_position].to_i
+    @y1 = params[:y_position].to_i
+    @sx = @x1 - @x0 # sx = displacement_x
+    @sy = @y1 - @y0 # sy = displacement_y
+    return false if pinned?
+    return false if this_captured? || same_sq?(params) ||  !capture_dest_piece?(@x1, @y1).nil?
     true
   end
 
@@ -43,7 +51,7 @@ class Piece < ActiveRecord::Base
     dest_piece.update_attributes(captured: true) if !dest_piece.nil?
   end
 
-  def self.join_as_black(game, user)
+  def self.join_as_black(user)
     self.all.each do |black_piece|
       black_piece.update_attributes(player_id: user.id)
     end
