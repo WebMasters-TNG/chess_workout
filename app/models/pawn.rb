@@ -59,17 +59,23 @@ class Pawn < Piece
     y1 = params[:y_position].to_i
     return false if pinned?
     return false if this_captured? || same_sq?(params) ||  !capture_dest_piece?(x1, y1).nil?
-    return false if !backwards_move?(y1)
-    return false if move_size?(y1) == nil
-    true
+    !backwards_move?(y1) && (diagonal_capture?(x0, y0, x1, y1) || pawn_straight_move?(x0, y0, x1, y1))
   end
 
   def backwards_move?(y)
     if self.color == "white"
-      self.y_position > y
-    elsif self.color == "black"
       self.y_position < y
+    elsif self.color == "black"
+      self.y_position > y
     end
+  end
+
+  def diagonal_capture?(x0, y0, x1, y1)
+    (y1 - y0).abs == (x1 - x0).abs && (y1 - y0).abs == 1 && !destination_piece(x1, y1).nil?
+  end
+
+  def pawn_straight_move?(x0, y0, x1, y1)
+    x1 == x0 && move_size?(y1) && destination_piece(x1, y1).nil?
   end
 
   # Ensure that the pawns do not move more than:
@@ -79,11 +85,11 @@ class Pawn < Piece
     if self.color == "white"
       # Check if the white pawn is at its starting y position.
       return true if (self.y_position - y) <= 2 && self.y_position == 7
-      true if (self.y_position - y) <= 1
+      self.y_position - y <= 1
     else
       # Check if the black pawn is at its starting y position.
       return true if (y - self.y_position) <= 2 && self.y_position == 2
-      true if (y - self.y_position) <= 1
+      y - self.y_position <= 1
     end
   end
 

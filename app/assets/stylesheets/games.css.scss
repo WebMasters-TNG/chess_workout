@@ -53,6 +53,15 @@ td, th {
   display: inline-block;
 }
 
+.blank {
+  width: $piece_size;
+  line-height: $piece_size;
+  margin: 0;
+  border-style: double;
+  display: inline-block;
+  visibility: hidden;
+}
+
 .white_piece {
   background-color: rgb(189, 168, 92);
   border-color: 1px black;
