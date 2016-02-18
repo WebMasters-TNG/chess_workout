@@ -53,6 +53,7 @@ class Pawn < Piece
   # end
 
   def valid_move?(params, piece)
+    return false if !attempt_move?(params, piece)
     x = params[:x_position].to_i
     y = params[:y_position].to_i
     captured_piece = Piece.where( x_position:  x, y_position: y ).first

@@ -4,14 +4,9 @@ class Piece < ActiveRecord::Base
   # Have the game keep track of which user a piece belongs to, instead of directly associating the pieces with a user.
 
   # Check if move is valid for selected piece
-  def valid_move?
-  end
-  # Check if the piece is a knight, for purposes of passing over another piece on the board:
-  def is_knight?
-  end
-
-  # When castling, you simultaneously move your king, and one of your rooks. The king moves two squares towards a rook, and that rook moves to the square at the other side of the king.
-  def castling?
+  def attempt_move?(params, piece)
+    return false if !is_turn?(piece)
+    true
   end
 
   def is_blocked?
@@ -21,10 +16,18 @@ class Piece < ActiveRecord::Base
   def outside_board?
   end
 
-  def destination_has_piece?
+  def capture_piece?(params)
   end
 
-  def is_turn?
+  def is_turn?(piece)
+    game = piece.game
+    if piece.color == "white" && game.turn.odd?
+      return true
+    elsif piece.color == "black" && game.turn.even?
+      return true
+    else
+      return false
+    end
   end
 
   # belongs_to :player, class_name: "User", foreign_key: :player_id
