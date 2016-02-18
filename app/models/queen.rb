@@ -4,6 +4,7 @@ class Queen < Piece
 		super
     return false if !attempt_move?(params)
     return false if !legal_move?
+    capture_piece?
     return false if is_blocked?
     game.next_turn
   end

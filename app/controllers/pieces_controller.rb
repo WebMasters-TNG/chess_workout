@@ -16,10 +16,10 @@ class PiecesController < ApplicationController
       respond_to do |format|
         format.js { render json: {success: true, status: :success} }
       end
-    else
-      respond_to do |format|
-        format.js { render json: {error: true, status: :invalid} }
-      end
+    # else
+    #   respond_to do |format|
+    #     format.js { render json: {error: true, status: :invalid} }
+    #   end
     end
   end
 

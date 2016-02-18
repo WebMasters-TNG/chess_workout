@@ -20,15 +20,38 @@ class Piece < ActiveRecord::Base
   end
 
   def is_blocked?
-    # if !is_knight && (self.x_position != other_player_piece.x_position && self.y_position != other_player_piece.y_position)
-    false
+    if @current_x != @target_x && @current_y == @target_y
+      x = @target_x
+      until x == @current_x do         
+        return true if game.pieces.where(x_position: x, y_position: @current_y, captured: false).first != nil
+        x -= 1 if x > @current_x
+        x += 1 if x < @current_x
+      end
+    elsif @current_x == @target_x && @current_y != @target_y
+      y = @target_y
+      until y == @current_y do         
+        return true if game.pieces.where(x_position: @current_x, y_position: y, captured: false).first != nil
+        y -= 1 if y > @current_y
+        y += 1 if y < @current_y
+      end
+    elsif @current_x != @target_x && @current_y != @target_y
+      x = @target_x
+      y = @target_y
+      until x == @current_x && y == @current_y do
+        return true if game.pieces.where(x_position: x, y_position: y, captured: false).first != nil
+        x -= 1 if x > @current_x
+        x += 1 if x < @current_x
+        y -= 1 if y > @current_y
+        y += 1 if y < @current_y
+      end
+    else
+      false
+    end
   end
 
-  def outside_board?
-  end
-
-  def capture_piece?(params)
-    # captured_piece = Piece.where( x_position:  x, y_position: y ).first
+  def capture_piece?
+    captured_piece = game.pieces.where(x_position:  @target_x, y_position: @target_y).first
+    captured_piece.update_attributes(captured: true) if captured_piece
   end
 
   def is_turn?
