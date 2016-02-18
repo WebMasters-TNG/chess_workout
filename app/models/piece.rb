@@ -1,37 +1,59 @@
 class Piece < ActiveRecord::Base
 	# shared functionality for all pieces goes here
   belongs_to :game
+  # belongs_to :player, class_name: "User", foreign_key: :player_id
   # Have the game keep track of which user a piece belongs to, instead of directly associating the pieces with a user.
 
   # Check if move is valid for selected piece
-  def valid_move?
-  end
-  # Check if the piece is a knight, for purposes of passing over another piece on the board:
-  def is_knight?
+  def valid_move?(params)
+    true
   end
 
-  # When castling, you simultaneously move your king, and one of your rooks. The king moves two squares towards a rook, and that rook moves to the square at the other side of the king.
-  def castling?
+  # ***********************************************************
+  # Pinning needs specific attention!!
+  # => It involves checking whether the King will be under
+  # check if this piece is moved.
+  # => AND!! This method MUST be called BEFORE capture_dest_piece?
+  # or otherwise an innocent piece will be captured.
+  # ***********************************************************
+
+  def pinned?
+    false # Placeholder value. Assume this current piece is not pinned.
   end
 
-  def is_blocked?
-    # if !is_knight && (self.x_position != other_player_piece.x_position && self.y_position != other_player_piece.y_position)
+  # Check if this requesting piece is already captured.
+  def this_captured?
+    !self.captured.blank?
   end
 
-  def outside_board?
+  # Check the piece currently at the destination square. If there is no piece, return nil.
+  def destination_piece(x, y)
+    self.game.pieces.where(x_position: x, y_position: y).first
   end
 
-  def destination_has_piece?
+  def capture_dest_piece?(x, y)
+    dest_piece = destination_piece(x, y)
+    return false if !dest_piece.nil? && dest_piece.color == self.color
   end
 
-  def is_turn?
+  def capture_piece(params)
+    x1 = params[:x_position].to_i
+    y1 = params[:y_position].to_i
+    dest_piece = destination_piece(x1, y1)
+    dest_piece.update_attributes(captured: true) if !dest_piece.nil?
   end
-
-  # belongs_to :player, class_name: "User", foreign_key: :player_id
 
   def self.join_as_black(game, user)
     self.all.each do |black_piece|
       black_piece.update_attributes(player_id: user.id)
     end
+  end
+
+  def same_sq?(params)
+    x0 = self.x_position
+    y0 = self.y_position
+    x1 = params[:x_position].to_i
+    y1 = params[:y_position].to_i
+    x0 == x1 && y0 == y1
   end
 end

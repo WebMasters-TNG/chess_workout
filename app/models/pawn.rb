@@ -52,14 +52,16 @@ class Pawn < Piece
   #   end
   # end
 
-  def valid_move?(params, piece)
-    x = params[:x_position].to_i
-    y = params[:y_position].to_i
-    captured_piece = Piece.where( x_position:  x, y_position: y ).first
-
-    return false if !backwards_move?(y)
-    return false if move_size?(y) == nil
-    Game.next_turn(game)
+  def valid_move?(params)
+    x0 = self.x_position
+    y0 = self.y_position
+    x1 = params[:x_position].to_i
+    y1 = params[:y_position].to_i
+    return false if pinned?
+    return false if this_captured? || same_sq?(params) ||  !capture_dest_piece?(x1, y1).nil?
+    return false if !backwards_move?(y1)
+    return false if move_size?(y1) == nil
+    true
   end
 
   def backwards_move?(y)

@@ -4,17 +4,15 @@ class PiecesController < ApplicationController
   before_action :authenticate_user!
   before_action :require_authorized_for_current_game, only: [:update]
   before_action :require_authorized_for_current_piece, only: [:update]
-  before_action :your_turn?, only: [:update]
+  before_action :valid?, only: [:update]
 
   def update
-    # if move is valid. Call back methods from model.
-    @piece = Piece.find(params[:id])
-    if @piece.valid_move?(piece_params, @piece)
-      current_piece.update_attributes(piece_params)
-      # Send a message back to the JS after the update (after the data object is defined in the AJAX request) to confirm successful update or an error:
-      respond_to do |format|
-        format.js { render json: {success: true, status: :success} }
-      end
+    current_piece.capture_piece(piece_params)
+    current_piece.update_attributes(piece_params)
+    Game.next_turn(current_game)
+    # Send a message back to the JS after the update (after the data object is defined in the AJAX request) to confirm successful update or an error:
+    respond_to do |format|
+      format.js { render json: {success: true, status: :success} }
     end
   end
 
@@ -35,7 +33,7 @@ class PiecesController < ApplicationController
   end
 
   def current_game
-    @current_game ||= Piece.find_by_id(params[:id]).game
+    @current_game ||= current_piece.game
   end
 
   def require_authorized_for_current_game
@@ -44,7 +42,9 @@ class PiecesController < ApplicationController
     end
   end
 
-  def your_turn?
-    render text: 'Unauthorized', status: :unauthorized unless Game.your_turn?(current_game, current_piece)
+  def valid?
+    if !Game.your_turn?(current_game, current_piece) || !current_piece.valid_move?(piece_params)
+      render text: 'Unauthorized', status: :unauthorized
+    end
   end
 end
