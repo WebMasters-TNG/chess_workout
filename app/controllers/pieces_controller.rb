@@ -9,16 +9,16 @@ class PiecesController < ApplicationController
   def update
     # if move is valid. Call back methods from model.
     @piece = Piece.find(params[:id])
-    if @piece.valid_move?(piece_params, @piece)
+    if @piece.valid_move?(piece_params)
       current_piece.update_attributes(piece_params)
       # Send a message back to the JS after the update (after the data object is defined in the AJAX request) to confirm successful update or an error:
       respond_to do |format|
         format.js { render json: {success: true, status: :success} }
       end
-    # else
-    #   respond_to do |format|
-    #     format.js { render json: {success: false, status: :failure} }
-    #   end
+    else
+      respond_to do |format|
+        format.js { render json: {error: true, status: :invalid} }
+      end
     end
   end
 

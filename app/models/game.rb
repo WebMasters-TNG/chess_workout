@@ -40,9 +40,9 @@ class Game < ActiveRecord::Base
 		game.pieces.where(color: "black").join_as_black(game, user)
 	end
 
-	def self.next_turn(game)
-		next_turn = game.turn + 1
-		game.update_attributes(turn: next_turn)
+	def next_turn
+		next_turn = self.turn + 1
+		self.update_attributes(turn: next_turn)
 	end
 
 	def self.your_turn?(game, piece)

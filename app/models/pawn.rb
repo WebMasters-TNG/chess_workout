@@ -52,37 +52,35 @@ class Pawn < Piece
   #   end
   # end
 
-  def valid_move?(params, piece)
-    return false if !attempt_move?(params, piece)
-    x = params[:x_position].to_i
-    y = params[:y_position].to_i
-    captured_piece = Piece.where( x_position:  x, y_position: y ).first
-
-    return false if !backwards_move?(y)
-    return false if move_size?(y) == nil
-    Game.next_turn(game)
+  def valid_move?(params)
+    super
+    return false if !attempt_move?(params)
+    
+    return false if !backwards_move?
+    return false if move_size? == nil
+    game.next_turn
   end
 
-  def backwards_move?(y)
+  def backwards_move?
     if self.color == "white"
-      self.y_position > y
+      @current_y > @target_y
     elsif self.color == "black"
-      self.y_position < y
+      @current_y < @target_y
     end
   end
 
   # Ensure that the pawns do not move more than:
   # (a) 2 vertical spaces on THE PAWN's (not the player's) first turn.
   # (b) 1 vertical space beyond their first turn.
-  def move_size?(y)
+  def move_size?
     if self.color == "white"
       # Check if the white pawn is at its starting y position.
-      return true if (self.y_position - y) <= 2 && self.y_position == 7
-      true if (self.y_position - y) <= 1
+      return true if (@current_y - @target_y) <= 2 && @current_y == 7
+      true if (@current_y - @target_y) <= 1
     else
       # Check if the black pawn is at its starting y position.
-      return true if (y - self.y_position) <= 2 && self.y_position == 2
-      true if (y - self.y_position) <= 1
+      return true if (@target_y - @current_y) <= 2 && @current_y == 2
+      true if (@target_y - @current_y) <= 1
     end
   end
 
