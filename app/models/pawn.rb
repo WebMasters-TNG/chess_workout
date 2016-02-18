@@ -7,7 +7,10 @@ class Pawn < Piece
     return false if pinned?
     return false if this_captured? || same_sq?(params) ||  !capture_dest_piece?(x1, y1).nil?
     return true if en_passant?
-    !backwards_move?(y1) && (diagonal_capture?(x0, y0, x1, y1) || pawn_straight_move?(x0, y0, x1, y1))
+    if !backwards_move?(y1) && (diagonal_capture?(x0, y0, x1, y1) || pawn_straight_move?(x0, y0, x1, y1))
+      promotion(y1)
+      return true
+    end
   end
 
   # ***********************************************************
@@ -18,6 +21,12 @@ class Pawn < Piece
 
   def en_passant?
     false # Placeholder value. Assume this current piece is not pinned.
+  end
+
+  def promotion(y)
+    if ( self.color == "white" && y == 1 ) || ( self.color == "black" && y == 8)
+      self.update_attributes(type: "Queen")
+    end
   end
 
   def backwards_move?(y)
