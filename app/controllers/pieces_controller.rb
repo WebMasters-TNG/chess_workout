@@ -8,6 +8,7 @@ class PiecesController < ApplicationController
 
   def update
     # if move is valid. Call back methods from model.
+    # Assign the specified piece to an instance variable
     @piece = Piece.find(params[:id])
     if @piece.valid_move?(piece_params)
       current_piece.update_attributes(piece_params)

@@ -1,15 +1,18 @@
 class Piece < ActiveRecord::Base
 	# shared functionality for all pieces goes here
   belongs_to :game
-  # Have the game keep track of which user a piece belongs to, instead of directly associating the pieces with a user.
 
   # Check if move is valid for selected piece
+  # This method is called from the piece type's model via the valid_move? method to run validations
+  # common to all piece types, many of which should be defined in this model.
   def attempt_move?(params)
     return false if !is_turn?
     true
   end
 
+  # This method is called from the child method 
   def valid_move?(params)
+    # Assigning instance variables for use in this and all other piece type models
     @target_x = params[:x_position].to_i
     @target_y = params[:y_position].to_i
     @current_x = self.x_position

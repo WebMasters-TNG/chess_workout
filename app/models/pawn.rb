@@ -52,12 +52,16 @@ class Pawn < Piece
   #   end
   # end
 
+  # This method is called from the update action in the Pieces controller and passed the x_position and y_position
+  # of the targeted move destination.
   def valid_move?(params)
+    # Call the parent method from the Piece model to run common validations. 
     super
+    # Upon return from the parent method, begin running type specific validations
     return false if !attempt_move?(params)
-    
     return false if !backwards_move?
     return false if move_size? == nil
+    # As the final step, increment the game turn via the next_turn method
     game.next_turn
   end
 

@@ -18,5 +18,4 @@ class Queen < Piece
   	end
   	false
   end
-	binding.pry
 end

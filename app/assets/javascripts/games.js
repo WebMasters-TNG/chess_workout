@@ -44,7 +44,7 @@ if (userID == whiteID && userID == blackID) {
   else {
     pieceColor = 'black_piece'
   };
-  
+
   $('.' + pieceColor).draggable({
     cursor: "pointer",
     containment: ".board",
@@ -99,7 +99,7 @@ if (userID == whiteID && userID == blackID) {
         context: this,
         type: 'PUT',
         // The AJAX request will be received by the 'piece-url', which can then be accessed in the Pieces Controller:
-        url: ui.draggable.data('piece-url'),
+        url: ui.draggable.data('piece-url'), // Mike suggested we pass the piece as data below instead, but that is optional
         dataType: 'json',
         // this.id is the destination square
         data: { piece: {x_position: Number(this.id.charAt(1)), y_position: Number(this.id.charAt(0))} },
