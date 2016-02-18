@@ -14,7 +14,7 @@
         <% index.each do |col| %>
           <% sq_color = (row + col).even? ? 'white_sq' : 'dark_sq' %>
           <td id="<%= "#{row}#{col}" %>" class="<%= sq_color %>">
-            <% piece = @game.pieces.where(:x_position => col, :y_position => row).first %>
+            <% piece = @game.pieces.where(:x_position => col, :y_position => row, :captured => nil).first %>
             <% if piece %>
               <div class="piece <%= piece.color %>_piece" id="<%= piece.color %>-<%= piece.type %>" data-piece-url="<%= piece_path(piece) %>">
                 <strong><%= piece.type %></strong>
@@ -34,9 +34,25 @@
 
   <div class="capture_box">
     <h5>Captured</h5>
-    <span id="white_captured"></span>
+    <div class="white_capture_box">
+      <span id="white_captured">
+        <% @game.pieces.where(:captured => true, :color => "white").each do |piece| %>
+          <div class="piece <%= piece.color %>_piece" id="<%= piece.color %>-<%= piece.type %>" data-piece-url="<%= piece_path(piece) %>">
+            <strong><%= piece.type %></strong>
+          </div>
+        <% end %>
+      </span>
+    </div>
     <br />
-    <span id="dark_captured"></span>
+    <div class="black_capture_box">
+      <span id="dark_captured">
+        <% @game.pieces.where(:captured => true, :color => "black").each do |piece| %>
+          <div class="piece <%= piece.color %>_piece" id="<%= piece.color %>-<%= piece.type %>" data-piece-url="<%= piece_path(piece) %>">
+            <strong><%= piece.type %></strong>
+          </div>
+        <% end %>
+      </span>
+    </div>
     <br />
   </div>
 </div>

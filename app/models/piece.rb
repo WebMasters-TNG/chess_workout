@@ -19,6 +19,9 @@ class Piece < ActiveRecord::Base
     @current_y = self.y_position
   end
 
+  # This method can be called by all piece types except the knight, whose moves are not considered below. 
+  # This will return true if there is a piece along the chosen movement path that has not been captured.
+  # Therefore the capture_piece? method should be called first.
   def is_blocked?
     if @current_x != @target_x && @current_y == @target_y
       x = @target_x
@@ -49,9 +52,13 @@ class Piece < ActiveRecord::Base
     end
   end
 
+  # This method can be called by all piece types and will determine if there is a piece of the opposite color 
+  # in the target square and, if so, update the status of the captured piece accordingly.
   def capture_piece?
     captured_piece = game.pieces.where(x_position:  @target_x, y_position: @target_y).first
+    binding.pry
     captured_piece.update_attributes(captured: true) if captured_piece
+    binding.pry
   end
 
   def is_turn?
