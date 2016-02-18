@@ -50,6 +50,6 @@ class PiecesController < ApplicationController
   end
 
   def your_turn?
-    render text: 'Unauthorized', status: :unauthorized unless Game.your_turn?(current_game, current_piece)
+    render text: 'Unauthorized', status: :unauthorized unless @current_game.your_turn?(current_piece)
   end
 end

@@ -30,7 +30,8 @@ class GamesController < ApplicationController
 
   def join_game
     if current_game.black_player_id == nil
-      Game.join_as_black(current_game, current_user)
+      binding.pry
+      current_game.join_as_black(current_user)
     end
     redirect_to game_path(current_game)
   end

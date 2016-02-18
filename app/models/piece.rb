@@ -43,7 +43,7 @@ class Piece < ActiveRecord::Base
 
   # belongs_to :player, class_name: "User", foreign_key: :player_id
 
-  def self.join_as_black(game, user)
+  def self.join_as_black(user)
     self.all.each do |black_piece|
       black_piece.update_attributes(player_id: user.id)
     end
