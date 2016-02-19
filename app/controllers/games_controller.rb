@@ -23,14 +23,14 @@ class GamesController < ApplicationController
     end
   end
 
-  def update
-    current_game.update_attributes(game_params)
-    redirect_to game_path(current_game)
-  end
+  # def update
+  #   current_game.update_attributes(game_params)
+  #   redirect_to game_path(current_game)
+  # end
 
   def join_game
     if current_game.black_player_id == nil
-      Game.join_as_black(current_game, current_user)
+      current_game.join_as_black(current_user)
     end
     redirect_to game_path(current_game)
   end
