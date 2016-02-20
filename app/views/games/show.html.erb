@@ -14,8 +14,7 @@
         <% index.each do |col| %>
           <% sq_color = (row + col).even? ? 'white_sq' : 'dark_sq' %>
           <td id="<%= "#{row}#{col}" %>" class="<%= sq_color %>">
-            <!-- <% piece = @game.pieces.where(:x_position => col, :y_position => row, :captured => nil).first %> -->
-            <!-- <% if piece %> -->
+
             <% piece = @game.pieces.where(:x_position => col, :y_position => row).order("updated_at DESC").first %>
             <% if piece && piece.captured.blank? %>
               <div class="piece <%= piece.color %>_piece" id="<%= piece.color %>-<%= piece.type %>" data-piece-url="<%= piece_path(piece) %>">

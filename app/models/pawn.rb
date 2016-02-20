@@ -1,4 +1,4 @@
-Wellclass Pawn < Piece
+class Pawn < Piece
   def valid_move?(params)
     return false unless super
     return true if en_passant?
