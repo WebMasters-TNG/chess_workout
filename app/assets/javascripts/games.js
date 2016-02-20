@@ -36,7 +36,7 @@ function initPage() {
   var start_sq = 99;
   var pieceColor = '';
 
-if (userID == whiteID && userID == blackID) {
+  if (userID == whiteID && userID == blackID) {
     pieceColor = 'piece'
   } else if (userID == whiteID) {
     pieceColor = 'white_piece'
