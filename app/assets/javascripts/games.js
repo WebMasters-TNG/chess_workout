@@ -23,6 +23,20 @@ $(window).bind('page:change', function() {
   // }, 5000)
 });
 
+// Attempt long polling...
+(function poll() {
+  setTimeout(function(){
+    $.ajax({
+      type: 'GET',
+      url: 'something',
+      success: function (data) {
+        //update game board
+      },
+      complete: poll
+    });
+  }, 5000);
+})();
+
 function initPage() {
   "use strict";
 
