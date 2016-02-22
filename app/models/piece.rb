@@ -1,6 +1,7 @@
 class Piece < ActiveRecord::Base
 	# shared functionality for all pieces goes here
   belongs_to :game
+  has_many :moves
   # belongs_to :player, class_name: "User", foreign_key: :player_id
   # Have the game keep track of which user a piece belongs to, instead of directly associating the pieces with a user.
 
@@ -14,6 +15,8 @@ class Piece < ActiveRecord::Base
     @sy = @y1 - @y0 # sy = displacement_y
     return false if pinned?
     return false if this_captured? || same_sq?(params) ||  !capture_dest_piece?(@x1, @y1).nil?
+    # Something is wrong in the last line:
+    # Move.create(old_x: @x0, old_y: @y0, new_x: @x1, new_y: @y1, counter: self.game.next_move)
     true
   end
 

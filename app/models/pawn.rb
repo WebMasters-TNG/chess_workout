@@ -1,7 +1,7 @@
 class Pawn < Piece
   def valid_move?(params)
     return false unless super
-    return true if en_passant?
+    return true if en_passant?(@x0, @y0, @x1, @y1)
     if !backwards_move? && (diagonal_capture? || pawn_straight_move?)
       promotion
       return true
@@ -15,8 +15,16 @@ class Pawn < Piece
   # => This involves changing the diagonal_capture method
   # ***********************************************************
 
-  def en_passant?
+  def en_passant?(x0, y0, x1, y1)
     false # Placeholder value. Assume this current piece is not pinned.
+    # Check if enemy pawn has moved two squares forward.
+    # if #last move + #Pawn
+    #  # && (destination_piece(x0, y0) - destination_piece(x1, y1) == 2)
+
+    # end
+    # Check if enemy pawn's current position - 1y square would be capturable.
+
+    # If these two checks pass, move the player pawn to the enemy pawn's current position - y.
   end
 
   def promotion

@@ -14,10 +14,27 @@ FactoryGirl.define do
   factory :game do
     association :white_player, factory: :user
     association :black_player, factory: :user
+    turn 1
   end
 
   factory :piece do
+    association :game
+    type "Pawn"
+    color "white"
+    captured false
+    x_position 1
+    y_position 7
+  end
 
+  # Set up an initially empty move, then adjust the values after checking that a piece can be moved:
+  factory :move do
+    association :piece
+    association :game
+    old_x 1
+    old_y 7
+    new_x 1
+    new_y 7
+    move_count 0
   end
 
 end
