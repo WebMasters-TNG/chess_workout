@@ -31,20 +31,20 @@ class Piece < ActiveRecord::Base
     if @x0 != @x1 && @y0 == @y1
       @x1 > @x0 ? x = @x1 - 1 : x = @x1 + 1
       until x == @x0 do        
-        clear = false if game.pieces.where(x_position: x, y_position: @y0, captured: !true).first != nil
+        clear = false if game.pieces.where(x_position: x, y_position: @y0, captured: nil).first != nil
         x > @x0 ? x -= 1 : x += 1
       end
     elsif @x0 == @x1 && @y0 != @y1
       @y1 > @y0 ? y = @y1 - 1 : y = @y1 + 1
       until y == @y0 do         
-        clear = false if game.pieces.where(x_position: @x0, y_position: y, captured: !true).first != nil
+        clear = false if game.pieces.where(x_position: @x0, y_position: y, captured: nil).first != nil
         y > @y0 ? y -= 1 : y += 1
       end
     elsif @x0 != @x1 && @y0 != @y1
       @x1 > @x0 ? x = @x1 - 1 : x = @x1 + 1
       @y1 > @y0 ? y = @y1 - 1 : y = @y1 + 1
       until x == @x0 && y == @y0 do
-        clear = false if game.pieces.where(x_position: x, y_position: y, captured: !true).first != nil
+        clear = false if game.pieces.where(x_position: x, y_position: y, captured: nil).first != nil
         x > @x0 ? x -= 1 : x += 1
         y > @y0 ? y -= 1 : y += 1
       end
@@ -56,7 +56,7 @@ class Piece < ActiveRecord::Base
   # in the target square and, if so, update the status of the captured piece accordingly. This should be called
   # after checking path_clear? with the exception being the knight.
   def capture_piece?
-    captured_piece = game.pieces.where(x_position:  @x1, y_position: @y1, captured: !true).first
+    captured_piece = game.pieces.where(x_position:  @x1, y_position: @y1, captured: nil).first
     return false if captured_piece && captured_piece.color == self.color
     captured_piece.update_attributes(captured: true) if captured_piece
     true
