@@ -10,7 +10,15 @@ class GamesController < ApplicationController
   def show
     # .find_by_id will return a nil value if the id doesn't exist.
     @game = Game.find_by_id(params[:id])
+    session[:current_game] = @game.id
     return render_not_found if @game.blank?
+  end
+
+  def refresh_game
+    @game = Game.find(session[:current_game])
+    respond_to do |format|
+      format.js
+    end
   end
 
   def create
@@ -32,6 +40,7 @@ class GamesController < ApplicationController
     if current_game.black_player_id == nil
       current_game.join_as_black(current_user)
     end
+    session[:current_game] = current_game.id
     redirect_to game_path(current_game)
   end
 
