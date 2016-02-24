@@ -25,6 +25,8 @@ class Pawn < Piece
     # Check if enemy pawn's current position - 1y square would be capturable.
 
     # If these two checks pass, move the player pawn to the enemy pawn's current position - y.
+
+    # *** ALTERNATIVELY, we could have the player whose pawn is capturable with the en passant move have a flag set on their own pawn after a check for an adjacent pawn. ***
   end
 
   def promotion

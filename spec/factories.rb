@@ -29,7 +29,7 @@ FactoryGirl.define do
   # Set up an initially empty move, then adjust the values after checking that a piece can be moved:
   factory :move do
     association :piece
-    association :game
+    # association :game
     old_x 1
     old_y 7
     new_x 1

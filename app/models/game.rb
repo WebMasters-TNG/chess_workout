@@ -1,6 +1,6 @@
 class Game < ActiveRecord::Base
   has_many :pieces
-  has_many :moves
+  has_many :moves, through: :pieces
   # The associations below will enable us to use game.white_player, game.black_player:
 
   belongs_to :white_player, class_name: 'User', foreign_key: :white_player_id
