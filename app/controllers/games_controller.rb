@@ -23,6 +23,11 @@ class GamesController < ApplicationController
     end
   end
 
+  def destroy
+    current_game.destroy
+    redirect_to games_path
+  end
+
   # def update
   #   current_game.update_attributes(game_params)
   #   redirect_to game_path(current_game)

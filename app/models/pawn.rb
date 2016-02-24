@@ -51,11 +51,11 @@ class Pawn < Piece
   end
 
   def diagonal_capture?
-    @sy.abs == @sx.abs && @sy.abs == 1 && !destination_piece(@x1, @y1).nil?
+    @sy.abs == @sx.abs && @sy.abs == 1 && !destination_piece.nil?
   end
 
   def pawn_straight_move?
-    @x1 == @x0 && move_size? && destination_piece(@x1, @y1).nil?
+    @x1 == @x0 && move_size? && destination_piece.nil?
   end
 
   # Ensure that the pawns do not move more than:
