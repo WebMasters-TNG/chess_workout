@@ -1,101 +1,63 @@
 class Pawn < Piece
-  # Pawn movement: A pawn can move to the square directly in front of itself, if that square is clear. A pawn on its starting rank has the option of moving two squares.
-
-  # @possible_moves = []
-
-  # # How to set the new_x_position and new_y_position properties?  Grab them from the games#show page with an html data attribute using JavaScript?
-  # # games#show page has table.board > tr > td#id
-  # # *** Check the Flixter app to see how to do this! ***
-  # self.new_x_position = ?....
-  # self.new_y_position = ?....
-
-  # @pawn_destination = [self.new_x_position, self.new_y_position]
-
-  # distance_x = self.x_position - @pawn_destination[0]
-  # distance_y = self.y_position - @pawn_destination[1]
-
-  # # Return an array of valid pawn moves (destination coordinates) every time a player has a turn.  If a potential move is valid (legal), add the resulting destination to the array of allowable pawn moves:
-  # def self.possible_moves
-  #   # General check for all pieces.  Check that: the piece is not moving outside of the board and that there is not another piece in the way OR that capturing is legal:
-  #   if !self.outside_board? && (!self.is_blocked? || self.is_capturing?)
-  #     # Specific check for pawns.  There are three potentially legal pawn moves:
-  #     # We need a way to check for the current active player, because a pawn can be moved two spaces on a starting player's turn.  Is there a way to link the black_player_id or the white_player_id to the current turn?
-  #     # *** Instead of checking for player's first turn, check if pawn is on starting position for moving 2 spaces. ***
-  #     if distance_y == 1 || (distance_y == 2 && @game.current_player.turn == 1) || en_passant?
-  #       @possible_moves << [self.new_x_position, self.new_y_position]
-  #     end
-  #   end
-  # end
-
-  # # Define pawn movement:
-  # # Pawns can only move vertically, except for the "en passant" move.
-  # def move(distance_x, distance_y)
-  #   if en_passant?
-  #     self.x_position += distance_x && self.y_position += distance_y
-  #   else
-  #     self.y_position += distance_y
-  #   end
-  # end
-
-  # # *** We need a turn counter, to check for the first turn. ***
-  # # *** Change Game.turn into an integer, because odd turns are always the white player's, and even turns the black player's. ***
-
-  # # If the move is valid (legal), execute it:
-  # # If pawn_destination is in the @possible_moves array:
-  # def valid_move?
-  #   @possible_moves.each do |possible_move|
-  #     if @pawn_destination == possible_move
-  #       self.move(distance_x, distance_y)
-  #     else
-  #       "Illegal move for the pawn at #{self.x_position}, #{self.y_position}"
-  #     end
-  #   end
-  # end
-
-  def valid_move?(params, piece)
-    x = params[:x_position].to_i
-    y = params[:y_position].to_i
-    captured_piece = Piece.where( x_position:  x, y_position: y ).first
-
-    return false if !backwards_move?(y)
-    return false if move_size?(y) == nil
-    Game.next_turn(game)
+  def valid_move?(params)
+    return false unless super
+    return true if en_passant?(@x0, @y0, @x1, @y1)
+    if !backwards_move? && (diagonal_capture? || pawn_straight_move?)
+      promotion
+      return true
+    end
   end
 
-  def backwards_move?(y)
-    if self.color == "white"
-      self.y_position > y
-    elsif self.color == "black"
-      self.y_position < y
+  # ***********************************************************
+  # En passant ("in passing") needs specific attention!!
+  # => A special pawn capture, that can only occur immediately after a pawn moves two ranks forward from its starting position and an enemy pawn could have captured it had the pawn moved only one square forward.
+  # => Must check that the other player's pawn has moved forward two spaces (on their first turn), and that the current_player's pawn is one square to the right or left.
+  # => This involves changing the diagonal_capture method
+  # ***********************************************************
+
+  def en_passant?(x0, y0, x1, y1)
+    false # Placeholder value. Assume this current piece is not pinned.
+    # Check if enemy pawn has moved two squares forward.
+    # if #last move + #Pawn
+    #  # && (destination_piece(x0, y0) - destination_piece(x1, y1) == 2)
+
+    # end
+    # Check if enemy pawn's current position - 1y square would be capturable.
+
+    # If these two checks pass, move the player pawn to the enemy pawn's current position - y.
+
+    # *** ALTERNATIVELY, we could have the player whose pawn is capturable with the en passant move have a flag set on their own pawn after a check for an adjacent pawn. ***
+  end
+
+  def promotion
+    if ( self.color == "white" && @y1 == 1 ) || ( self.color == "black" && @y1 == 8 )
+      self.update_attributes(type: "Queen")
     end
+  end
+
+  def backwards_move?
+    self.color == "white" ? @y0 < @y1 : @y0 > @y1
+  end
+
+  def diagonal_capture?
+    @sy.abs == @sx.abs && @sy.abs == 1 && !destination_piece(@x1, @y1).nil?
+  end
+
+  def pawn_straight_move?
+    @x1 == @x0 && move_size? && destination_piece(@x1, @y1).nil?
   end
 
   # Ensure that the pawns do not move more than:
   # (a) 2 vertical spaces on THE PAWN's (not the player's) first move.
   # (b) 1 vertical space beyond their first move.
-  def move_size?(y)
+  def move_size?
     if self.color == "white"
       # Check if the white pawn is at its starting y position.
-      return true if (self.y_position - y) <= 2 && self.y_position == 7
-      true if (self.y_position - y) <= 1
+      return true if (@sy.abs) == 2 && @y0 == 7
     else
       # Check if the black pawn is at its starting y position.
-      return true if (y - self.y_position) <= 2 && self.y_position == 2
-      true if (y - self.y_position) <= 1
+      return true if (@sy.abs) == 2 && @y0 == 2
     end
+    @sy.abs == 1
   end
-
-  # # Check to see if the piece is able to capture another:
-  # # I thought that this method should be written for each type of piece because it must check that the piece's move is valid, which differs for each type of piece.
-  # def is_capturing?
-  #   if destination_has_piece? && valid_move? && !outside_board
-  #     true
-  #   end
-  # end
-
-  # # En passant ("in passing"):  A special pawn capture, that can only occur immediately after a pawn moves two ranks forward from its starting position and an enemy pawn could have captured it had the pawn moved only one square forward.
-  # def en_passant?
-  #   # Must check that the other player's pawn has moved forward two spaces (on their first turn), and that the current_player's pawn is one square to the right or left.
-  # end
-
 end

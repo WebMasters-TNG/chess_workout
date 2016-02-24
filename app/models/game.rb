@@ -1,5 +1,6 @@
 class Game < ActiveRecord::Base
   has_many :pieces
+  has_many :moves, through: :pieces
   # The associations below will enable us to use game.white_player, game.black_player:
 
   belongs_to :white_player, class_name: 'User', foreign_key: :white_player_id
@@ -33,20 +34,24 @@ class Game < ActiveRecord::Base
       Pawn.create(color: "black", x_position: i, y_position: 2, game_id: id, player_id: black_player_id)
       Pawn.create(color: "white", x_position: i, y_position: 7, game_id: id, player_id: white_player_id)
     end
+
+    self.counter = 0
+    # Saves the counter to the database.
+    self.save
   end
 
-	def self.join_as_black(game, user)
-		game.update_attributes(black_player_id: user.id)
-		game.pieces.where(color: "black").join_as_black(game, user)
+	def join_as_black(user)
+		self.update_attributes(black_player_id: user.id)
+		self.pieces.where(color: "black").join_as_black(user)
 	end
 
-	def self.next_turn(game)
-		next_turn = game.turn + 1
-		game.update_attributes(turn: next_turn)
+	def next_turn
+		increment_turn = self.turn + 1
+		self.update_attributes(turn: increment_turn)
 	end
 
-	def self.your_turn?(game, piece)
-		case game.turn % 2
+	def your_turn?(piece)
+		case self.turn % 2
 		when 1
 			return true if piece.color == "white"
 		when 0
@@ -54,4 +59,11 @@ class Game < ActiveRecord::Base
 		end
 		false
 	end
+
+#
+  def next_move
+    self.counter += 1
+    self.save
+    self.counter
+  end
 end
