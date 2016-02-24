@@ -43,8 +43,6 @@ class Piece < ActiveRecord::Base
     !self.captured.blank?
   end
 
-  def capture_piece?
-  # Check the piece currently at the destination square. If there is no piece, return nil.
   def destination_piece(x, y)
     self.game.pieces.where(x_position: x, y_position: y, captured: nil).order("updated_at DESC").first
   end

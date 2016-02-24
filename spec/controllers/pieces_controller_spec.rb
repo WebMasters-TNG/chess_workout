@@ -9,18 +9,16 @@ RSpec.describe PiecesController, type: :controller do
       game = FactoryGirl.create(:game, :white_player_id => user.id)
       # Test a white pawn's movement on its first turn:
       piece = FactoryGirl.create(:piece, :game => game, :player_id => user.id)
-      move = FactoryGirl.create(:move, :piece => piece)
       if piece.valid_move?({ :x_position => piece.x_position, :y_position => 5, :type => piece.type, :captured => piece.captured })
         # Move the pawn 2 vertical spaces on its first turn, and record the move:
         # *** PROBLEM: The piece's y-position is not being updated. ***
         patch :update, :id => piece.id, :piece => { :y_position => 5 }, :format => :js
         # patch :update, :id => piece.id, :piece => { :x_position => piece.x_position, :y_position => 5, :type => piece.type, :captured => piece.captured }, :format => :js
-        piece.reload
-        if user.id != game.white_player_id
-          # "Problem with authentication if this next expectation fails."
-          expect(user.id).to eq game.white_player_id
-        end
-        binding.pry
+        # *** piece.reload resets the piece's properties to their initial factory settings (after manually reassigning piece.y_position in rails console), but removing it does not fix the problem. ***
+        piece.save
+        # piece.reload
+        # binding.pry
+        move = FactoryGirl.create(:move, :piece => piece)
         expect(piece.y_position).to eq 5
         expect(game.turn).to eq 2
         expect(move.new_x).to eq piece.x_position
