@@ -15,10 +15,12 @@ class GamesController < ApplicationController
   end
 
   def refresh_game
-    @game = Game.find(session[:current_game])
-    respond_to do |format|
-      format.js
-    end
+
+    # @game = Game.find(session[:current_game])
+    # respond_to do |format|
+    #   format.js
+    # end
+    render json: {message: "test"}
   end
 
   def create

@@ -24,33 +24,35 @@ $(window).bind('page:change', function() {
 });
 
 // Attempt long polling...
-// (function poll() {
-//   setTimeout(function(){
-//     $.ajax({
-//       type: 'GET',
-//       dataType: 'json',
-//       url: game,
-//       success: function () {
-//         alert("Polled!");
-//       },
-//       error: function() {
-//         alert("error");
-//       },
-//       complete: poll
-//     });
-//   }, 10000);
-// })();
+(function poll() {
+  setTimeout(function(){
+    var moveId = 7;
+    $.ajax({
+      type: 'GET',
+      dataType: 'json',
+      url: game,
+      data: {"game_id": game_id, "move_id": moveId},
+      success: function (data) {
+        console.log(data);
+      },
+      error: function() {
+        alert("error");
+      },
+      complete: poll
+    });
+  }, 10000);
+})();
 
-setInterval(refreshGame, 10000)
+// setInterval(refreshGame, 10000)
 
-function refreshGame() {
-  // $.ajax({
-  //   url: game
-  //   data: 
-  // });
-  // location.reload();
-  $('.gameboard').load(game);
-};
+// function refreshGame() {
+//   // $.ajax({
+//   //   url: game
+//   //   data: 
+//   // });
+//   // location.reload();
+//   $('.gameboard').load(game);
+// };
 
 function initPage() {
   "use strict";
