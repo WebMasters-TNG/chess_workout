@@ -23,6 +23,27 @@ $(window).bind('page:change', function() {
   // }, 5000)
 });
 
+// Attempt long polling...
+(function poll() {
+  setTimeout(function(){
+    var moveId = 7;
+    $.ajax({
+      type: 'GET',
+      dataType: 'json',
+      url: game,
+      data: {"game_id": game_id, "move_id": moveId},
+      success: function (data) {
+        console.log(data);
+      },
+      error: function() {
+        alert("error");
+      },
+      complete: poll
+    });
+  }, 10000);
+})();
+
+
 function initPage() {
   "use strict";
 
