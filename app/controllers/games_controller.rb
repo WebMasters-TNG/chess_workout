@@ -19,14 +19,15 @@ class GamesController < ApplicationController
     return render_not_found if @game.blank?
   end
 
+  # This action is called by AJAX request to check the server for new moves.
   def refresh_game
     move_id = params[:move_id].to_i
     game_id = params[:game_id]
     @game = Game.find(session[:current_game])
-    last_move = @game.moves.where(id: move_id + 1).first
-    binding.pry
+    last_move = @game.moves.where(id: move_id + 1).first   # Check the server for a move id greater than the last known value
+    # binding.pry
     if !last_move.nil?
-      render json: {message: last_move}
+      render json: {new_move: last_move, turn: @game.turn}  # Return last move and turn data to client side
     end
     
   end

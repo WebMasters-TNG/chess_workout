@@ -7,7 +7,7 @@
   window.last_move = "<%= @last_move_id %>"
 <% end %>
 <br />
-<h1><%= "Game ID: #{@game.id}, Turn: #{@game.turn}" %></h1>
+<h1>Game ID: <%= @game.id %>, Turn <span class="game_turn"><%= @game.turn %></span></h1>
 <br />
 <div class="gameboard col-xs-6">
   <table class="board" id="chessboard">
@@ -23,8 +23,6 @@
               <div class="piece <%= piece.color %>_piece" id="<%= piece.color %>-<%= piece.type %>" data-piece-url="<%= piece_path(piece) %>">
                 <strong><%= piece.type %></strong>
               </div>
-            <% else %>
-              <div class="blank"></div>
             <% end %>
           </td>
         <% end %>
