@@ -43,16 +43,6 @@ $(window).bind('page:change', function() {
   }, 10000);
 })();
 
-// setInterval(refreshGame, 10000)
-
-// function refreshGame() {
-//   // $.ajax({
-//   //   url: game
-//   //   data: 
-//   // });
-//   // location.reload();
-//   $('.gameboard').load(game);
-// };
 
 function initPage() {
   "use strict";
