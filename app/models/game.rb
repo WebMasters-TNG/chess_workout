@@ -66,4 +66,5 @@ class Game < ActiveRecord::Base
     self.save
     self.counter
   end
+
 end

@@ -15,11 +15,9 @@ class GamesController < ApplicationController
   end
 
   def refresh_game
-
-    # @game = Game.find(session[:current_game])
-    # respond_to do |format|
-    #   format.js
-    # end
+    move_id = params[:move_id]
+    game_id = params[:game_id]
+    @game = Game.find(session[:current_game])
     render json: {message: "test"}
   end
 

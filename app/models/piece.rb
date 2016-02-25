@@ -88,6 +88,12 @@ class Piece < ActiveRecord::Base
     false # Placeholder value. Assume this current piece is not pinned.
   end
 
+  def update_move
+    binding.pry
+    moves.where(piece_id: id).first.nil? ? inc_move = 0 : inc_move = moves.where(piece_id: id).last.move_count + 1
+    Move.create(game_id: game.id, piece_id: id, move_count: inc_move, old_x: @x0, new_x: @x1, old_y: @y0, new_y: @y1)
+  end
+
 
 
 
