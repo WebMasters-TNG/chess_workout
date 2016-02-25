@@ -35,6 +35,27 @@ class Pawn < Piece
     end
   end
 
+
+  # # This method is called from the update action in the Pieces controller and passed the x_position and y_position
+  # # of the targeted move destination.
+  # def valid_move?(params)
+  #   # Call the parent method from the Piece model to run common validations. 
+  #   super
+  #   # Upon return from the parent method, begin running type specific validations
+  #   return false if !attempt_move?(params)
+  #   return false if !backwards_move?
+  #   return false if move_size? == nil
+  #   # As the final step, increment the game turn via the next_turn method
+  #   game.next_turn
+  # end
+
+  # def backwards_move?
+  #   if self.color == "white"
+  #     @current_y > @target_y
+  #   elsif self.color == "black"
+  #     @current_y < @target_y
+  #   end
+
   def backwards_move?
     self.color == "white" ? @y0 < @y1 : @y0 > @y1
   end
@@ -53,6 +74,14 @@ class Pawn < Piece
   def move_size?
     if self.color == "white"
       # Check if the white pawn is at its starting y position.
+
+    #   return true if (@current_y - @target_y) <= 2 && @current_y == 7
+    #   true if (@current_y - @target_y) <= 1
+    # else
+    #   # Check if the black pawn is at its starting y position.
+    #   return true if (@target_y - @current_y) <= 2 && @current_y == 2
+    #   true if (@target_y - @current_y) <= 1
+
       return true if (@sy.abs) == 2 && @y0 == 7
     else
       # Check if the black pawn is at its starting y position.

@@ -14,9 +14,54 @@ class Piece < ActiveRecord::Base
     @sx = @x1 - @x0 # sx = displacement_x
     @sy = @y1 - @y0 # sy = displacement_y
     return false if pinned?
-    return false if this_captured? || same_sq?(params) ||  !capture_dest_piece?(@x1, @y1).nil?
-    # Something is wrong in the last line:
-    # Move.create(old_x: @x0, old_y: @y0, new_x: @x1, new_y: @y1, counter: self.game.next_move)
+    true
+  end
+
+  # Check to see if the movement path is a valid diagonal move
+  def diagonal_move?
+    @sy.abs == @sx.abs
+  end
+
+  # Check to see if the movement pat is a valid straight move
+  def straight_move?
+    @x1 == @x0 || @y1 == @y0
+  end
+
+  # This method can be called by all piece types except the knight, whose moves are not considered below.
+  # This will return true if there is no piece along the chosen movement path that has not been captured.
+  def path_clear?
+    clear = true
+    if @x0 != @x1 && @y0 == @y1
+      @x1 > @x0 ? x = @x1 - 1 : x = @x1 + 1
+      until x == @x0 do
+        clear = false if game.pieces.where(x_position: x, y_position: @y0, captured: nil).first != nil
+        x > @x0 ? x -= 1 : x += 1
+      end
+    elsif @x0 == @x1 && @y0 != @y1
+      @y1 > @y0 ? y = @y1 - 1 : y = @y1 + 1
+      until y == @y0 do
+        clear = false if game.pieces.where(x_position: @x0, y_position: y, captured: nil).first != nil
+        y > @y0 ? y -= 1 : y += 1
+      end
+    elsif @x0 != @x1 && @y0 != @y1
+      @x1 > @x0 ? x = @x1 - 1 : x = @x1 + 1
+      @y1 > @y0 ? y = @y1 - 1 : y = @y1 + 1
+      until x == @x0 && y == @y0 do
+        clear = false if game.pieces.where(x_position: x, y_position: y, captured: nil).first != nil
+        x > @x0 ? x -= 1 : x += 1
+        y > @y0 ? y -= 1 : y += 1
+      end
+    end
+    clear
+  end
+
+  # This method can be called by all piece types and will determine if there is a piece of the opposite color
+  # in the target square and, if so, update the status of the captured piece accordingly. This should be called
+  # after checking path_clear? with the exception being the knight.
+  def capture_piece?
+    captured_piece = game.pieces.where(x_position:  @x1, y_position: @y1, captured: nil).first
+    return false if captured_piece && captured_piece.color == self.color
+    captured_piece.update_attributes(captured: true) if captured_piece
     true
   end
 
@@ -38,26 +83,68 @@ class Piece < ActiveRecord::Base
     false # Placeholder value. Assume this current piece is not pinned.
   end
 
+
+
+
+
+  # def path_clear?
+  #   sx_arr = [0]
+  #   sy_arr = [0]
+  #   if @sx > 0
+  #     sx_arr = (1).upto(@sx - 1).to_a
+  #   elsif @sx < 0
+  #     sx_arr = (-1).downto(@sx + 1).to_a
+  #   end
+  #   if @sy > 0
+  #     sy_arr = (1).upto(@sy - 1).to_a
+  #   elsif @sy < 0
+  #     sy_arr = (-1).downto(@sy + 1).to_a
+  #   end
+
+  #   if diagonal_move?
+  #     return true if @sx.abs == 1
+  #     sx_arr.each_with_index do |i, index_i|
+  #       sy_arr.each_with_index do |j, index_j|
+  #         if index_i == index_j
+  #           return false unless self.game.pieces.where(captured: nil, x_position: @x0 + i, y_position: @y0 + j).empty?
+  #         end
+  #       end
+  #     end
+  #   end
+
+  #   if straight_move?
+  #     sx_arr.each do |i|
+  #       sy_arr.each do |j|
+  #         return false unless self.game.pieces.where(captured: nil, x_position: @x0 + i, y_position: @y0 + j).empty?
+  #       end
+  #     end
+  #   end
+  #   true
+  # end
+
+
+
   # Check if this requesting piece is already captured.
-  def this_captured?
-    !self.captured.blank?
-  end
+  # def this_captured?
+  #   !self.captured.blank?
+  # end
 
-  def destination_piece(x, y)
-    self.game.pieces.where(x_position: x, y_position: y, captured: nil).order("updated_at DESC").first
-  end
+  # Check the piece currently at the destination square. If there is no piece, return nil.
+  # def destination_piece(x, y)
+  #   self.game.pieces.where(x_position: x, y_position: y, captured: nil).order("updated_at DESC").first
+  # end
 
-  def capture_dest_piece?(x, y)
-    dest_piece = destination_piece(x, y)
-    return false if !dest_piece.nil? && dest_piece.color == self.color
-  end
+  # def capture_dest_piece?(x, y)
+  #   dest_piece = destination_piece(x, y)
+  #   return false if !dest_piece.nil? && dest_piece.color == self.color
+  # end
 
-  def capture_piece(params)
-    x1 = params[:x_position].to_i
-    y1 = params[:y_position].to_i
-    dest_piece = destination_piece(x1, y1)
-    dest_piece.update_attributes(captured: true) if !dest_piece.nil?
-  end
+  # def capture_piece(params)
+  #   x1 = params[:x_position].to_i
+  #   y1 = params[:y_position].to_i
+  #   dest_piece = destination_piece(x1, y1)
+  #   dest_piece.update_attributes(captured: true) if !dest_piece.nil?
+  # end
 
   def self.join_as_black(user)
     self.all.each do |black_piece|
@@ -65,11 +152,11 @@ class Piece < ActiveRecord::Base
     end
   end
 
-  def same_sq?(params)
-    x0 = self.x_position
-    y0 = self.y_position
-    x1 = params[:x_position].to_i
-    y1 = params[:y_position].to_i
-    x0 == x1 && y0 == y1
-  end
+  # def same_sq?(params)
+  #   x0 = self.x_position
+  #   y0 = self.y_position
+  #   x1 = params[:x_position].to_i
+  #   y1 = params[:y_position].to_i
+  #   x0 == x1 && y0 == y1
+  # end
 end
