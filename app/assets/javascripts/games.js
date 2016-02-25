@@ -26,17 +26,19 @@ $(window).bind('page:change', function() {
 // Attempt long polling...
 (function poll() {
   setTimeout(function(){
-    var moveId = 7;
-    $.ajax({
+    
+    $.ajax({ 
       type: 'GET',
       dataType: 'json',
       url: game,
-      data: {"game_id": game_id, "move_id": moveId},
+      data: {"game_id": game_id, "move_id": last_move},
       success: function (data) {
-        console.log(data);
+        console.log(data['message']);
+        var lastServerMove = data['message']
+        last_move = lastServerMove['id']
       },
       error: function() {
-        alert("error");
+        console.log("No update available");
       },
       complete: poll
     });

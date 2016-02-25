@@ -10,15 +10,25 @@ class GamesController < ApplicationController
   def show
     # .find_by_id will return a nil value if the id doesn't exist.
     @game = Game.find_by_id(params[:id])
+    @game.moves.where(game_id: @game.id).last.nil? ? @last_move_id = 0 : @last_move_id = @game.moves.where(game_id: @game.id).last.id
     session[:current_game] = @game.id
+    # @piece_hash =
+    # @game.pieces.each do |piece|
+    #   @piece_hash["#{piece.x_position}_#{piece.y_position}"] = piece
+    # end
     return render_not_found if @game.blank?
   end
 
   def refresh_game
-    move_id = params[:move_id]
+    move_id = params[:move_id].to_i
     game_id = params[:game_id]
     @game = Game.find(session[:current_game])
-    render json: {message: "test"}
+    last_move = @game.moves.where(id: move_id + 1).first
+    binding.pry
+    if !last_move.nil?
+      render json: {message: last_move}
+    end
+    
   end
 
   def create
@@ -32,6 +42,7 @@ class GamesController < ApplicationController
   end
 
   def destroy
+    Pieces.where(game_id: current_game.id).each {|piece| piece.destroy}
     current_game.destroy
     redirect_to games_path
   end
