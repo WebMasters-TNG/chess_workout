@@ -22,6 +22,9 @@ gem 'jbuilder', '~> 1.2'
 
 gem 'pry-rails', :group => :development
 
+# Navigation through pry bindings:
+gem 'pry-nav', :group => :development
+
 # Allows much nicer formatting of listed objects in the Rails console.
 # Troubleshooting: michelegera's answer from https://github.com/michaeldv/awesome_print/issues/136
 gem 'awesome_print'

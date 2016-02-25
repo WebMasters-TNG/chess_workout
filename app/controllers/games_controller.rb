@@ -9,7 +9,13 @@ class GamesController < ApplicationController
 
   def show
     # .find_by_id will return a nil value if the id doesn't exist.
+    # Use a hash to reduce the number of queries:
     @game = Game.find_by_id(params[:id])
+    # .include(:piece)
+    # @piece_hash =
+    # @game.pieces.each do |piece|
+    #   @piece_hash["#{piece.x_position}_#{piece.y_position}"] = piece
+    # end
     return render_not_found if @game.blank?
   end
 

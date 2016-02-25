@@ -1,6 +1,9 @@
 class Piece < ActiveRecord::Base
 	# shared functionality for all pieces goes here
   belongs_to :game
+  has_many :moves
+  # belongs_to :player, class_name: "User", foreign_key: :player_id
+  # Have the game keep track of which user a piece belongs to, instead of directly associating the pieces with a user.
 
   # Check if move is valid for selected piece
   def valid_move?(params)
@@ -24,19 +27,19 @@ class Piece < ActiveRecord::Base
     @x1 == @x0 || @y1 == @y0
   end
 
-  # This method can be called by all piece types except the knight, whose moves are not considered below. 
+  # This method can be called by all piece types except the knight, whose moves are not considered below.
   # This will return true if there is no piece along the chosen movement path that has not been captured.
   def path_clear?
     clear = true
     if @x0 != @x1 && @y0 == @y1
       @x1 > @x0 ? x = @x1 - 1 : x = @x1 + 1
-      until x == @x0 do        
+      until x == @x0 do
         clear = false if game.pieces.where(x_position: x, y_position: @y0, captured: nil).first != nil
         x > @x0 ? x -= 1 : x += 1
       end
     elsif @x0 == @x1 && @y0 != @y1
       @y1 > @y0 ? y = @y1 - 1 : y = @y1 + 1
-      until y == @y0 do         
+      until y == @y0 do
         clear = false if game.pieces.where(x_position: @x0, y_position: y, captured: nil).first != nil
         y > @y0 ? y -= 1 : y += 1
       end
@@ -49,10 +52,10 @@ class Piece < ActiveRecord::Base
         y > @y0 ? y -= 1 : y += 1
       end
     end
-    clear    
+    clear
   end
 
-  # This method can be called by all piece types and will determine if there is a piece of the opposite color 
+  # This method can be called by all piece types and will determine if there is a piece of the opposite color
   # in the target square and, if so, update the status of the captured piece accordingly. This should be called
   # after checking path_clear? with the exception being the knight.
   def capture_piece?
@@ -69,6 +72,12 @@ class Piece < ActiveRecord::Base
   # => AND!! This method MUST be called BEFORE capture_dest_piece?
   # or otherwise an innocent piece will be captured.
   # ***********************************************************
+
+  def is_blocked?
+    # Are there any pieces in between your origin and destination square?
+    # if !is_knight && (self.x_position != other_player_piece.x_position && self.y_position != other_player_piece.y_position)
+    true
+  end
 
   def pinned?
     false # Placeholder value. Assume this current piece is not pinned.
