@@ -45,20 +45,6 @@ function initPage() {
   else {
     pieceColor = 'black_piece'
   };
-  // if (userID == whiteID) {
-  //   pieceColor = 'white_piece'
-  // } else if (userID == blackID) {
-  //   pieceColor = 'black_piece'
-  // };
-
-    if (userID == whiteID && userID == blackID) {
-      pieceColor = 'piece'
-    } else if (userID == whiteID) {
-      pieceColor = 'white_piece'
-      }
-    else {
-      pieceColor = 'black_piece'
-    };
 
   $('.' + pieceColor).draggable({
     cursor: "pointer",
@@ -138,7 +124,7 @@ function initPage() {
           var oldPosition = ui.draggable.offset();
           $(ui.draggable).appendTo(this);
           revertAnimate(ui, oldPosition, 0);
-          ui.draggable.draggable("option", "revert", true);
+          ui.draggable.draggable("option", "revert", "invalid");
           $("#" + start_sq).addClass("moved_sq");
           $(this).addClass("moved_sq");
           $("#moves").prepend("<li>" + ui.draggable.attr("id") + ": " + start_sq + " --> " + this.id + "</li>");

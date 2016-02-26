@@ -26,9 +26,10 @@ body {
 }
 
 td, th {
-  height: $piece_size;
+  height: $piece_size + 6;
   width: $piece_size;
   padding: 0;
+  text-align: center;
 }
 
 .white_sq {
