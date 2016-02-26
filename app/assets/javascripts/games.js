@@ -137,7 +137,7 @@ function initPage() {
 
 }
 
-  // Attempt long polling...
+  // Check server for new moves via long polling
   (function poll() {
     setTimeout(function(){
       $.ajax({ 
