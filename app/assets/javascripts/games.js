@@ -36,6 +36,7 @@ function initPage() {
   var start_sq = 99;
   var pieceColor = '';
 
+// Check which color the current user is playing as:
   if (userID == whiteID && userID == blackID) {
     pieceColor = 'piece'
   } else if (userID == whiteID) {
@@ -44,6 +45,20 @@ function initPage() {
   else {
     pieceColor = 'black_piece'
   };
+  // if (userID == whiteID) {
+  //   pieceColor = 'white_piece'
+  // } else if (userID == blackID) {
+  //   pieceColor = 'black_piece'
+  // };
+
+    if (userID == whiteID && userID == blackID) {
+      pieceColor = 'piece'
+    } else if (userID == whiteID) {
+      pieceColor = 'white_piece'
+      }
+    else {
+      pieceColor = 'black_piece'
+    };
 
   $('.' + pieceColor).draggable({
     cursor: "pointer",

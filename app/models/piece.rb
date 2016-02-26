@@ -61,6 +61,7 @@ class Piece < ActiveRecord::Base
     game.pieces.where(x_position: @x1, y_position: @y1, captured: nil).first
   end
 
+>>>>>>> Devbot77-master
   # in the target square and, if so, update the status of the captured piece accordingly. This should be called
   # after checking path_clear? with the exception being the knight.
   def capture_piece?
