@@ -1,26 +1,31 @@
-<h1>Welcome to the Games Lobby!</h1>
-
-<%= simple_form_for @game_new, :url => games_path, :method => :post do |f| %>
-  <%= f.submit 'Create Game', :class => "btn btn-success" %>
-<% end %>
-
-<% @games.each do |game| %>
-  <hr />
-  <%= link_to game_path(game.id) do %>
-    <h3><%= "View Game ID: #{game.id}" %></h3>
+<br />
+<div class="text-center">
+  <h1>Welcome to the Games Lobby!</h1>
+  <%= simple_form_for @game_new, :url => games_path, :method => :post do |f| %>
+    <%= f.submit 'Create Game', :class => "btn btn-success" %>
   <% end %>
-  <% if game.white_player_id.present? %>
-    <h6><%= "White: #{@user.find_by_id(game.white_player_id).username}" %></h6>
-  <% end %>
-  <% if game.black_player_id.present? %>
-    <h6><%= "Black: #{@user.find_by_id(game.black_player_id).username}" %></h6>
-  <% else %>
-    <h6>Black: </h6>
-    <% if current_user != game.white_player %>
+</div>
+
+<div class="col-xs-10 col-xs-offset-1">
+  <% @games.each do |game| %>
+    <hr />
+    <%= link_to game_path(game.id) do %>
+      <h3><%= "View Game ID: #{game.id}" %></h3>
+    <% end %>
+    <% if game.white_player_id.present? %>
+      <h6><%= "White: #{@user.find_by_id(game.white_player_id).username}" %></h6>
+    <% end %>
+    <% if game.black_player_id.present? %>
+      <h6><%= "Black: #{@user.find_by_id(game.black_player_id).username}" %></h6>
+    <% else %>
+      <h6>Black: </h6>
       <%= simple_form_for game, :url => join_game_path(game), :method => :put do |f| %>
         <%= f.submit 'Play as black', :class => "btn btn-primary" %>
       <% end %>
     <% end %>
+    <% if current_user.id == game.white_player_id %>
+      <%= link_to "Delete", game_path(game), :method => :delete, :data => {:confirm => "Are you sure you want to delete this game?"} %>
+    <% end %>
+    <br />
   <% end %>
-  <br />
-<% end %>
+</div>
