@@ -26,7 +26,6 @@ ActiveRecord::Schema.define(version: 20160218221707) do
     t.integer  "counter"
   end
 
- # Purpose: to keep track of a game.
   create_table "moves", force: true do |t|
     t.integer  "old_x"
     t.integer  "old_y"
