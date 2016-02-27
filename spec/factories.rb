@@ -20,10 +20,6 @@ FactoryGirl.define do
   factory :piece do
     association :game
     captured false
-    type "Pawn"
-    color "white"
-    x_position 1
-    y_position 2
   end
 
   factory :white_pawn, :class => Pawn, :parent => :piece do

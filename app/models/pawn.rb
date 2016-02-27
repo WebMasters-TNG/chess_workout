@@ -22,23 +22,23 @@ class Pawn < Piece
       # Check for an enemy pawn to either side of the player's pawn.
       black_pawn = Piece.all.where(:type => "Pawn", :color => "black", :x_position => x0 + 1, :y_position => y0)
       black_pawn2 = Piece.all.where(:type => "Pawn", :color => "black", :x_position => x0 - 1, :y_position => y0)
-      if black_pawn
+      if black_pawn != []
         binding.pry
-        black_pawn.captured = true
+        black_pawn.update_attributes(captured: true)
         return true
-      elsif black_pawn2
+      elsif black_pawn2 != []
         binding.pry
-        black_pawn2.captured = true
+        black_pawn2.update_attributes(captured: true)
         return true
       end
     elsif self.color == "black" && y0 == 4
       white_pawn = Piece.all.where(:type => "Pawn", :color => "white", :x_position => x0 + 1, :y_position => y0)
       white_pawn2 = Piece.all.where(:type => "Pawn", :color => "white", :x_position => x0 - 1, :y_position => y0)
       if white_pawn
-        white_pawn.captured = true
+        white_pawn.update_attributes(captured: true)
         return true
       elsif white_pawn2
-        white_pawn2.captured = true
+        white_pawn2.update_attributes(captured: true)
         return true
       end
     else

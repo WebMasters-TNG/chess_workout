@@ -55,6 +55,10 @@ class Piece < ActiveRecord::Base
     clear
   end
 
+  def destination_piece
+    game.pieces.where(x_position: @x1, y_position: @y1, captured: nil).first
+  end
+
   # This method can be called by all piece types and will determine if there is a piece of the opposite color
   # in the target square and, if so, update the status of the captured piece accordingly. This should be called
   # after checking path_clear? with the exception being the knight.
@@ -83,7 +87,10 @@ class Piece < ActiveRecord::Base
     false # Placeholder value. Assume this current piece is not pinned.
   end
 
-
+  def update_move
+    moves.where(piece_id: id).first.nil? ? inc_move = 1 : inc_move = moves.where(piece_id: id).last.move_count + 1
+    Move.create(game_id: game.id, piece_id: id, move_count: inc_move, old_x: @x0, new_x: @x1, old_y: @y0, new_y: @y1)
+  end
 
 
 
@@ -131,9 +138,9 @@ class Piece < ActiveRecord::Base
 
   # Check the piece currently at the destination square. If there is no piece, return nil.
   # *** Why was this method commented out after the last commit? ***
-  def destination_piece(x, y)
-    self.game.pieces.where(x_position: x, y_position: y, captured: nil).order("updated_at DESC").first
-  end
+  # def destination_piece(x, y)
+  #   self.game.pieces.where(x_position: x, y_position: y, captured: nil).order("updated_at DESC").first
+  # end
 
   # def capture_dest_piece?(x, y)
   #   dest_piece = destination_piece(x, y)
