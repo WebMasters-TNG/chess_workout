@@ -17,7 +17,19 @@ class Pawn < Piece
 
   def en_passant?(x0, y0, x1, y1)
     false # Placeholder value. Assume this current piece is not pinned.
-    # Check if enemy pawn has moved two squares forward.
+    # Check if player's pawn is at the correct vertical square (only possibilities are y = 4 for white, y = 5 for black).
+    if self.color == "white" && y0 == 4
+      # Check for an enemy pawn to either side of the player's pawn.
+      binding.pry
+      if Piece.all.where(:type => "Pawn", :color => "black", :x_position => @x + 1, :y_position => @y) || Piece.all.where(:type => "Pawn", :color => "black", :x_position => @x - 1, :y_position => @y)
+        true
+      end
+    elsif self.color == "black" && @y == 5
+      false
+    else
+      false
+    end
+
     # if #last move + #Pawn
     #  # && (destination_piece(x0, y0) - destination_piece(x1, y1) == 2)
 
@@ -39,7 +51,7 @@ class Pawn < Piece
   # # This method is called from the update action in the Pieces controller and passed the x_position and y_position
   # # of the targeted move destination.
   # def valid_move?(params)
-  #   # Call the parent method from the Piece model to run common validations. 
+  #   # Call the parent method from the Piece model to run common validations.
   #   super
   #   # Upon return from the parent method, begin running type specific validations
   #   return false if !attempt_move?(params)
