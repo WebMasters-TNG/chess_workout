@@ -2,7 +2,6 @@ class Knight < Piece
   def valid_move?(params)
     return false unless super
     rectangle_move?
-    capture_piece?
   end
 
   def rectangle_move?

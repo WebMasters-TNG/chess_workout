@@ -25,12 +25,14 @@ class GamesController < ApplicationController
     move_id = params[:move_id].to_i
     game_id = params[:game_id]
     @game = Game.find(session[:current_game])
-    last_move = @game.moves.where(id: move_id + 1).first   # Check the server for a move id greater than the last known value
-    # binding.pry
+    if move_id == 0
+      last_move = @game.moves.first
+    else
+      last_move = @game.moves.where(id: move_id + 1).first   # Check the server for a move id greater than the last known value
+    end
     if !last_move.nil?
       render json: {new_move: last_move, turn: @game.turn}  # Return last move and turn data to client side
     end
-
   end
 
   def create
@@ -44,7 +46,8 @@ class GamesController < ApplicationController
   end
 
   def destroy
-    Pieces.where(game_id: current_game.id).each {|piece| piece.destroy}
+    current_game.pieces.destroy_all
+    current_game.moves.destroy_all
     current_game.destroy
     redirect_to games_path
   end
