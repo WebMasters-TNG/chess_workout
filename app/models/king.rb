@@ -2,9 +2,9 @@ class King < Piece
 
   def valid_move?(params)
     return false unless super
-    return false unless move_size
-    (straight_move? || diagonal_move?) && path_clear?
-    # capture_piece?
+    return false unless (straight_move? || diagonal_move?) && path_clear?
+    return false unless move_size || castle_move
+    true
   end
 
   # ***********************************************************
@@ -18,11 +18,18 @@ class King < Piece
   def castle_move
     return false if @sx.abs != 2
     if @x1 < @x0
-      target_rook = game.pieces.where(x_position: 1, y_position: @y0).first
+      @target_rook = game.pieces.where(x_position: 1, y_position: @y0).first
     else
-      target_rook = game.pieces.where(x_position: 8, y_position: @y0).first
+      @target_rook = game.pieces.where(x_position: 8, y_position: @y0).first
     end
-    return false if !first_move? || !target_rook.first_move? 
+    return false if @target_rook.nil?
+    return false if !first_move? || !@target_rook.first_move?
+    if @target_rook.x_position == 1
+      @target_rook.update_attributes(x_position: 4)
+    else
+      @target_rook.update_attributes(x_position: 6)
+    end
+    true 
   end
 
   # ***********************************************************
