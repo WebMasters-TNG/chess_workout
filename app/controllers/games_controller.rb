@@ -42,7 +42,6 @@ class GamesController < ApplicationController
   end
 
   def destroy
-    binding.pry
     current_game.pieces.destroy_all
     current_game.moves.destroy_all
     current_game.destroy

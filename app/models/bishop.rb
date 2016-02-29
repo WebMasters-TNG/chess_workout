@@ -4,7 +4,4 @@ class Bishop < Piece
     diagonal_move? && path_clear?
   end
 
-  def diagonal_move?
-    @sy.abs == @sx.abs
-  end
 end

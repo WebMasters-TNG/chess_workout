@@ -26,7 +26,7 @@ body {
 }
 
 td, th {
-  height: $piece_size + 6;
+  height: $piece_size;
   width: $piece_size;
   padding: 0;
   text-align: center;
@@ -47,7 +47,9 @@ td, th {
 .piece {
   border-radius: 50%;
   width: $piece_size;
-  line-height: $piece_size;
+  height: $piece_size;
+  vertical-align: middle;
+  line-height: $piece_size - 6;
   text-align: center;
   margin: 0;
   border-style: double;

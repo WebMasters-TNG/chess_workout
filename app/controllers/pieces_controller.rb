@@ -7,7 +7,7 @@ class PiecesController < ApplicationController
   before_action :valid?, only: [:update]
 
   def update
-    # current_piece.capture_piece? # Check for and update captured pieces as part of move validation
+    current_piece.capture_piece? # Check for and update captured pieces as part of move validation
     Piece.find_by_id(params[:id]).update_attributes(piece_params) # Do not use current_piece here solely for pawn promotion
     current_piece.update_move 
     current_game.next_turn

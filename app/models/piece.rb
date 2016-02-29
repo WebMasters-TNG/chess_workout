@@ -77,13 +77,6 @@ class Piece < ActiveRecord::Base
   # => AND!! This method MUST be called BEFORE capture_dest_piece?
   # or otherwise an innocent piece will be captured.
   # ***********************************************************
-
-  def is_blocked?
-    # Are there any pieces in between your origin and destination square?
-    # if !is_knight && (self.x_position != other_player_piece.x_position && self.y_position != other_player_piece.y_position)
-    true
-  end
-
   def pinned?
     false # Placeholder value. Assume this current piece is not pinned.
   end
@@ -93,6 +86,9 @@ class Piece < ActiveRecord::Base
     Move.create(game_id: game.id, piece_id: id, move_count: inc_move, old_x: @x0, new_x: @x1, old_y: @y0, new_y: @y1)
   end
 
+  def first_move?
+    self.moves.first.nil?
+  end
 
 
 

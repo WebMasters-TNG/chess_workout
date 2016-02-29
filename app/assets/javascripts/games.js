@@ -171,6 +171,6 @@ function initPage() {
         },
         complete: poll
       });
-    }, 10000);
+    }, 5000);
   })();
 

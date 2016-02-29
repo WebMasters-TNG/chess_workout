@@ -2,8 +2,9 @@ class King < Piece
 
   def valid_move?(params)
     return false unless super
-    move_size && (straight_move? || diagonal_move?) && path_clear?
-    capture_piece?
+    return false unless move_size
+    (straight_move? || diagonal_move?) && path_clear?
+    # capture_piece?
   end
 
   # ***********************************************************
@@ -13,6 +14,16 @@ class King < Piece
   # => It involves checking if King is under check
   # => It involves checking if castling path is under check
   # ***********************************************************
+
+  def castle_move
+    return false if @sx.abs != 2
+    if @x1 < @x0
+      target_rook = game.pieces.where(x_position: 1, y_position: @y0).first
+    else
+      target_rook = game.pieces.where(x_position: 8, y_position: @y0).first
+    end
+    return false if !first_move? || !target_rook.first_move? 
+  end
 
   # ***********************************************************
   # Check & Checkmate needs specific attention!!
@@ -24,6 +35,7 @@ class King < Piece
   # ***********************************************************
 
   def move_size
+    return false if @sx.abs > 1 || @sy.abs > 1
     @sx.abs <= 1 && @sy.abs <= 1
   end  
 end
