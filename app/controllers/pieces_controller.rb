@@ -44,6 +44,7 @@ class PiecesController < ApplicationController
   end
 
   def valid?
+    # binding.pry
     if !current_game.your_turn?(current_piece) || !current_piece.valid_move?(piece_params)
       render text: 'Unauthorized', status: :unauthorized
     end

@@ -5,14 +5,14 @@ RSpec.describe PiecesController, type: :controller do
     it "should update a piece's position and advance the game to the next turn after a valid move" do
       user_sign_in
       game = FactoryGirl.create(:game, :white_player_id => @user.id)
-      white_pawn = FactoryGirl.create(:white_pawn, :game => game, :player_id => @user.id)
+      piece = FactoryGirl.create(:white_pawn, :game => game, :player_id => @user.id)
 
       # Move a white pawn 2 vertical spaces on its first turn, and record the move:
-      put :update, :id => white_pawn.id, :piece => { :x_position => white_pawn.x_position, :y_position => 4 }, :format => :js
-      white_pawn.reload
+      put :update, :id => piece.id, :piece => { :x_position => 1, :y_position => 4 }, :format => :js
+      piece.reload
 
-      expect(white_pawn.y_position).to eq 4
-      expect(white_pawn.game.turn).to eq 2
+      expect(piece.y_position).to eq 4
+      expect(piece.game.turn).to eq 2
     end
 
 
