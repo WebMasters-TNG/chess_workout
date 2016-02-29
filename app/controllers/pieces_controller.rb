@@ -11,6 +11,7 @@ class PiecesController < ApplicationController
     Piece.find_by_id(params[:id]).update_attributes(piece_params) # Do not use current_piece here solely for pawn promotion
     current_piece.update_move 
     current_game.next_turn
+    current_piece.update_move
     # Send a message back to the JS after the update (after the data object is defined in the AJAX request) to confirm successful update or an error:
     respond_to do |format|
       format.js { render json: {success: true, status: :success} }
@@ -44,6 +45,7 @@ class PiecesController < ApplicationController
   end
 
   def valid?
+    # binding.pry
     if !current_game.your_turn?(current_piece) || !current_piece.valid_move?(piece_params)
       render text: 'Unauthorized', status: :unauthorized
     end

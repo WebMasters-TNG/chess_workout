@@ -16,8 +16,35 @@ class Pawn < Piece
   # ***********************************************************
 
   def en_passant?(x0, y0, x1, y1)
-    false # Placeholder value. Assume this current piece is not pinned.
-    # Check if enemy pawn has moved two squares forward.
+    # Assume this current piece is not pinned.
+    # Check if player's pawn is at the correct vertical square (only possibilities are y = 4 for white, y = 5 for black).
+    if self.color == "white" && y0 == 5
+      # Check for an enemy pawn to either side of the player's pawn.
+      black_pawn = Piece.all.where(:type => "Pawn", :color => "black", :x_position => x0 + 1, :y_position => y0)
+      black_pawn2 = Piece.all.where(:type => "Pawn", :color => "black", :x_position => x0 - 1, :y_position => y0)
+      if black_pawn != []
+        binding.pry
+        black_pawn.update_attributes(captured: true)
+        return true
+      elsif black_pawn2 != []
+        binding.pry
+        black_pawn2.update_attributes(captured: true)
+        return true
+      end
+    elsif self.color == "black" && y0 == 4
+      white_pawn = Piece.all.where(:type => "Pawn", :color => "white", :x_position => x0 + 1, :y_position => y0)
+      white_pawn2 = Piece.all.where(:type => "Pawn", :color => "white", :x_position => x0 - 1, :y_position => y0)
+      if white_pawn
+        white_pawn.update_attributes(captured: true)
+        return true
+      elsif white_pawn2
+        white_pawn2.update_attributes(captured: true)
+        return true
+      end
+    else
+      return false
+    end
+
     # if #last move + #Pawn
     #  # && (destination_piece(x0, y0) - destination_piece(x1, y1) == 2)
 
@@ -39,7 +66,7 @@ class Pawn < Piece
   # # This method is called from the update action in the Pieces controller and passed the x_position and y_position
   # # of the targeted move destination.
   # def valid_move?(params)
-  #   # Call the parent method from the Piece model to run common validations. 
+  #   # Call the parent method from the Piece model to run common validations.
   #   super
   #   # Upon return from the parent method, begin running type specific validations
   #   return false if !attempt_move?(params)

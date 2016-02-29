@@ -55,12 +55,12 @@ class Piece < ActiveRecord::Base
     clear
   end
 
-
   # Check the piece currently at the destination square. If there is no piece, return nil.
   def destination_piece
     game.pieces.where(x_position: @x1, y_position: @y1, captured: nil).first
   end
 
+  # This method can be called by all piece types and will determine if there is a piece of the opposite color
   # in the target square and, if so, update the status of the captured piece accordingly. This should be called
   # after checking path_clear? with the exception being the knight.
   def capture_piece?
@@ -89,7 +89,6 @@ class Piece < ActiveRecord::Base
   def first_move?
     self.moves.first.nil?
   end
-
 
 
 
@@ -133,6 +132,12 @@ class Piece < ActiveRecord::Base
   # Check if this requesting piece is already captured.
   # def this_captured?
   #   !self.captured.blank?
+  # end
+
+  # Check the piece currently at the destination square. If there is no piece, return nil.
+  # *** Why was this method commented out after the last commit? ***
+  # def destination_piece(x, y)
+  #   self.game.pieces.where(x_position: x, y_position: y, captured: nil).order("updated_at DESC").first
   # end
 
   # def capture_dest_piece?(x, y)
