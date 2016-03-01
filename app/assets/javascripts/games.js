@@ -45,20 +45,6 @@ function initPage() {
   else {
     pieceColor = 'black_piece'
   };
-  // if (userID == whiteID) {
-  //   pieceColor = 'white_piece'
-  // } else if (userID == blackID) {
-  //   pieceColor = 'black_piece'
-  // };
-
-    if (userID == whiteID && userID == blackID) {
-      pieceColor = 'piece'
-    } else if (userID == whiteID) {
-      pieceColor = 'white_piece'
-      }
-    else {
-      pieceColor = 'black_piece'
-    };
 
   $('.' + pieceColor).draggable({
     cursor: "pointer",
@@ -138,7 +124,7 @@ function initPage() {
           var oldPosition = ui.draggable.offset();
           $(ui.draggable).appendTo(this);
           revertAnimate(ui, oldPosition, 0);
-          ui.draggable.draggable("option", "revert", true);
+          ui.draggable.draggable("option", "revert", "invalid");
           $("#" + start_sq).addClass("moved_sq");
           $(this).addClass("moved_sq");
           $("#moves").prepend("<li>" + ui.draggable.attr("id") + ": " + start_sq + " --> " + this.id + "</li>");
@@ -148,4 +134,43 @@ function initPage() {
       return;
     }
   };
+
 }
+
+  // Check server for new moves via long polling
+  (function poll() {
+    setTimeout(function(){
+      $.ajax({ 
+        type: 'GET',
+        dataType: 'json',
+        url: game,
+        data: {"game_id": game_id, "move_id": last_move},
+        success: function (data) {
+          console.log(data['new_move']);
+          var lastServerMove = data['new_move'];
+          var last_x = lastServerMove['old_x'];
+          var last_y = lastServerMove['old_y'];
+          var new_x = lastServerMove['new_x'];
+          var new_y = lastServerMove['new_y'];
+          var gameTurn = data['turn']
+          $(".board td").removeClass("moved_sq");
+          // $('td#' + new_y + new_x).empty();
+          if (lastServerMove['id'] > last_move) {
+            if ($('td#' + new_y + new_x).find(".piece").hasClass("white_piece") && gameTurn % 2 != 0) {
+              $('td#' + new_y + new_x).find(".piece").appendTo("#white_captured");
+            } else if ($('td#' + new_y + new_x).find(".piece").hasClass("black_piece") && gameTurn % 2 == 0) {
+              $('td#' + new_y + new_x).find(".piece").appendTo("#dark_captured");
+            };
+          };
+          $('td#' + last_y + last_x).find('.piece').appendTo('td#' + new_y + new_x);
+          $('.game_turn').html(gameTurn);
+          last_move = lastServerMove['id'];
+        },
+        error: function() {
+          console.log("No update available");
+        },
+        complete: poll
+      });
+    }, 5000);
+  })();
+
