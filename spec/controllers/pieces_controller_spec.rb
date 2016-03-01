@@ -2,12 +2,12 @@ require 'rails_helper'
 
 RSpec.describe PiecesController, type: :controller do
   describe "Action: pieces#update" do
-    it "should update a piece's position and advance the game to the next turn after a valid move" do
+    it "should update a pawn's position and advance the game to the next turn after a valid move" do
       user_sign_in
       game = FactoryGirl.create(:game, :white_player_id => @user.id)
       piece = FactoryGirl.create(:white_pawn, :game => game, :player_id => @user.id)
 
-      # Move a white pawn 2 vertical spaces on its first turn, and record the move:
+      # Move a white pawn 2 vertical spaces on its first turn:
       put :update, :id => piece.id, :piece => { :x_position => 1, :y_position => 4 }, :format => :js
       piece.reload
 
@@ -15,6 +15,28 @@ RSpec.describe PiecesController, type: :controller do
       expect(piece.game.turn).to eq 2
     end
 
+    it "should check for invalid pawn moves" do
+
+    end
+
+    it "should check for blocking" do
+
+    end
+
+    it "should update a rook's position and advance the game to the next turn after a valid move" do
+      user_sign_in
+      game = FactoryGirl.create(:game, :white_player_id => @user.id)
+      # The white rook begins at [2, 4]
+      white_rook = FactoryGirl.create(:white_rook, :game => game, :player_id => @user.id)
+
+      # Move a white rook 3 horizontal spaces on its first turn:
+      put :update, :id => white_rook.id, :piece => { :x_position => 5, :y_position => 4 }, :format => :js
+      white_rook.reload
+
+      expect(white_rook.x_position).to eq 5
+      expect(white_rook.y_position).to eq 4
+      expect(white_rook.game.turn).to eq 2
+    end
 
     it "should recognize en passant as a valid move for the white pawn" do
       user_sign_in

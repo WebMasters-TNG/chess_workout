@@ -23,11 +23,11 @@ class Pawn < Piece
       black_pawn = Piece.all.where(:type => "Pawn", :color => "black", :x_position => x0 + 1, :y_position => y0)
       black_pawn2 = Piece.all.where(:type => "Pawn", :color => "black", :x_position => x0 - 1, :y_position => y0)
       if black_pawn != []
-        binding.pry
+        # binding.pry
         black_pawn.update_attributes(captured: true)
         return true
       elsif black_pawn2 != []
-        binding.pry
+        # binding.pry
         black_pawn2.update_attributes(captured: true)
         return true
       end

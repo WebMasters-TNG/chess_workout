@@ -36,6 +36,13 @@ FactoryGirl.define do
     y_position 7
   end
 
+  factory :white_rook, :class => Rook, :parent => :piece do
+    type "Rook"
+    color "white"
+    x_position 2
+    y_position 4
+  end
+
   # Set up an initially empty move, then adjust the values after checking that a piece can be moved:
   factory :move do
     association :piece
