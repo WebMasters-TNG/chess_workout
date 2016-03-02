@@ -26,30 +26,33 @@ FactoryGirl.define do
     type "Pawn"
     color "white"
     x_position 1
-    y_position 2
+    y_position 7
   end
 
   factory :black_pawn, :class => Pawn, :parent => :piece do
     type "Pawn"
     color "black"
     x_position 1
-    y_position 7
+    y_position 2
   end
 
   factory :white_rook, :class => Rook, :parent => :piece do
     type "Rook"
     color "white"
-    x_position 2
-    y_position 4
+    x_position 1
+    y_position 8
   end
 
   # Set up an initially empty move, then adjust the values after checking that a piece can be moved:
   factory :move do
     association :piece
+    association :white_pawn, :factory => :piece
+    association :black_pawn, :factory => :piece
+    association :white_rook, :factory => :piece
     old_x 1
-    old_y 2
+    old_y 7
     new_x 1
-    new_y 4
+    new_y 5
     move_count 0
   end
 

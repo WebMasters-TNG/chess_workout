@@ -1,8 +1,9 @@
 class Pawn < Piece
   def valid_move?(params)
     return false unless super
-    return true if en_passant?(@x0, @y0, @x1, @y1)
-    if !backwards_move? && (diagonal_capture? || pawn_straight_move?)
+    if self.color == "white" && @y0 == 4 && @y1 == 3 || self.color == "black" && @y0 == 5 && @y1 == 6
+      return true if en_passant?(@x0, @y0, @x1, @y1)
+    elsif !backwards_move? && (diagonal_capture? || pawn_straight_move?)
       promotion
       return true
     end
@@ -18,26 +19,28 @@ class Pawn < Piece
   def en_passant?(x0, y0, x1, y1)
     # Assume this current piece is not pinned.
     # Check if player's pawn is at the correct vertical square (only possibilities are y = 4 for white, y = 5 for black).
-    if self.color == "white" && y0 == 5
-      # Check for an enemy pawn to either side of the player's pawn.
-      black_pawn = Piece.all.where(:type => "Pawn", :color => "black", :x_position => x0 + 1, :y_position => y0)
-      black_pawn2 = Piece.all.where(:type => "Pawn", :color => "black", :x_position => x0 - 1, :y_position => y0)
-      if black_pawn != []
-        # binding.pry
+    if self.color == "white" && y0 == 4
+      # Check for an enemy pawn to either side of the player's pawn that has only made one move.
+      black_pawn = Piece.all.where(:type => "Pawn", :color => "black", :x_position => x0 + 1, :y_position => y0).first
+      black_pawn2 = Piece.all.where(:type => "Pawn", :color => "black", :x_position => x0 - 1, :y_position => y0).first
+      # 1) Check if the enemy pawn has moved two vertical squares in its last turn.
+      # 2) Check if the diagonal movement is 1 space.
+      # 3) Check that there is no piece on the destination square.
+      # black_pawn.moves.move_count cannot always be used here, because in a valid case moves will have not been created yet for this piece (before the black pawn's first move, black_pawn.moves is an empty array).
+      if !black_pawn.nil? && black_pawn.moves.count <= 1 && @sy.abs == @sx.abs && @sy.abs == 1 && destination_piece.nil? && x1 == black_pawn.x_position
         black_pawn.update_attributes(captured: true)
         return true
-      elsif black_pawn2 != []
-        # binding.pry
+      elsif !black_pawn2.nil? && black_pawn2.moves.count <= 1 && @sy.abs == @sx.abs && @sy.abs == 1 && destination_piece.nil? && x1 == black_pawn2.x_position
         black_pawn2.update_attributes(captured: true)
         return true
       end
-    elsif self.color == "black" && y0 == 4
+    elsif self.color == "black" && y0 == 5
       white_pawn = Piece.all.where(:type => "Pawn", :color => "white", :x_position => x0 + 1, :y_position => y0)
       white_pawn2 = Piece.all.where(:type => "Pawn", :color => "white", :x_position => x0 - 1, :y_position => y0)
-      if white_pawn
+      if !white_pawn.nil? && white_pawn.moves.count <= 1 && @sy.abs == @sx.abs && @sy.abs == 1 && destination_piece.nil? && x1 == white_pawn.x_position
         white_pawn.update_attributes(captured: true)
         return true
-      elsif white_pawn2
+      elsif !white_pawn2.nil? && white_pawn2.moves.count <= 1 && @sy.abs == @sx.abs && @sy.abs == 1 && destination_piece.nil? && x1 == white_pawn2.x_position
         white_pawn2.update_attributes(captured: true)
         return true
       end
