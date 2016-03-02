@@ -26,6 +26,7 @@ class Pawn < Piece
       # 1) Check if the enemy pawn has moved two vertical squares in its last turn.
       # 2) Check if the diagonal movement is 1 space.
       # 3) Check that there is no piece on the destination square.
+      # 4) Check that the player's pawn's destination is in the same column as the enemy pawn.
       # black_pawn.moves.move_count cannot always be used here, because in a valid case moves will have not been created yet for this piece (before the black pawn's first move, black_pawn.moves is an empty array).
       if !black_pawn.nil? && black_pawn.moves.count <= 1 && @sy.abs == @sx.abs && @sy.abs == 1 && destination_piece.nil? && x1 == black_pawn.x_position
         black_pawn.update_attributes(captured: true)
