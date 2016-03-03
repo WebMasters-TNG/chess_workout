@@ -46,13 +46,13 @@ FactoryGirl.define do
   # Set up an initially empty move, then adjust the values after checking that a piece can be moved:
   factory :move do
     association :piece
-    association :white_pawn, :factory => :piece
-    association :black_pawn, :factory => :piece
-    association :white_rook, :factory => :piece
-    old_x 1
-    old_y 7
-    new_x 1
-    new_y 5
+    # association :white_pawn, :factory => :piece
+    # association :black_pawn, :factory => :piece
+    # association :white_rook, :factory => :piece
+    old_x 0
+    old_y 0
+    new_x 0
+    new_y 0
     move_count 0
   end
 
