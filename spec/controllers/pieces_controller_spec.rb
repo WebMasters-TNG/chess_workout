@@ -40,41 +40,39 @@ RSpec.describe PiecesController, type: :controller do
       expect(white_rook.game.turn).to eq 2
     end
 
-    it "should recognize en passant as a valid move for the white pawn" do
-      user_sign_in
-      game = FactoryGirl.create(:game, :white_player_id => @user.id, :black_player_id => @user2.id)
-      white_pawn = FactoryGirl.create(:white_pawn, :game => game, :player_id => @user.id)
-      # move = FactoryGirl.create(:move)
-      # Modify factory piece to start at [2, 4]
-      white_pawn.update_attributes(:x_position => 2, :y_position => 4)
-      white_pawn.reload
-      white_pawn_start_x = white_pawn.x_position
-      white_pawn_start_y = white_pawn.y_position
+    describe "en passant" do
+      let(:user) { FactoryGirl.create(:user) }
+      let(:user2) { FactoryGirl.create(:user) }
+      let(:game) { FactoryGirl.create(:game, :white_player_id => user.id, :black_player_id => user2.id, :turn => 1) }
+      let!(:white_pawn) do
+        p = game.pieces.where(:type => "Pawn", :color => "white").first
+        p.update_attributes(:x_position => 2, :y_position => 4)
+        p
+      end
+      let!(:black_pawn) do
+        p = game.pieces.where(:type => "Pawn", :color => "black").first
+        p.update_attributes(:x_position => 1, :y_position => 4)
+        p
+      end
 
-      black_pawn = FactoryGirl.create(:black_pawn, :game => game, :player_id => :black_player_id)
-      black_pawn.update_attributes(:y_position => 4)
-      black_pawn.reload
+      before do
+        sign_in user
+      end
 
-      # The black pawn makes its staring move from [1, 2] to [1, 4]
-      # put :update, :id => black_pawn.id, :piece => { :x_position => 1, :y_position => 4 }, :format => :js
-      # black_pawn.reload
+      it "should recognize en passant as a valid move for the white pawn" do
+        white_pawn_start_x = white_pawn.x_position
+        white_pawn_start_y = white_pawn.y_position
 
-      # The white pawn makes an en passant capture on the black pawn, moving from [2, 4] to [1, 5] (assume en passant is valid prior to confirming below)
+        # The white pawn makes an en passant capture on the black pawn, moving from [2, 4] to [1, 3] (assume en passant is valid prior to confirming below)
+        put :update, :id => white_pawn.id, :piece => { :x_position => 1, :y_position => 3 }, :format => :js
+        white_pawn.reload
 
-      white_pawn.update_attributes(:x_position => 1, :y_position => 3)
-      white_pawn.reload
-
-      # put :update, :id => white_pawn.id, :piece => { :x_position => 1, :y_position => 3 }, :format => :js
-      # white_pawn.reload
-      binding.pry
-
-      # Check that the white pawn can execute the en_passant move
-      expect(white_pawn.en_passant?(white_pawn_start_x, white_pawn_start_y, white_pawn.x_position, white_pawn.y_position)).to eq true
-      binding.pry
-
-      expect(white_pawn.x_position).to eq 1
-      expect(white_pawn.y_position).to eq 3
-      # expect(white_pawn.game.turn).to eq 3
+        # Check that the white pawn can execute the en_passant move
+        expect(white_pawn.en_passant?(white_pawn_start_x, white_pawn_start_y, white_pawn.x_position, white_pawn.y_position)).to eq true
+        expect(white_pawn.x_position).to eq 1
+        expect(white_pawn.y_position).to eq 3
+        expect(white_pawn.game.turn).to eq 2
+      end
     end
 
 
@@ -141,7 +139,6 @@ RSpec.describe PiecesController, type: :controller do
   private
   def user_sign_in
     @user = FactoryGirl.create(:user)
-    @user2 = FactoryGirl.create(:user)
     sign_in @user
   end
 end
