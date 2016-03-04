@@ -27,7 +27,9 @@ class Pawn < Piece
       # 2) Check if the diagonal movement is 1 space.
       # 3) Check that there is no piece on the destination square.
       # 4) Check that the player's pawn's destination is in the same column as the enemy pawn.
+      # ****=============****
       # 5) Check that the player's pawn was already in its current starting position in the turn before the enemy pawn has made its starting two square advance.
+      # ****=============****
       # black_pawn.moves.move_count cannot always be used here, because in a valid case moves will have not been created yet for this piece (before the black pawn's first move, black_pawn.moves is an empty array).
       if !black_pawn.nil? && black_pawn.moves.count <= 1 && (y1 - y0).abs == (x1 - x0).abs && (y1 - y0).abs == 1 && destination_piece.nil? && x1 == black_pawn.x_position && self.old_y == self.new_y
         black_pawn.update_attributes(captured: true)
