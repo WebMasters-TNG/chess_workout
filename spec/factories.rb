@@ -43,6 +43,41 @@ FactoryGirl.define do
     y_position 8
   end
 
+  factory :white_knight, :class => Knight, :parent => :piece do
+    type "Knight"
+    color "white"
+    x_position 2
+    y_position 8
+  end
+
+  factory :white_bishop, :class => Bishop, :parent => :piece do
+    type "Bishop"
+    color "white"
+    x_position 3
+    y_position 8
+  end
+
+  factory :white_queen, :class => Queen, :parent => :piece do
+    type "Queen"
+    color "white"
+    x_position 4
+    y_position 8
+  end
+
+  factory :white_king, :class => King, :parent => :piece do
+    type "King"
+    color "white"
+    x_position 5
+    y_position 8
+  end
+
+  factory :black_king, :class => King, :parent => :piece do
+    type "King"
+    color "black"
+    x_position 5
+    y_position 1
+  end
+
   # Set up an initially empty move, then adjust the values after checking that a piece can be moved:
   factory :move do
     association :piece

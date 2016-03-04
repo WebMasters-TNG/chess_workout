@@ -21,8 +21,7 @@ RSpec.describe PiecesController, type: :controller do
           sign_in user
         end
 
-        it "should update a pawn's position and advance the game to the next turn after a valid move" do
-          # Move a white pawn 2 vertical spaces on its first turn:
+        it "should allow a 2 vertical space move on the pawn's first turn" do
           put :update, :id => white_pawn.id, :piece => { :x_position => 1, :y_position => 5 }, :format => :js
           white_pawn.reload
 
@@ -30,9 +29,19 @@ RSpec.describe PiecesController, type: :controller do
           expect(white_pawn.game.turn).to eq 2
         end
 
-        it "should not allow invalid pawn moves" do
-          # Try moving a white pawn 3 vertical spaces on its first turn:
-          put :update, :id => white_pawn.id, :piece => { :x_position => 2, :y_position => 5 }, :format => :js
+        it "should not allow a 2 vertical space move beyond the pawn's first turn" do
+          game.update_attributes(:turn => 3)
+          game.reload
+
+          put :update, :id => white_pawn.id, :piece => { :x_position => 1, :y_position => 4 }, :format => :js
+          white_pawn.reload
+
+          expect(white_pawn.y_position).to eq 7
+          expect(white_pawn.game.turn).to eq 3
+        end
+
+        it "should not allow a greater than 2 vertical space move on the pawn's first turn" do
+          put :update, :id => white_pawn.id, :piece => { :x_position => 1, :y_position => 4 }, :format => :js
           white_pawn.reload
 
           expect(white_pawn.x_position).to eq 1
@@ -40,9 +49,20 @@ RSpec.describe PiecesController, type: :controller do
           expect(white_pawn.game.turn).to eq 1
         end
 
+        it "should allow a 1 vertical space move beyond the pawn's first turn" do
+          game.update_attributes(:turn => 3)
+          game.reload
+
+          put :update, :id => white_pawn.id, :piece => { :x_position => 1, :y_position => 6 }, :format => :js
+          white_pawn.reload
+
+          expect(white_pawn.y_position).to eq 6
+          expect(white_pawn.game.turn).to eq 4
+        end
+
         it "should not allow a move when there is a non-capturable piece at the destination site" do
-          # The white pawn begins at [1, 3], on turn 5:
-          game.update_attributes(:turn => 5)
+          # The white pawn begins at [1, 3], on turn 3:
+          game.update_attributes(:turn => 3)
           game.reload
           white_pawn.update_attributes(:y_position => 3)
           white_pawn.reload
@@ -52,12 +72,12 @@ RSpec.describe PiecesController, type: :controller do
           white_pawn.reload
 
           expect(white_pawn.y_position).to eq 3
-          expect(white_pawn.game.turn).to eq 5
+          expect(white_pawn.game.turn).to eq 3
         end
 
         it "should not allow a move when a non-capturable piece is blocking its path" do
-          # The white pawn begins at [1, 3], on turn 5:
-          game.update_attributes(:turn => 5)
+          # The white pawn begins at [1, 3], on turn 3:
+          game.update_attributes(:turn => 3)
           game.reload
           white_pawn.update_attributes(:y_position => 3)
           white_pawn.reload
@@ -71,7 +91,7 @@ RSpec.describe PiecesController, type: :controller do
           white_pawn.reload
 
           expect(white_pawn.y_position).to eq 3
-          expect(white_pawn.game.turn).to eq 5
+          expect(white_pawn.game.turn).to eq 3
         end
 
         it "should allow a diagonal move with a capturable piece on the destination square" do
@@ -102,7 +122,7 @@ RSpec.describe PiecesController, type: :controller do
 
       describe "basic rook movement" do
         let!(:white_rook) do
-          p = game.pieces.where(:type => "Rook", :color => "white").first
+          p = game.pieces.where(:type => "Rook", :color => "white", :x_position => 1).first
           p
         end
 
@@ -110,7 +130,7 @@ RSpec.describe PiecesController, type: :controller do
           sign_in user
         end
 
-        it "should allow a valid non-capturing move" do
+        it "should allow a valid non-capturing horizontal move" do
           # The white rook begins at [2, 4]
           white_rook.update_attributes(:x_position => 2, :y_position => 4)
           white_rook.reload
@@ -124,9 +144,23 @@ RSpec.describe PiecesController, type: :controller do
           expect(white_rook.game.turn).to eq 2
         end
 
+        it "should allow a valid non-capturing vertical move" do
+          # The white rook begins at [2, 4]
+          white_rook.update_attributes(:x_position => 2, :y_position => 4)
+          white_rook.reload
+
+          # Move a white rook 3 horizontal spaces to the right on its first turn:
+          put :update, :id => white_rook.id, :piece => { :x_position => 2, :y_position => 6 }, :format => :js
+          white_rook.reload
+
+          expect(white_rook.x_position).to eq 2
+          expect(white_rook.y_position).to eq 6
+          expect(white_rook.game.turn).to eq 2
+        end
+
         it "should allow a valid capturing move" do
           # The white rook begins at [1, 4]:
-          white_rook.update_attributes(:x_position => 1, :y_position => 4)
+          white_rook.update_attributes(:y_position => 4)
           white_rook.reload
 
           # Capture the black pawn at [1, 2]
@@ -153,7 +187,7 @@ RSpec.describe PiecesController, type: :controller do
         end
 
 
-        it "should not allow a move when a piece is blocking its path" do
+        it "should not allow a move when an allied piece is blocking its path" do
           # The white rook begins at [1, 8].  Try moving forward two squares, past the white pawn at [1, 7]:
           put :update, :id => white_rook.id, :piece => { :x_position => 1, :y_position => 6 }, :format => :js
           white_rook.reload
@@ -163,12 +197,65 @@ RSpec.describe PiecesController, type: :controller do
         end
       end
 
-      describe "basic bishop movement" do
+      describe "basic knight movement" do
+        let!(:white_knight) do
+          p = game.pieces.where(:type => "Knight", :color => "white", :x_position => 2).first
+          p
+        end
 
+        before do
+          sign_in user
+        end
+
+        it "should allow a valid non-capturing L-shaped move" do
+
+        end
+
+        it "should allow a valid L-shaped capturing move" do
+
+        end
+
+        it "should not allow a straight move" do
+
+        end
+
+        it "should not allow a horizontal move" do
+
+        end
+
+        it "should not allow a diagonal move" do
+
+        end
+
+        it "should not allow a move when the destination square has an allied piece" do
+
+        end
       end
 
-      describe "basic knight movement" do
+      describe "basic bishop movement" do
+        it "should allow a valid non-capturing diagonal move" do
 
+        end
+
+        it "should allow a valid capturing diagonal move" do
+
+        end
+
+        it "should not allow a straight move" do
+
+        end
+
+        it "should not allow a horizontal move" do
+
+        end
+
+        it "should not allow a diagonal move when blocked by an allied piece" do
+
+        end
+
+        it "should not allow a diagonal move when the destination square has an allied piece" do
+
+        end
       end
 
       describe "basic queen movement" do
