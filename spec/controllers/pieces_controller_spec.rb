@@ -110,7 +110,7 @@ RSpec.describe PiecesController, type: :controller do
           sign_in user
         end
 
-        it "should update a rook's position and advance the game to the next turn after a valid move" do
+        it "should allow a valid non-capturing move" do
           # The white rook begins at [2, 4]
           white_rook.update_attributes(:x_position => 2, :y_position => 4)
           white_rook.reload
@@ -121,6 +121,20 @@ RSpec.describe PiecesController, type: :controller do
 
           expect(white_rook.x_position).to eq 5
           expect(white_rook.y_position).to eq 4
+          expect(white_rook.game.turn).to eq 2
+        end
+
+        it "should allow a valid capturing move" do
+          # The white rook begins at [1, 4]:
+          white_rook.update_attributes(:x_position => 1, :y_position => 4)
+          white_rook.reload
+
+          # Capture the black pawn at [1, 2]
+          put :update, :id => white_rook.id, :piece => { :x_position => 1, :y_position => 2 }, :format => :js
+          white_rook.reload
+
+          expect(white_rook.x_position).to eq 1
+          expect(white_rook.y_position).to eq 2
           expect(white_rook.game.turn).to eq 2
         end
 
@@ -140,7 +154,12 @@ RSpec.describe PiecesController, type: :controller do
 
 
         it "should not allow a move when a piece is blocking its path" do
+          # The white rook begins at [1, 8].  Try moving forward two squares, past the white pawn at [1, 7]:
+          put :update, :id => white_rook.id, :piece => { :x_position => 1, :y_position => 6 }, :format => :js
+          white_rook.reload
 
+          expect(white_rook.y_position).to eq 8
+          expect(white_rook.game.turn).to eq 1
         end
       end
 
@@ -256,17 +275,17 @@ RSpec.describe PiecesController, type: :controller do
 
 
       it "should allow pawn promotion" do
-        # user_sign_in
+        sign_in user
       end
 
 
       it "should recognize castling as a valid move" do
-        # user_sign_in
+        sign_in user
       end
 
 
-      it "should test for checkmate" do
-        # user_sign_in
+      it "should recognize a valid checkmate move" do
+        sign_in user
       end
     end
   end
