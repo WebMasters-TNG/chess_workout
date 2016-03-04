@@ -124,7 +124,7 @@ RSpec.describe PiecesController, type: :controller do
           expect(white_rook.game.turn).to eq 2
         end
 
-        it "should not allow invalid rook moves" do
+        it "should not allow diagonal rook moves" do
           # The white rook begins at [1, 5]
           white_rook.update_attributes(:y_position => 5)
           white_rook.reload
@@ -137,6 +137,27 @@ RSpec.describe PiecesController, type: :controller do
           expect(white_rook.y_position).to eq 5
           expect(white_rook.game.turn).to eq 1
         end
+
+
+        it "should not allow a move when a piece is blocking its path" do
+
+        end
+      end
+
+      describe "basic bishop movement" do
+
+      end
+
+      describe "basic knight movement" do
+
+      end
+
+      describe "basic queen movement" do
+
+      end
+
+      describe "basic king movement" do
+
       end
 
       describe "en passant capture of the black pawn" do
@@ -186,52 +207,52 @@ RSpec.describe PiecesController, type: :controller do
         end
       end
 
-      # describe "en passant capture of the white pawn" do
-      #   let(:user2) { FactoryGirl.create(:user) }
-      #   let(:game) { FactoryGirl.create(:game, :white_player_id => user.id, :black_player_id => user2.id, :turn => 2) }
-      #   let!(:white_pawn) do
-      #     p = game.pieces.where(:type => "Pawn", :color => "white").first
-      #     p.update_attributes(:x_position => 2, :y_position => 5)
-      #     p
-      #   end
-      #   let!(:black_pawn) do
-      #     p = game.pieces.where(:type => "Pawn", :color => "black").first
-      #     p.update_attributes(:x_position => 1, :y_position => 5)
-      #     p
-      #   end
-      #   let(:move) { FactoryGirl.create(:move, :game_id => game.id, :piece_id => white_pawn.id, :move_count => 1) }
-      #   let(:move) { FactoryGirl.create(:move, :game_id => game.id, :piece_id => black_pawn.id, :move_count => 0) }
+      describe "en passant capture of the white pawn" do
+        let(:user2) { FactoryGirl.create(:user) }
+        let(:game) { FactoryGirl.create(:game, :white_player_id => user.id, :black_player_id => user2.id, :turn => 2) }
+        let!(:white_pawn) do
+          p = game.pieces.where(:type => "Pawn", :color => "white").first
+          p.update_attributes(:x_position => 2, :y_position => 5)
+          p
+        end
+        let!(:black_pawn) do
+          p = game.pieces.where(:type => "Pawn", :color => "black").first
+          p.update_attributes(:x_position => 1, :y_position => 5)
+          p
+        end
+        let(:move) { FactoryGirl.create(:move, :game_id => game.id, :piece_id => white_pawn.id, :move_count => 1) }
+        let(:move) { FactoryGirl.create(:move, :game_id => game.id, :piece_id => black_pawn.id, :move_count => 0) }
 
-      #   before do
-      #     sign_in user2
-      #   end
+        before do
+          sign_in user2
+        end
 
-      #   it "should recognize a valid en passant move by the black pawn" do
-      #     black_pawn_start_x = black_pawn.x_position
-      #     black_pawn_start_y = black_pawn.y_position
+        it "should recognize a valid en passant move by the black pawn" do
+          black_pawn_start_x = black_pawn.x_position
+          black_pawn_start_y = black_pawn.y_position
 
-      #     put :update, :id => black_pawn.id, :piece => { :x_position => 2, :y_position => 6 }, :format => :js
-      #     black_pawn.reload
+          put :update, :id => black_pawn.id, :piece => { :x_position => 2, :y_position => 6 }, :format => :js
+          black_pawn.reload
 
-      #     expect(black_pawn.en_passant?(black_pawn_start_x, black_pawn_start_y, black_pawn.x_position, black_pawn.y_position)).to eq true
-      #     expect(black_pawn.x_position).to eq 2
-      #     expect(black_pawn.y_position).to eq 6
-      #     expect(black_pawn.game.turn).to eq 3
-      #   end
+          expect(black_pawn.en_passant?(black_pawn_start_x, black_pawn_start_y, black_pawn.x_position, black_pawn.y_position)).to eq true
+          expect(black_pawn.x_position).to eq 2
+          expect(black_pawn.y_position).to eq 6
+          expect(black_pawn.game.turn).to eq 3
+        end
 
-      #   it "should not recognize an invalid en passant move by the black pawn" do
-      #     black_pawn_start_x = black_pawn.x_position
-      #     black_pawn_start_y = black_pawn.y_position
+        it "should not recognize an invalid en passant move by the black pawn" do
+          black_pawn_start_x = black_pawn.x_position
+          black_pawn_start_y = black_pawn.y_position
 
-      #     put :update, :id => black_pawn.id, :piece => { :x_position => 2, :y_position => 7 }, :format => :js
-      #     black_pawn.reload
+          put :update, :id => black_pawn.id, :piece => { :x_position => 2, :y_position => 7 }, :format => :js
+          black_pawn.reload
 
-      #     expect(black_pawn.en_passant?(black_pawn_start_x, black_pawn_start_y, black_pawn.x_position, black_pawn.y_position)).to eq nil
-      #     expect(black_pawn.x_position).to eq 1
-      #     expect(black_pawn.y_position).to eq 5
-      #     expect(black_pawn.game.turn).to eq 2
-      #   end
-      # end
+          expect(black_pawn.en_passant?(black_pawn_start_x, black_pawn_start_y, black_pawn.x_position, black_pawn.y_position)).to eq nil
+          expect(black_pawn.x_position).to eq 1
+          expect(black_pawn.y_position).to eq 5
+          expect(black_pawn.game.turn).to eq 2
+        end
+      end
 
 
       it "should allow pawn promotion" do
