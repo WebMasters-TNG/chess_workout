@@ -302,6 +302,15 @@ RSpec.describe PiecesController, type: :controller do
       end
 
       describe "basic bishop movement" do
+        let!(:white_bishop) do
+          p = game.pieces.where(:type => "Bishop", :color => "white", :x_position => 3).first
+          p
+        end
+
+        before do
+          sign_in user
+        end
+
         it "should allow a valid non-capturing diagonal move" do
 
         end
@@ -310,7 +319,7 @@ RSpec.describe PiecesController, type: :controller do
 
         end
 
-        it "should not allow a straight move" do
+        it "should not allow a vertical move" do
 
         end
 
@@ -328,11 +337,145 @@ RSpec.describe PiecesController, type: :controller do
       end
 
       describe "basic queen movement" do
+        let!(:white_queen) do
+          p = game.pieces.where(:type => "Queen", :color => "white", :x_position => 4).first
+          p
+        end
 
+        before do
+          sign_in user
+        end
+
+        describe "diagonal moves" do
+          it "should allow a valid non-capturing multi-square diagonal move" do
+
+          end
+
+          it "should allow a valid capturing multi-square diagonal move" do
+
+          end
+
+          it "should not allow a diagonal move when blocked by an allied piece" do
+
+          end
+
+          it "should not allow a diagonal move when the destination square has an allied piece" do
+
+          end
+        end
+
+        describe "vertical moves" do
+          it "should allow a valid non-capturing multi-square vertical move" do
+
+          end
+
+          it "should allow a valid capturing multi-square vertical move" do
+
+          end
+
+          it "should not allow a vertical move when blocked by an allied piece" do
+
+          end
+
+          it "should not allow a vertical move when the destination square has an allied piece" do
+
+          end
+        end
+
+        describe "horizontal moves" do
+          it "should allow a valid non-capturing multi-square horizontal move" do
+
+          end
+
+          it "should allow a valid capturing multi-square horizontal move" do
+
+          end
+
+          it "should not allow a horizontal move when blocked by an allied piece" do
+
+          end
+
+          it "should not allow a horizontal move when the destination square has an allied piece" do
+
+          end
+        end
       end
 
       describe "basic king movement" do
+        let!(:white_king) do
+          p = game.pieces.where(:type => "King", :color => "white", :x_position => 5).first
+          p
+        end
 
+        before do
+          sign_in user
+        end
+
+        describe "diagonal moves" do
+          it "should allow a valid non-capturing diagonal move" do
+
+          end
+
+          it "should allow a valid capturing diagonal move" do
+
+          end
+
+          it "should not allow a multi-square diagonal move" do
+
+          end
+
+          it "should not allow a diagonal move when blocked by an allied piece" do
+
+          end
+
+          it "should not allow a diagonal move when the destination square has an allied piece" do
+
+          end
+        end
+
+        describe "vertical moves" do
+          it "should allow a valid non-capturing single vertical move" do
+
+          end
+
+          it "should allow a valid capturing vertical move" do
+
+          end
+
+          it "should not allow a multi-square vertical move" do
+
+          end
+
+          it "should not allow a vertical move when blocked by an allied piece" do
+
+          end
+
+          it "should not allow a vertical move when the destination square has an allied piece" do
+
+          end
+        end
+
+        describe "horizontal moves" do
+          it "should allow a valid non-capturing horizontal move" do
+
+          end
+
+          it "should allow a valid capturing horizontal move" do
+
+          end
+
+          it "should not allow a multi-square horizontal move" do
+
+          end
+
+          it "should not allow a horizontal move when blocked by an allied piece" do
+
+          end
+
+          it "should not allow a horizontal move when the destination square has an allied piece" do
+
+          end
+        end
       end
 
       describe "en passant capture of the black pawn" do
