@@ -10,7 +10,11 @@ class GamesController < ApplicationController
   def show
     # .find_by_id will return a nil value if the id doesn't exist.
     # Use a hash to reduce the number of queries:
-    @game = Game.find_by_id(params[:id])
+    if Game.find_by_id(params[:id]) != nil
+      @game = Game.find_by_id(params[:id])
+    else
+      return render_not_found
+    end
     @game.moves.where(game_id: @game.id).last.nil? ? @last_move_id = 0 : @last_move_id = @game.moves.where(game_id: @game.id).last.id
     session[:current_game] = @game.id
     # @piece_hash =
