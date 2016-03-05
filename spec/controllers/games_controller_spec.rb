@@ -23,13 +23,13 @@ RSpec.describe GamesController, type: :controller do
       expect(response).to have_http_status(:success)
     end
 
-    # game#show depends on a valid game id existing as it currently stands.
-    # it "should return a 404 error if the game is not found" do
-    #   user_sign_in
-    #   game = FactoryGirl.create(:game)
-    #   get :show, :id => "NONSENSE"
-    #   expect(response).to have_http_status(:not_found)
-    # end
+    it "should return a 404 error if the game is not found" do
+      user_sign_in
+      game = FactoryGirl.create(:game)
+      move = FactoryGirl.create(:move)
+      get :show, :id => "NONSENSE"
+      expect(response).to have_http_status(:not_found)
+    end
   end
 
   describe "Action: games#create" do
