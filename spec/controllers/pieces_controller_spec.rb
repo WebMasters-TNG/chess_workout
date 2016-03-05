@@ -770,6 +770,10 @@ RSpec.describe PiecesController, type: :controller do
           put :update, :id => white_pawn.id, :piece => { :x_position => 1, :y_position => 1 }, :format => :js
           white_pawn.reload
 
+          binding.pry
+          # *** IS THERE A ROOK STILL HERE WHEN THE TEST RUNS?  IS THIS PAWN BLOCKED? ***
+          # *** Just checked in the console.  There isn't any piece there.  The update isn't going through for some other reason. ***
+          # *** Could en passant be screwing with this, given that there is a black pawn beside this white pawn? ***
           expect(white_pawn.y_position).to eq 1
           expect(white_pawn.type).to eq "Queen"
         end
