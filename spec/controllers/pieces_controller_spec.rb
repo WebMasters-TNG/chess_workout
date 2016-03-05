@@ -247,25 +247,57 @@ RSpec.describe PiecesController, type: :controller do
         end
 
         it "should not allow a straight move" do
-          put :update, :id => white_knight.id, :piece => { :x_position => 2, :y_position => 6 }, :format => :js
+          white_knight.update_attributes(:x_position => 2, :y_position => 6)
+          white_knight.reload
+
+          put :update, :id => white_knight.id, :piece => { :x_position => 2, :y_position => 4 }, :format => :js
+          white_knight.reload
+
+          expect(white_knight.x_position).to eq 2
+          expect(white_knight.y_position).to eq 6
+          expect(white_knight.game.turn).to eq 1
+          expect(response).to have_http_status(:unauthorized)
+        end
+
+        it "should not allow a horizontal move" do
+          white_knight.update_attributes(:x_position => 2, :y_position => 6)
+          white_knight.reload
+
+          put :update, :id => white_knight.id, :piece => { :x_position => 4, :y_position => 6 }, :format => :js
+          white_knight.reload
+
+          expect(white_knight.x_position).to eq 2
+          expect(white_knight.y_position).to eq 6
+          expect(white_knight.game.turn).to eq 1
+          expect(response).to have_http_status(:unauthorized)
+        end
+
+        it "should not allow a diagonal move" do
+          white_knight.update_attributes(:x_position => 2, :y_position => 6)
+          white_knight.reload
+
+          put :update, :id => white_knight.id, :piece => { :x_position => 3, :y_position => 5 }, :format => :js
+          white_knight.reload
+
+          expect(white_knight.x_position).to eq 2
+          expect(white_knight.y_position).to eq 6
+          expect(white_knight.game.turn).to eq 1
+          expect(response).to have_http_status(:unauthorized)
+        end
+
+        # *************************
+        # *************************
+        # The failing test below has been confirmed to occur in the browser.  Right now the knight can capture an allied piece.
+        # *************************
+        # *************************
+        it "should not allow a move when the destination square has an allied piece" do
+          put :update, :id => white_knight.id, :piece => { :x_position => 4, :y_position => 7 }, :format => :js
           white_knight.reload
 
           expect(white_knight.x_position).to eq 2
           expect(white_knight.y_position).to eq 8
           expect(white_knight.game.turn).to eq 1
           expect(response).to have_http_status(:unauthorized)
-        end
-
-        it "should not allow a horizontal move" do
-
-        end
-
-        it "should not allow a diagonal move" do
-
-        end
-
-        it "should not allow a move when the destination square has an allied piece" do
-
         end
       end
 
