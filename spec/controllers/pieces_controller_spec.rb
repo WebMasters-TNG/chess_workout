@@ -126,6 +126,34 @@ RSpec.describe PiecesController, type: :controller do
           expect(white_pawn.game.turn).to eq 1
           expect(response).to have_http_status(:unauthorized)
         end
+
+        it "should not allow a non-capturing move when the destination square has an allied piece" do
+          white_rook = game.pieces.where(:type => "Rook", :color => "white", :x_position => 1).first
+          white_rook.update_attributes(:y_position => 6)
+          white_rook.reload
+
+          # Try moving the first white pawn onto the white rook at [1, 6]:
+          put :update, :id => white_pawn.id, :piece => { :x_position => 1, :y_position => 6 }, :format => :js
+          white_pawn.reload
+
+          expect(white_pawn.y_position).to eq 7
+          expect(white_pawn.game.turn).to eq 1
+          expect(response).to have_http_status(:unauthorized)
+        end
+
+        it "should not allow a capturing move when the destination square has an allied piece" do
+          white_rook = game.pieces.where(:type => "Rook", :color => "white", :x_position => 1).first
+          white_rook.update_attributes(:x_position => 2, :y_position => 6)
+          white_rook.reload
+
+          # Try moving the first white pawn to capture the white rook at [2, 6]:
+          put :update, :id => white_pawn.id, :piece => { :x_position => 2, :y_position => 6 }, :format => :js
+          white_pawn.reload
+
+          expect(white_pawn.y_position).to eq 7
+          expect(white_pawn.game.turn).to eq 1
+          expect(response).to have_http_status(:unauthorized)
+        end
       end
 
       describe "basic rook movement" do
@@ -208,6 +236,16 @@ RSpec.describe PiecesController, type: :controller do
           expect(white_rook.game.turn).to eq 1
           expect(response).to have_http_status(:unauthorized)
         end
+
+        it "should not allow a move when the destination square has an allied piece" do
+          # Try moving onto the white pawn at [1, 7]:
+          put :update, :id => white_rook.id, :piece => { :x_position => 1, :y_position => 7 }, :format => :js
+          white_rook.reload
+
+          expect(white_rook.y_position).to eq 8
+          expect(white_rook.game.turn).to eq 1
+          expect(response).to have_http_status(:unauthorized)
+        end
       end
 
       describe "basic knight movement" do
@@ -246,7 +284,7 @@ RSpec.describe PiecesController, type: :controller do
           expect(response).to have_http_status(:success)
         end
 
-        it "should not allow a straight move" do
+        it "should not allow a vertical move" do
           white_knight.update_attributes(:x_position => 2, :y_position => 6)
           white_knight.reload
 
@@ -312,27 +350,82 @@ RSpec.describe PiecesController, type: :controller do
         end
 
         it "should allow a valid non-capturing diagonal move" do
+          # Place the white bishop at [3, 6]:
+          white_bishop.update_attributes(:y_position => 6)
+          white_bishop.reload
 
+          put :update, :id => white_bishop.id, :piece => { :x_position => 5, :y_position => 4 }, :format => :js
+          white_bishop.reload
+
+          expect(white_bishop.x_position).to eq 5
+          expect(white_bishop.y_position).to eq 4
+          expect(white_bishop.game.turn).to eq 2
+          expect(response).to have_http_status(:success)
         end
 
         it "should allow a valid capturing diagonal move" do
+          # Place the white bishop at [3, 6]:
+          white_bishop.update_attributes(:y_position => 6)
+          white_bishop.reload
 
+          # Capture the black pawn at [7, 2]:
+          put :update, :id => white_bishop.id, :piece => { :x_position => 7, :y_position => 2 }, :format => :js
+          white_bishop.reload
+
+          expect(white_bishop.x_position).to eq 7
+          expect(white_bishop.y_position).to eq 2
+          expect(white_bishop.game.turn).to eq 2
+          expect(response).to have_http_status(:success)
         end
 
         it "should not allow a vertical move" do
+          # Place the white bishop at [3, 6]:
+          white_bishop.update_attributes(:y_position => 6)
+          white_bishop.reload
 
+          # Try moving to [3, 4]:
+          put :update, :id => white_bishop.id, :piece => { :x_position => 3, :y_position => 4 }, :format => :js
+          white_bishop.reload
+
+          expect(white_bishop.y_position).to eq 6
+          expect(white_bishop.game.turn).to eq 1
+          expect(response).to have_http_status(:unauthorized)
         end
 
         it "should not allow a horizontal move" do
+          # Place the white bishop at [3, 6]:
+          white_bishop.update_attributes(:y_position => 6)
+          white_bishop.reload
 
+          # Try moving to [5, 6]:
+          put :update, :id => white_bishop.id, :piece => { :x_position => 5, :y_position => 6 }, :format => :js
+          white_bishop.reload
+
+          expect(white_bishop.x_position).to eq 3
+          expect(white_bishop.game.turn).to eq 1
+          expect(response).to have_http_status(:unauthorized)
         end
 
         it "should not allow a diagonal move when blocked by an allied piece" do
+          # Try moving from [3, 8] to [5, 6]:
+          put :update, :id => white_bishop.id, :piece => { :x_position => 5, :y_position => 6 }, :format => :js
+          white_bishop.reload
 
+          expect(white_bishop.x_position).to eq 3
+          expect(white_bishop.y_position).to eq 8
+          expect(white_bishop.game.turn).to eq 1
+          expect(response).to have_http_status(:unauthorized)
         end
 
         it "should not allow a diagonal move when the destination square has an allied piece" do
+          # Try moving from [3, 8] to [4, 7]:
+          put :update, :id => white_bishop.id, :piece => { :x_position => 4, :y_position => 7 }, :format => :js
+          white_bishop.reload
 
+          expect(white_bishop.x_position).to eq 3
+          expect(white_bishop.y_position).to eq 8
+          expect(white_bishop.game.turn).to eq 1
+          expect(response).to have_http_status(:unauthorized)
         end
       end
 
