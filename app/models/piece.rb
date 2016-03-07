@@ -1,5 +1,5 @@
 class Piece < ActiveRecord::Base
-	# shared functionality for all pieces goes here
+  # shared functionality for all pieces goes here
   belongs_to :game
   has_many :moves
   # belongs_to :player, class_name: "User", foreign_key: :player_id

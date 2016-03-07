@@ -18,6 +18,8 @@
 require 'pry'
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
+  # Use color in STDOUT
+  config.color = true
   # *** Automigrate if needs migration ***
   ActiveRecord::Migrator.migrate(File.join(Rails.root, 'db/migrate'))
 
