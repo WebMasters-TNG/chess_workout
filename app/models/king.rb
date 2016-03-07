@@ -26,8 +26,10 @@ class King < Piece
     return false if !first_move? || !@target_rook.first_move?
     if @target_rook.x_position == 1
       @target_rook.update_attributes(x_position: 4)
+      @target_rook.update_move(1, @y0, 4, @y0)
     else
       @target_rook.update_attributes(x_position: 6)
+      @target_rook.update_move(8, @y0, 6, @y0)
     end
     true 
   end

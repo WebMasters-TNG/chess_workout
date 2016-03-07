@@ -162,11 +162,11 @@ function initPage() {
                 } else if ($('td#' + move['new_y'] + move['new_x']).find(".piece").hasClass("black_piece") && gameTurn % 2 == 0) {
                   $('td#' + move['new_y'] + move['new_x']).find(".piece").appendTo("#dark_captured");
                 };
+                $('td#' + move['old_y'] + move['old_x']).find('.piece').appendTo('td#' + move['new_y'] + move['new_x']);
+                last_move = move['id'];
               };
-              $('td#' + move['old_y'] + move['old_x']).find('.piece').appendTo('td#' + move['new_y'] + move['new_x']);
             });
             $('.game_turn').html(gameTurn);
-            last_move = lastServerMove['id'];
           } else {
             console.log("No new moves");
           };
