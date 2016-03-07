@@ -7,7 +7,7 @@ RSpec.describe PiecesController, type: :controller do
       let(:user) { FactoryGirl.create(:user) }
       let(:game) { FactoryGirl.create(:game, :white_player_id => user.id) }
 
-      describe "basic pawn movement" do
+      describe "basic PAWN movement" do
         let!(:white_pawn) do
           p = game.pieces.where(:type => "Pawn", :color => "white", :x_position => 1, :y_position => 7).first
           p
@@ -156,7 +156,7 @@ RSpec.describe PiecesController, type: :controller do
         end
       end
 
-      describe "basic rook movement" do
+      describe "basic ROOK movement" do
         let!(:white_rook) do
           p = game.pieces.where(:type => "Rook", :color => "white", :x_position => 1).first
           p
@@ -248,7 +248,7 @@ RSpec.describe PiecesController, type: :controller do
         end
       end
 
-      describe "basic knight movement" do
+      describe "basic KNIGHT movement" do
         let!(:white_knight) do
           p = game.pieces.where(:type => "Knight", :color => "white", :x_position => 2).first
           p
@@ -339,7 +339,7 @@ RSpec.describe PiecesController, type: :controller do
         end
       end
 
-      describe "basic bishop movement" do
+      describe "basic BISHOP movement" do
         let!(:white_bishop) do
           p = game.pieces.where(:type => "Bishop", :color => "white", :x_position => 3).first
           p
@@ -429,7 +429,7 @@ RSpec.describe PiecesController, type: :controller do
         end
       end
 
-      describe "basic queen movement" do
+      describe "basic QUEEN movement" do
         let!(:white_queen) do
           p = game.pieces.where(:type => "Queen", :color => "white", :x_position => 4).first
           p
@@ -506,7 +506,17 @@ RSpec.describe PiecesController, type: :controller do
           end
 
           it "should allow a valid capturing multi-square vertical move" do
+            # Begin with the white queen at [4, 6]:
+            white_queen.update_attributes(:y_position => 6)
+            white_queen.reload
 
+            # Capture the black pawn at [4, 2]:
+            put :update, :id => white_queen.id, :piece => { :x_position => 4, :y_position => 2 }, :format => :js
+            white_queen.reload
+
+            expect(white_queen.y_position).to eq 2
+            expect(white_queen.game.turn).to eq 2
+            expect(response).to have_http_status(:success)
           end
 
           it "should not allow a vertical move when blocked by an allied piece" do
@@ -545,7 +555,22 @@ RSpec.describe PiecesController, type: :controller do
           end
 
           it "should allow a valid capturing multi-square horizontal move" do
+            # Begin with the white queen at [4, 5]:
+            white_queen.update_attributes(:y_position => 5)
+            white_queen.reload
 
+            black_pawn = game.pieces.where(:type => "Pawn", :color => "black", :x_position => 1).first
+            black_pawn.update_attributes(:x_position => 1, :y_position => 5)
+            black_pawn.reload
+
+            # Capture the black pawn at [1, 5]:
+            put :update, :id => white_queen.id, :piece => { :x_position => 1, :y_position => 5 }, :format => :js
+            white_queen.reload
+
+
+            expect(white_queen.x_position).to eq 1
+            expect(white_queen.game.turn).to eq 2
+            expect(response).to have_http_status(:success)
           end
 
           it "should not allow a horizontal move when blocked by an allied piece" do
@@ -570,7 +595,7 @@ RSpec.describe PiecesController, type: :controller do
         end
       end
 
-      describe "basic king movement" do
+      describe "basic KING movement" do
         let!(:white_king) do
           p = game.pieces.where(:type => "King", :color => "white", :x_position => 5).first
           p
@@ -647,7 +672,7 @@ RSpec.describe PiecesController, type: :controller do
         end
       end
 
-      describe "en passant capture of the black pawn" do
+      describe "EN PASSANT capture of the black pawn" do
         let(:user2) { FactoryGirl.create(:user) }
         let(:game) { FactoryGirl.create(:game, :white_player_id => user.id, :black_player_id => user2.id) }
         let!(:white_pawn) do
@@ -695,7 +720,7 @@ RSpec.describe PiecesController, type: :controller do
         end
       end
 
-      describe "en passant capture of the white pawn" do
+      describe "EN PASSANT capture of the white pawn" do
         let(:user2) { FactoryGirl.create(:user) }
         let(:game) { FactoryGirl.create(:game, :white_player_id => user.id, :black_player_id => user2.id, :turn => 2) }
         let!(:white_pawn) do
@@ -770,10 +795,11 @@ RSpec.describe PiecesController, type: :controller do
           put :update, :id => white_pawn.id, :piece => { :x_position => 1, :y_position => 1 }, :format => :js
           white_pawn.reload
 
-          binding.pry
+          # binding.pry
           # *** IS THERE A ROOK STILL HERE WHEN THE TEST RUNS?  IS THIS PAWN BLOCKED? ***
           # *** Just checked in the console.  There isn't any piece there.  The update isn't going through for some other reason. ***
           # *** Could en passant be screwing with this, given that there is a black pawn beside this white pawn? ***
+          #
           expect(white_pawn.y_position).to eq 1
           expect(white_pawn.type).to eq "Queen"
         end
