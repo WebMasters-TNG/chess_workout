@@ -25,6 +25,8 @@ RSpec.describe GamesController, type: :controller do
 
     it "should return a 404 error if the game is not found" do
       user_sign_in
+      game = FactoryGirl.create(:game)
+      move = FactoryGirl.create(:move)
       get :show, :id => "NONSENSE"
       expect(response).to have_http_status(:not_found)
     end
