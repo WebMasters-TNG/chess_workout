@@ -5,7 +5,8 @@ RSpec.describe PiecesController, type: :controller do
 
     describe "all pieces" do
       let(:user) { FactoryGirl.create(:user) }
-      let(:game) { FactoryGirl.create(:game, :white_player_id => user.id) }
+      let(:user2) { FactoryGirl.create(:user) }
+      let(:game) { FactoryGirl.create(:game, :white_player_id => user.id, :black_player_id => user2.id) }
 
       describe "basic PAWN movement" do
         let!(:white_pawn) do
@@ -27,6 +28,19 @@ RSpec.describe PiecesController, type: :controller do
 
           expect(white_pawn.y_position).to eq 5
           expect(white_pawn.game.turn).to eq 2
+          expect(response).to have_http_status(:success)
+        end
+
+        it "BLACK PAWN should allow a 2 vertical space move on the pawn's first turn" do
+          sign_in user2
+          game.update_attributes(:turn => 2)
+          game.reload
+
+          put :update, :id => black_pawn.id, :piece => { :x_position => 1, :y_position => 4 }, :format => :js
+          black_pawn.reload
+
+          expect(black_pawn.y_position).to eq 4
+          expect(black_pawn.game.turn).to eq 3
           expect(response).to have_http_status(:success)
         end
 
@@ -150,6 +164,7 @@ RSpec.describe PiecesController, type: :controller do
           put :update, :id => white_pawn.id, :piece => { :x_position => 2, :y_position => 6 }, :format => :js
           white_pawn.reload
 
+          expect(white_pawn.x_position).to eq 1
           expect(white_pawn.y_position).to eq 7
           expect(white_pawn.game.turn).to eq 1
           expect(response).to have_http_status(:unauthorized)
@@ -186,13 +201,32 @@ RSpec.describe PiecesController, type: :controller do
           white_rook.update_attributes(:x_position => 2, :y_position => 4)
           white_rook.reload
 
-          # Move a white rook 3 horizontal spaces to the right on its first turn:
+          # Move a white rook 2 vertical spaces up on its first turn:
           put :update, :id => white_rook.id, :piece => { :x_position => 2, :y_position => 6 }, :format => :js
           white_rook.reload
 
           expect(white_rook.x_position).to eq 2
           expect(white_rook.y_position).to eq 6
           expect(white_rook.game.turn).to eq 2
+          expect(response).to have_http_status(:success)
+        end
+
+        it "BLACK ROOK should allow a valid non-capturing vertical move" do
+          sign_in user2
+          game.update_attributes(:turn => 2)
+          game.reload
+          # The black rook begins at [2, 3]
+          black_rook = game.pieces.where(:type => "Rook", :color => "black", :x_position => 1).first
+          black_rook.update_attributes(:x_position => 2, :y_position => 3)
+          black_rook.reload
+
+          # Move a black rook 2 vertical spaces down on its first turn:
+          put :update, :id => black_rook.id, :piece => { :x_position => 2, :y_position => 5 }, :format => :js
+          black_rook.reload
+
+          expect(black_rook.x_position).to eq 2
+          expect(black_rook.y_position).to eq 5
+          expect(black_rook.game.turn).to eq 3
           expect(response).to have_http_status(:success)
         end
 
@@ -323,11 +357,30 @@ RSpec.describe PiecesController, type: :controller do
           expect(response).to have_http_status(:unauthorized)
         end
 
-        # *************************
-        # *************************
-        # The failing test below has been confirmed to occur in the browser.  Right now the knight can capture an allied piece.
-        # *************************
-        # *************************
+        it "should allow a non-capturing L-shaped move even with another piece in its path" do
+          put :update, :id => white_knight.id, :piece => { :x_position => 3, :y_position => 6 }, :format => :js
+          white_knight.reload
+
+          expect(white_knight.x_position).to eq 3
+          expect(white_knight.y_position).to eq 6
+          expect(white_knight.game.turn).to eq 2
+          expect(response).to have_http_status(:success)
+        end
+
+        it "BLACK KNIGHT should allow a non-capturing L-shaped move even with another piece in its path" do
+          sign_in user2
+          game.update_attributes(:turn => 2)
+          game.reload
+          black_knight = game.pieces.where(:type => "Knight", :color => "black", :x_position => 2).first
+          put :update, :id => black_knight.id, :piece => { :x_position => 3, :y_position => 3 }, :format => :js
+          black_knight.reload
+
+          expect(black_knight.x_position).to eq 3
+          expect(black_knight.y_position).to eq 3
+          expect(black_knight.game.turn).to eq 3
+          expect(response).to have_http_status(:success)
+        end
+
         it "should not allow a move when the destination square has an allied piece" do
           put :update, :id => white_knight.id, :piece => { :x_position => 4, :y_position => 7 }, :format => :js
           white_knight.reload
@@ -360,6 +413,24 @@ RSpec.describe PiecesController, type: :controller do
           expect(white_bishop.x_position).to eq 5
           expect(white_bishop.y_position).to eq 4
           expect(white_bishop.game.turn).to eq 2
+          expect(response).to have_http_status(:success)
+        end
+
+        it "BLACK BISHOP should allow a valid non-capturing diagonal move" do
+          sign_in user2
+          game.update_attributes(:turn => 2)
+          game.reload
+          black_bishop = game.pieces.where(:type => "Bishop", :color => "black", :x_position => 3).first
+          # Place the black bishop at [3, 3]:
+          black_bishop.update_attributes(:y_position => 3)
+          black_bishop.reload
+
+          put :update, :id => black_bishop.id, :piece => { :x_position => 5, :y_position => 5 }, :format => :js
+          black_bishop.reload
+
+          expect(black_bishop.x_position).to eq 5
+          expect(black_bishop.y_position).to eq 5
+          expect(black_bishop.game.turn).to eq 3
           expect(response).to have_http_status(:success)
         end
 
@@ -879,21 +950,22 @@ RSpec.describe PiecesController, type: :controller do
       end
 
       describe "pawn promotion" do
-        let!(:white_pawn) do
-          p = game.pieces.where(:type => "Pawn", :color => "white", :x_position => 1).first
-          p.update_attributes(:y_position => 2)
-          p
-        end
-        let(:black_pawn) do
-          # Remove the black pawn at [1, 2]:
-          p = game.pieces.where(:type => "Pawn", :color => "black", :x_position => 1).first
-          p.update_attributes(:x_position => 5, :y_position => 5)
-          p
-        end
-        let(:black_rook) do
+        # let!(:white_pawn) do
+        #   p = game.pieces.where(:type => "Pawn", :color => "white", :x_position => 1).first
+        #   p.update_attributes(:y_position => 3)
+        #   p
+        # end
+        # let!(:black_pawn) do
+        #   # Remove the black pawn at [1, 2]:
+        #   p = game.pieces.where(:type => "Pawn", :color => "black", :x_position => 1).first
+        #   # p.update_attributes(:x_position => 5, :y_position => 5)
+        #   p
+        # end
+        let!(:black_rook) do
           # Remove the black rook at [1, 1]:
           p = game.pieces.where(:type => "Rook", :color => "black", :x_position => 1).first
-          p.update_attributes(:x_position => 6, :y_position => 5)
+          # p.update_attributes(:x_position => 6, :y_position => 5)
+          p.destroy
           p
         end
 
@@ -902,6 +974,22 @@ RSpec.describe PiecesController, type: :controller do
         end
 
         it "should allow promotion to queen" do
+          black_pawn = game.pieces.where(:type => "Pawn", :color => "black", :x_position => 1).first
+          black_pawn.update_attributes(:x_position => 5, :y_position => 5)
+          black_pawn.reload
+
+          white_pawn = game.pieces.where(:type => "Pawn", :color => "white", :x_position => 2).first
+          white_pawn.update_attributes(:x_position => 1, :y_position => 3)
+          white_pawn.reload
+
+          # put :update, :id => white_pawn.id, :piece => { :x_position => 1, :y_position => 2 }, :format => :js
+          # white_pawn.reload
+
+          # game.update_attributes(:turn => 3)
+          # game.reload
+
+          # sign_in user
+
           put :update, :id => white_pawn.id, :piece => { :x_position => 1, :y_position => 1 }, :format => :js
           white_pawn.reload
 
