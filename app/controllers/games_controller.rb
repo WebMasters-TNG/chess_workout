@@ -34,7 +34,6 @@ class GamesController < ApplicationController
     else
       new_moves = @game.moves.where(id: (move_id + 1)..Float::INFINITY).all   # Check the server for a move id greater than the last known value
     end
-    binding.pry
     if new_moves != []
       render json: {new_move: new_moves, turn: @game.turn}  # Return last move and turn data to client side
     else
