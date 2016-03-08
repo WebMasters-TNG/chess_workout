@@ -961,43 +961,43 @@ RSpec.describe PiecesController, type: :controller do
         #   # p.update_attributes(:x_position => 5, :y_position => 5)
         #   p
         # end
-        let!(:black_rook) do
-          # Remove the black rook at [1, 1]:
-          p = game.pieces.where(:type => "Rook", :color => "black", :x_position => 1).first
-          # p.update_attributes(:x_position => 6, :y_position => 5)
-          p.destroy
-          p
-        end
+        # let!(:black_rook) do
+        #   # Remove the black rook at [1, 1]:
+        #   p = game.pieces.where(:type => "Rook", :color => "black", :x_position => 1).first
+        #   # p.update_attributes(:x_position => 6, :y_position => 5)
+        #   p
+        # end
 
         before do
           sign_in user
         end
 
         it "should allow promotion to queen" do
-          black_pawn = game.pieces.where(:type => "Pawn", :color => "black", :x_position => 1).first
+          # Clear a path for the white pawn.
+          # Move the black pawn from [2, 2] to [5, 5]:
+          black_pawn = game.pieces.where(:type => "Pawn", :color => "black", :x_position => 2).first
           black_pawn.update_attributes(:x_position => 5, :y_position => 5)
           black_pawn.reload
 
+          # Move the black knight from [2, 1] to [6, 5]:
+          black_knight = game.pieces.where(:type => "Knight", :color => "black", :x_position => 2).first
+          black_knight.update_attributes(:x_position => 6, :y_position => 5)
+          black_knight.reload
+
+          # Position the white pawn to start at [2, 2]:
           white_pawn = game.pieces.where(:type => "Pawn", :color => "white", :x_position => 2).first
-          white_pawn.update_attributes(:x_position => 1, :y_position => 3)
+          white_pawn.update_attributes(:x_position => 2, :y_position => 3)
           white_pawn.reload
 
-          # put :update, :id => white_pawn.id, :piece => { :x_position => 1, :y_position => 2 }, :format => :js
-          # white_pawn.reload
+          # *** Does the database still think that a black pawn is present at [2, 2]?  The same error doesn't come up when placing the white pawn at [2, 3] initially.  Moving the white pawn from [2, 3] to [2, 2] also works fine. ***
+          binding.pry
 
-          # game.update_attributes(:turn => 3)
-          # game.reload
-
-          # sign_in user
-
-          put :update, :id => white_pawn.id, :piece => { :x_position => 1, :y_position => 1 }, :format => :js
+          put :update, :id => white_pawn.id, :piece => { :x_position => 2, :y_position => 2 }, :format => :js
           white_pawn.reload
+          # *** After placing the white pawn at [2, 2] and trying to move to [2, 1], white_pawn.reload gives
+          # ActiveRecord::RecordNotFound: Couldn't find Pawn with id=330530 [WHERE "pieces"."type" IN ('Pawn')]
+          # even though white_pawn.id = 330530 in the console.  WHY? ***
 
-          # binding.pry
-          # *** IS THERE A ROOK STILL HERE WHEN THE TEST RUNS?  IS THIS PAWN BLOCKED? ***
-          # *** Just checked in the console.  There isn't any piece there.  The update isn't going through for some other reason. ***
-          # *** Could en passant be screwing with this, given that there is a black pawn beside this white pawn? ***
-          #
           expect(white_pawn.y_position).to eq 1
           expect(white_pawn.type).to eq "Queen"
         end
