@@ -61,9 +61,9 @@ class Game < ActiveRecord::Base
 	end
 
 #
-  def next_move
-    self.counter += 1
-    self.save
-    self.counter
-  end
+  # def next_move
+  #   self.counter += 1
+  #   self.save
+  #   self.counter
+  # end
 end
