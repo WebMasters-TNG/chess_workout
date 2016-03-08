@@ -607,67 +607,177 @@ RSpec.describe PiecesController, type: :controller do
 
         describe "diagonal moves" do
           it "should allow a valid non-capturing diagonal move" do
+            # Start at [5, 6]:
+            white_king.update_attributes(:y_position => 6)
+            white_king.reload
 
+            put :update, :id => white_king.id, :piece => { :x_position => 6, :y_position => 5 }, :format => :js
+            white_king.reload
+
+            expect(white_king.x_position).to eq 6
+            expect(white_king.y_position).to eq 5
+            expect(white_king.game.turn).to eq 2
+            expect(response).to have_http_status(:success)
           end
 
           it "should allow a valid capturing diagonal move" do
+            # Start at [5, 6]:
+            white_king.update_attributes(:y_position => 6)
+            white_king.reload
 
+            black_pawn = game.pieces.where(:type => "Pawn", :color => "black").first
+            black_pawn.update_attributes(:x_position => 6, :y_position => 5)
+            black_pawn.reload
+
+            put :update, :id => white_king.id, :piece => { :x_position => 6, :y_position => 5 }, :format => :js
+            white_king.reload
+
+            expect(white_king.x_position).to eq 6
+            expect(white_king.y_position).to eq 5
+            expect(white_king.game.turn).to eq 2
+            expect(response).to have_http_status(:success)
           end
 
           it "should not allow a multi-square diagonal move" do
+            # Start at [5, 6]:
+            white_king.update_attributes(:y_position => 6)
+            white_king.reload
 
-          end
+            put :update, :id => white_king.id, :piece => { :x_position => 7, :y_position => 4 }, :format => :js
+            white_king.reload
 
-          it "should not allow a diagonal move when blocked by an allied piece" do
-
+            expect(white_king.x_position).to eq 5
+            expect(white_king.y_position).to eq 6
+            expect(white_king.game.turn).to eq 1
+            expect(response).to have_http_status(:unauthorized)
           end
 
           it "should not allow a diagonal move when the destination square has an allied piece" do
+            # The white pawn at [6, 7] should prevent the king from moving onto this square:
+            put :update, :id => white_king.id, :piece => { :x_position => 6, :y_position => 7 }, :format => :js
+            white_king.reload
 
+            expect(white_king.x_position).to eq 5
+            expect(white_king.y_position).to eq 8
+            expect(white_king.game.turn).to eq 1
+            expect(response).to have_http_status(:unauthorized)
           end
         end
 
         describe "vertical moves" do
           it "should allow a valid non-capturing single vertical move" do
+            # Start at [5, 6]:
+            white_king.update_attributes(:y_position => 6)
+            white_king.reload
 
+            put :update, :id => white_king.id, :piece => { :x_position => 5, :y_position => 5 }, :format => :js
+            white_king.reload
+
+            expect(white_king.x_position).to eq 5
+            expect(white_king.y_position).to eq 5
+            expect(white_king.game.turn).to eq 2
+            expect(response).to have_http_status(:success)
           end
 
           it "should allow a valid capturing vertical move" do
+            # Start at [5, 6]:
+            white_king.update_attributes(:y_position => 6)
+            white_king.reload
 
+            black_pawn = game.pieces.where(:type => "Pawn", :color => "black").first
+            black_pawn.update_attributes(:x_position => 5, :y_position => 5)
+            black_pawn.reload
+
+            put :update, :id => white_king.id, :piece => { :x_position => 5, :y_position => 5 }, :format => :js
+            white_king.reload
+
+            expect(white_king.x_position).to eq 5
+            expect(white_king.y_position).to eq 5
+            expect(white_king.game.turn).to eq 2
+            expect(response).to have_http_status(:success)
           end
 
           it "should not allow a multi-square vertical move" do
+            # Start at [5, 6]:
+            white_king.update_attributes(:y_position => 6)
+            white_king.reload
 
-          end
+            put :update, :id => white_king.id, :piece => { :x_position => 5, :y_position => 3 }, :format => :js
+            white_king.reload
 
-          it "should not allow a vertical move when blocked by an allied piece" do
-
+            expect(white_king.x_position).to eq 5
+            expect(white_king.y_position).to eq 6
+            expect(white_king.game.turn).to eq 1
+            expect(response).to have_http_status(:unauthorized)
           end
 
           it "should not allow a vertical move when the destination square has an allied piece" do
+            # The white pawn at [5, 7] should prevent the king from moving onto this square:
+            put :update, :id => white_king.id, :piece => { :x_position => 5, :y_position => 7 }, :format => :js
+            white_king.reload
 
+            expect(white_king.x_position).to eq 5
+            expect(white_king.y_position).to eq 8
+            expect(white_king.game.turn).to eq 1
+            expect(response).to have_http_status(:unauthorized)
           end
         end
 
         describe "horizontal moves" do
           it "should allow a valid non-capturing horizontal move" do
+            # Start at [5, 6]:
+            white_king.update_attributes(:y_position => 6)
+            white_king.reload
 
+            put :update, :id => white_king.id, :piece => { :x_position => 4, :y_position => 6 }, :format => :js
+            white_king.reload
+
+            expect(white_king.x_position).to eq 4
+            expect(white_king.y_position).to eq 6
+            expect(white_king.game.turn).to eq 2
+            expect(response).to have_http_status(:success)
           end
 
           it "should allow a valid capturing horizontal move" do
+            # Start at [5, 6]:
+            white_king.update_attributes(:y_position => 6)
+            white_king.reload
 
+            black_pawn = game.pieces.where(:type => "Pawn", :color => "black").first
+            black_pawn.update_attributes(:x_position => 4, :y_position => 6)
+            black_pawn.reload
+
+            put :update, :id => white_king.id, :piece => { :x_position => 4, :y_position => 6 }, :format => :js
+            white_king.reload
+
+            expect(white_king.x_position).to eq 4
+            expect(white_king.y_position).to eq 6
+            expect(white_king.game.turn).to eq 2
+            expect(response).to have_http_status(:success)
           end
 
           it "should not allow a multi-square horizontal move" do
+            # Start at [5, 6]:
+            white_king.update_attributes(:y_position => 6)
+            white_king.reload
 
-          end
+            put :update, :id => white_king.id, :piece => { :x_position => 2, :y_position => 6 }, :format => :js
+            white_king.reload
 
-          it "should not allow a horizontal move when blocked by an allied piece" do
-
+            expect(white_king.x_position).to eq 5
+            expect(white_king.y_position).to eq 6
+            expect(white_king.game.turn).to eq 1
+            expect(response).to have_http_status(:unauthorized)
           end
 
           it "should not allow a horizontal move when the destination square has an allied piece" do
+            put :update, :id => white_king.id, :piece => { :x_position => 6, :y_position => 8 }, :format => :js
+            white_king.reload
 
+            expect(white_king.x_position).to eq 5
+            expect(white_king.y_position).to eq 8
+            expect(white_king.game.turn).to eq 1
+            expect(response).to have_http_status(:unauthorized)
           end
         end
       end
