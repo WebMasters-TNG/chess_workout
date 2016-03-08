@@ -154,17 +154,22 @@ function initPage() {
           var new_y = lastServerMove['new_y'];
           var gameTurn = data['turn']
           $(".board td").removeClass("moved_sq");
-          // $('td#' + new_y + new_x).empty();
-          if (lastServerMove['id'] > last_move) {
-            if ($('td#' + new_y + new_x).find(".piece").hasClass("white_piece") && gameTurn % 2 != 0) {
-              $('td#' + new_y + new_x).find(".piece").appendTo("#white_captured");
-            } else if ($('td#' + new_y + new_x).find(".piece").hasClass("black_piece") && gameTurn % 2 == 0) {
-              $('td#' + new_y + new_x).find(".piece").appendTo("#dark_captured");
-            };
+          if (lastServerMove != 'none') {
+            lastServerMove.forEach(function(move) {
+              if (move['id'] > last_move) {
+                if ($('td#' + move['new_y'] + move['new_x']).find(".piece").hasClass("white_piece") && gameTurn % 2 != 0) {
+                  $('td#' + move['new_y'] + move['new_x']).find(".piece").appendTo("#white_captured");
+                } else if ($('td#' + move['new_y'] + move['new_x']).find(".piece").hasClass("black_piece") && gameTurn % 2 == 0) {
+                  $('td#' + move['new_y'] + move['new_x']).find(".piece").appendTo("#dark_captured");
+                };
+                $('td#' + move['old_y'] + move['old_x']).find('.piece').appendTo('td#' + move['new_y'] + move['new_x']);
+                last_move = move['id'];
+              };
+            });
+            $('.game_turn').html(gameTurn);
+          } else {
+            console.log("No new moves");
           };
-          $('td#' + last_y + last_x).find('.piece').appendTo('td#' + new_y + new_x);
-          $('.game_turn').html(gameTurn);
-          last_move = lastServerMove['id'];
         },
         error: function() {
           console.log("No update available");
