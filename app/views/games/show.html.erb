@@ -7,7 +7,13 @@
   window.last_move = "<%= @last_move_id %>"
 <% end %>
 <br />
-<h1>Game ID: <%= @game.id %>, Turn <span class="game_turn"><%= @game.turn %></span></h1>
+<h1>Game ID: <%= @game.id %>, Turn <span class="game_turn"><%= @game.turn %></span>,
+  <% if @game.turn % 2 == 1 %>
+    White
+  <% else %>
+    Black
+  <% end %>
+ Player's Move</h1>
 <br />
 <div class="gameboard col-xs-6">
   <table class="board" id="chessboard">
