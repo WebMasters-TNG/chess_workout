@@ -31,7 +31,7 @@ class King < Piece
       @target_rook.update_attributes(x_position: 6)
       Move.create(game_id: game.id, piece_id: @target_rook.id, move_count: 1, old_x: 8, new_x: 6, old_y: @y0, new_y: @y0)
     end
-    true 
+    true
   end
 
   # ***********************************************************
@@ -43,9 +43,27 @@ class King < Piece
   # => 3) Move King to unchecking position
   # ***********************************************************
 
+  def check?
+
+  end
+
+  def checkmate?
+    # If this king has been captured, mark the other player as the game's winner:
+    if self.captured == true
+      if self.color == "white"
+        game.winner = "black"
+      else
+        game.winner = "white"
+      end
+      return true
+    else
+      return false
+    end
+  end
+
   def move_size
     return false if @sx.abs > 1 || @sy.abs > 1
     @sx.abs <= 1 && @sy.abs <= 1
-  end  
+  end
 end
 
