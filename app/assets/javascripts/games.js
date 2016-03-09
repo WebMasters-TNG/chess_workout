@@ -157,12 +157,22 @@ function initPage() {
           if (lastServerMove != 'none') {
             lastServerMove.forEach(function(move) {
               if (move['id'] > last_move) {
-                if ($('td#' + move['new_y'] + move['new_x']).find(".piece").hasClass("white_piece") && gameTurn % 2 != 0) {
-                  $('td#' + move['new_y'] + move['new_x']).find(".piece").appendTo("#white_captured");
-                } else if ($('td#' + move['new_y'] + move['new_x']).find(".piece").hasClass("black_piece") && gameTurn % 2 == 0) {
-                  $('td#' + move['new_y'] + move['new_x']).find(".piece").appendTo("#dark_captured");
+                // if ($('td#' + move['new_y'] + move['new_x']).find(".piece").hasClass("white_piece") && gameTurn % 2 != 0) {
+                //   $('td#' + move['new_y'] + move['new_x']).find(".piece").appendTo("#white_captured");
+                // } else if ($('td#' + move['new_y'] + move['new_x']).find(".piece").hasClass("black_piece") && gameTurn % 2 == 0) {
+                //   $('td#' + move['new_y'] + move['new_x']).find(".piece").appendTo("#dark_captured");
+                // };
+                // $('td#' + move['old_y'] + move['old_x']).find('.piece').appendTo('td#' + move['new_y'] + move['new_x']);
+
+                if (move['captured_piece'] == true) {
+                  if ($('td#' + move['old_y'] + move['old_x']).find(".piece").hasClass("white_piece") && gameTurn % 2 != 0) {
+                    $('td#' + move['old_y'] + move['old_x']).find(".piece").appendTo("#white_captured");
+                  } else if ($('td#' + move['old_y'] + move['old_x']).find(".piece").hasClass("black_piece") && gameTurn % 2 == 0) {
+                    $('td#' + move['old_y'] + move['old_x']).find(".piece").appendTo("#dark_captured");
+                  };
+                } else {
+                  $('td#' + move['old_y'] + move['old_x']).find('.piece').appendTo('td#' + move['new_y'] + move['new_x']);
                 };
-                $('td#' + move['old_y'] + move['old_x']).find('.piece').appendTo('td#' + move['new_y'] + move['new_x']);
                 last_move = move['id'];
               };
             });
