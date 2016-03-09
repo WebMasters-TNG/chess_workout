@@ -1027,7 +1027,47 @@ RSpec.describe PiecesController, type: :controller do
 
       it "should recognize a valid checkmate move" do
         sign_in user
+
+        # Move the black king to [5, 6]:
+        black_king = game.pieces.where(:type => "King", :color => "black").first
+        black_king.update_attributes(:x_position => 5, :y_position => 6)
+        black_king.reload
+
+        # Capture the black king with the white pawn from [4, 7]:
+        white_pawn = game.pieces.where(:type => "Pawn", :color => "white", :x_position => 4).first
+        put :update, :id => white_pawn.id, :piece => { :x_position => 5, :y_position => 6 }, :format => :js
+        white_pawn.reload
+
+        expect(white_pawn.x_position).to eq 5
+        expect(white_pawn.y_position).to eq 6
+        expect(white_pawn.game.turn).to eq 2
+        expect(response).to have_http_status(:success)
+        # Check for checkmate:
+        expect(white_pawn.game.winner).to eq "white"
       end
     end
   end
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

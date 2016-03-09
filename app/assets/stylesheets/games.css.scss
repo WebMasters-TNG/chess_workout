@@ -54,6 +54,12 @@ td, th {
   margin: 0;
   border-style: double;
   display: inline-block;
+  // background: url("<%= asset_path 'black_bishop.svg' %>");
+}
+
+.piece_image {
+  width: 70px;
+  height: 70px;
 }
 
 .blank {
