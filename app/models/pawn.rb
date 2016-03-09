@@ -17,7 +17,6 @@ class Pawn < Piece
   # ***********************************************************
 
   def en_passant?(x0, y0, x1, y1)
-    binding.pry
     # Assume this current piece is not pinned.
     # Check if player's pawn is at the correct vertical square (only possibilities are y = 4 for white, y = 5 for black).
     if self.color == "white" && y0 == 4
