@@ -148,10 +148,12 @@ function initPage() {
         success: function (data) {
           console.log(data['new_move']);
           var lastServerMove = data['new_move'];
-          var last_x = lastServerMove['old_x'];
-          var last_y = lastServerMove['old_y'];
-          var new_x = lastServerMove['new_x'];
-          var new_y = lastServerMove['new_y'];
+          if (lastServerMove != null) {
+            var last_x = lastServerMove['old_x'];
+            var last_y = lastServerMove['old_y'];
+            var new_x = lastServerMove['new_x'];
+            var new_y = lastServerMove['new_y'];
+          };
           var gameTurn = data['turn']
           $(".board td").removeClass("moved_sq");
           if (lastServerMove != 'none') {
