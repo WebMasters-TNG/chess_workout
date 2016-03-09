@@ -45,16 +45,15 @@ td, th {
 }
 
 .piece {
-  border-radius: 50%;
-  width: $piece_size;
-  height: $piece_size;
+  // border-radius: 50%;
+  // width: $piece_size;
+  // height: $piece_size;
   vertical-align: middle;
-  line-height: $piece_size - 6;
+  // line-height: $piece_size - 6;
   text-align: center;
   margin: 0;
-  border-style: double;
+  // border-style: double;
   display: inline-block;
-  // background: url("<%= asset_path 'black_bishop.svg' %>");
 }
 
 .piece_image {
@@ -72,12 +71,12 @@ td, th {
 }
 
 .white_piece {
-  background-color: rgb(189, 168, 92);
-  border-color: 1px black;
+  // background-color: rgb(189, 168, 92);
+  // border-color: 1px black;
 }
 
 .black_piece {
-  background-color: rgb(31, 24, 9);
-  color: white;
-  border-color: 1px white;
+  // background-color: rgb(31, 24, 9);
+  // color: white;
+  // border-color: 1px white;
 }
