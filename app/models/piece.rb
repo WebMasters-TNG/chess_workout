@@ -68,14 +68,16 @@ class Piece < ActiveRecord::Base
     return false if destination_piece && destination_piece.color == color
     Move.create(game_id: game.id, piece_id: destination_piece.id, old_x: @x1, old_y: @y1, captured_piece: true) if destination_piece
     destination_piece.update_attributes(captured: true) if destination_piece
-    @black_king = game.pieces.where(:type => "King", :color => "black").first
-    @white_king = game.pieces.where(:type => "King", :color => "white").first
+    # @black_king = game.pieces.where(:type => "King", :color => "black").first
+    # @white_king = game.pieces.where(:type => "King", :color => "white").first
     # Check for checkmate if the destination square has the king of the opposite color.
     # binding.pry
     if self.color == "white"
-      binding.pry
+      @black_king = game.pieces.where(:type => "King", :color => "black").first
+      # binding.pry
       checkmate? if @black_king.x_position == @x1 && @black_king.y_position == @y1
     else
+      @white_king = game.pieces.where(:type => "King", :color => "white").first
       checkmate? if @white_king.x_position == @x1 && @white_king.y_position == @y1
     end
     true
@@ -87,6 +89,15 @@ class Piece < ActiveRecord::Base
   # check if this piece is moved.
   # => AND!! This method MUST be called BEFORE capture_dest_piece?
   # or otherwise an innocent piece will be captured.
+  # ***********************************************************
+
+  ## ***********************************************************
+  # Check & Checkmate needs specific attention!!
+  # => It involves all potentially threatening pieces
+  # => Three moves allowed under check
+  # => 1) Capture threatening pieces
+  # => 2) Block threatening pieces
+  # => 3) Move King to unchecking position
   # ***********************************************************
   def pinned?
     false # Placeholder value. Assume this current piece is not pinned.
