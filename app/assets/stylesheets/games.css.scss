@@ -2,10 +2,27 @@ $piece_size: 80px;
 
 body {
   margin-top: 30px;
+  background-image: url("concrete_seamless.png");
+}
+
+.gamelobby {
+  /*background-image: url("whitemarble.gif");*/
+}
+
+.gamelist {
+  background-color: white;
+  -moz-box-shadow: 1px 1px 2px 0 #d0d0d0;
+  -webkit-box-shadow: 1px 1px 2px 0 #d0d0d0;
+  box-shadow: 1px 1px 2px 0 #d0d0d0;
+  background: #fff;
+  border: 2px solid #ccc;
+  border-color: #e4e4e4 #bebebd #bebebd #e4e4e4;
+  padding: 10px;
 }
 
 .moves_record {
   border: 1px solid black;
+  background-color: white;
   text-align: center;
   height: 200px;
   overflow-y: scroll
