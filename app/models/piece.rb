@@ -68,6 +68,16 @@ class Piece < ActiveRecord::Base
     return false if destination_piece && destination_piece.color == color
     Move.create(game_id: game.id, piece_id: destination_piece.id, old_x: @x1, old_y: @y1, captured_piece: true) if destination_piece
     destination_piece.update_attributes(captured: true) if destination_piece
+    @black_king = game.pieces.where(:type => "King", :color => "black").first
+    @white_king = game.pieces.where(:type => "King", :color => "white").first
+    # Check for checkmate if the destination square has the king of the opposite color.
+    # binding.pry
+    if self.color == "white"
+      binding.pry
+      checkmate? if @black_king.x_position == @x1 && @black_king.y_position == @y1
+    else
+      checkmate? if @white_king.x_position == @x1 && @white_king.y_position == @y1
+    end
     true
   end
 
@@ -80,6 +90,18 @@ class Piece < ActiveRecord::Base
   # ***********************************************************
   def pinned?
     false # Placeholder value. Assume this current piece is not pinned.
+  end
+
+  def checkmate?
+    # If this king has been captured, mark the other player as the game's winner:
+    # binding.pry
+    if @white_king.captured == true
+      game.winner = "black"
+    elsif @black_king.captured == true
+      game.winner = "white"
+    else
+      return false
+    end
   end
 
   def update_move

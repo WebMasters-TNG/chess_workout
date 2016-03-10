@@ -43,23 +43,23 @@ class King < Piece
   # => 3) Move King to unchecking position
   # ***********************************************************
 
-  def check?
+  # def check?
 
-  end
+  # end
 
-  def checkmate?
-    # If this king has been captured, mark the other player as the game's winner:
-    if self.captured == true
-      if self.color == "white"
-        game.winner = "black"
-      else
-        game.winner = "white"
-      end
-      return true
-    else
-      return false
-    end
-  end
+  # def checkmate?
+  #   # If this king has been captured, mark the other player as the game's winner:
+  #   if self.captured == true
+  #     if self.color == "white"
+  #       game.winner = "black"
+  #     else
+  #       game.winner = "white"
+  #     end
+  #     return true
+  #   else
+  #     return false
+  #   end
+  # end
 
   def move_size
     return false if @sx.abs > 1 || @sy.abs > 1
