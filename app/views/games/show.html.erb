@@ -5,6 +5,7 @@
   window.game = "<%= refresh_game_path %>"
   window.game_id = "<%= @game.id %>"
   window.last_move = "<%= @last_move_id %>"
+  Game.poll();
 <% end %>
 <br />
 <h1>Game ID: <%= @game.id %>, Turn <span class="game_turn"><%= @game.turn %></span>,
