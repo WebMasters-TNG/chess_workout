@@ -66,6 +66,7 @@ class Piece < ActiveRecord::Base
   def capture_piece?
     # captured_piece = game.pieces.where(x_position:  @x1, y_position: @y1, captured: nil).first
     return false if destination_piece && destination_piece.color == color
+    Move.create(game_id: game.id, piece_id: destination_piece.id, old_x: @x1, old_y: @y1, captured_piece: true) if destination_piece
     destination_piece.update_attributes(captured: true) if destination_piece
     true
   end

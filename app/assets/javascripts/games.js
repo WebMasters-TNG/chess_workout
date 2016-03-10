@@ -148,25 +148,23 @@ function initPage() {
         success: function (data) {
           console.log(data['new_move']);
           var lastServerMove = data['new_move'];
-          var last_x = lastServerMove['old_x'];
-          var last_y = lastServerMove['old_y'];
-          var new_x = lastServerMove['new_x'];
-          var new_y = lastServerMove['new_y'];
-          var gameTurn = data['turn']
           $(".board td").removeClass("moved_sq");
-          if (lastServerMove != 'none') {
+          if (lastServerMove != 'none' && lastServerMove != null) {
             lastServerMove.forEach(function(move) {
               if (move['id'] > last_move) {
-                if ($('td#' + move['new_y'] + move['new_x']).find(".piece").hasClass("white_piece") && gameTurn % 2 != 0) {
-                  $('td#' + move['new_y'] + move['new_x']).find(".piece").appendTo("#white_captured");
-                } else if ($('td#' + move['new_y'] + move['new_x']).find(".piece").hasClass("black_piece") && gameTurn % 2 == 0) {
-                  $('td#' + move['new_y'] + move['new_x']).find(".piece").appendTo("#dark_captured");
+                if (move['captured_piece'] == true) {
+                  if ($('td#' + move['old_y'] + move['old_x']).find(".piece").hasClass("white_piece") && gameTurn % 2 != 0) {
+                    $('td#' + move['old_y'] + move['old_x']).find(".piece").appendTo("#white_captured");
+                  } else if ($('td#' + move['old_y'] + move['old_x']).find(".piece").hasClass("black_piece") && gameTurn % 2 == 0) {
+                    $('td#' + move['old_y'] + move['old_x']).find(".piece").appendTo("#dark_captured");
+                  };
+                } else {
+                  $('td#' + move['old_y'] + move['old_x']).find('.piece').appendTo('td#' + move['new_y'] + move['new_x']);
                 };
-                $('td#' + move['old_y'] + move['old_x']).find('.piece').appendTo('td#' + move['new_y'] + move['new_x']);
                 last_move = move['id'];
               };
             });
-            $('.game_turn').html(gameTurn);
+            $('.game_turn').html(data['turn']);
           } else {
             console.log("No new moves");
           };
