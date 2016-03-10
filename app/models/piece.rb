@@ -95,9 +95,9 @@ class Piece < ActiveRecord::Base
   def checkmate?
     # If this king has been captured, mark the other player as the game's winner:
     # binding.pry
-    if @white_king.captured == true
+    if @white_king.captured == true && game.winner != "white"
       game.winner = "black"
-    elsif @black_king.captured == true
+    elsif @black_king.captured == true && game.winner != "black"
       game.winner = "white"
     else
       return false
