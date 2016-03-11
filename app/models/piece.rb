@@ -152,7 +152,6 @@ class Piece < ActiveRecord::Base
         end
 
       end
-    end
 
     white_rook_possible_moves = []
     white_rooks.each do |white_rook|
