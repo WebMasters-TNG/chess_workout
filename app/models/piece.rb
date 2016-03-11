@@ -102,23 +102,26 @@ class Piece < ActiveRecord::Base
 
   def check?
     # a) Check whether the current player's king is in check where it is.  If so, determine a list of valid moves:
-    bl_possible_moves = black_possible_moves
-    bl_possible_moves.each do |bl_possible_move|
-      bl_possible_move[0].each do |black_pawn_possible_move|
-        if self.color == "white" && black_pawn_possible_move[0] == @white_king.x_position && black_pawn_possible_move[1] == @white_king.y_position
-          return true
-        end
+    wt_possible_moves = white_possible_moves
+    # wt_possible_moves[0] = white_pawn_possible_moves
+    # wt_possible_moves[1] = white_rook_possible_moves
+    # wt_possible_moves[2] = white_knight_possible_moves
+    # wt_possible_moves[3] = white_bishop_possible_moves
+    # wt_possible_moves[4] = white_queen_possible_moves
+    # wt_possible_moves[5] = white_king_possible_moves
+    wt_possible_moves[0].each do |white_pawn_possible_move|
+      if self.color == "black" && white_pawn_possible_move[0] == @black_king.x_position && white_pawn_possible_move[1] == @black_king.y_position
+        return true
       end
     end
 
-    wt_possible_moves = white_possible_moves
-    wt_possible_moves.each do |wt_possible_move|
-      wt_possible_move[0].each do |white_pawn_possible_move|
-        if self.color == "black" && white_pawn_possible_move[0] == @black_king.x_position && white_pawn_possible_move[1] == @black_king.y_position
-          return true
-        end
+    bl_possible_moves = black_possible_moves
+    bl_possible_moves[0].each do |black_pawn_possible_move|
+      if self.color == "white" && black_pawn_possible_move[0] == @white_king.x_position && black_pawn_possible_move[1] == @white_king.y_position
+        return true
       end
     end
+
     # 1) Capture threatening pieces
     # 2) Block threatening pieces
     # 3) Move King to unchecking position
