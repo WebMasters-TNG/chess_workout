@@ -100,7 +100,16 @@ class Piece < ActiveRecord::Base
   # => 3) Move King to unchecking position
   # ***********************************************************
   def pinned?
+    # Determine possible moves of all pieces that would put the king in check.
     false # Placeholder value. Assume this current piece is not pinned.
+  end
+
+  def check?
+    # a) Check whether the current player's king is in check where it is.  If so, determine a list of valid moves:
+    # 1) Capture threatening pieces
+    # 2) Block threatening pieces
+    # 3) Move King to unchecking position
+    # b) Check whether moving the current piece would place the king in check
   end
 
   def checkmate?
