@@ -2,8 +2,6 @@ class Piece < ActiveRecord::Base
   # shared functionality for all pieces goes here
   belongs_to :game
   has_many :moves
-  # belongs_to :player, class_name: "User", foreign_key: :player_id
-  # Have the game keep track of which user a piece belongs to, instead of directly associating the pieces with a user.
 
   # Check if move is valid for selected piece
   def valid_move?(params)
@@ -68,8 +66,6 @@ class Piece < ActiveRecord::Base
     return false if destination_piece && destination_piece.color == color
     Move.create(game_id: game.id, piece_id: destination_piece.id, old_x: @x1, old_y: @y1, captured_piece: true) if destination_piece
     destination_piece.update_attributes(captured: true) if destination_piece
-    # @black_king = game.pieces.where(:type => "King", :color => "black").first
-    # @white_king = game.pieces.where(:type => "King", :color => "white").first
     # Check for checkmate if the destination square has the king of the opposite color.
     # binding.pry
     if self.color == "white"
