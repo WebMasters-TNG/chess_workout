@@ -121,7 +121,8 @@ class Piece < ActiveRecord::Base
     # b) Check whether moving the current piece would place the king in check
   end
 
-  def possible_moves
+  def white_possible_moves
+    # Store all of the active (non-captured) white pieces on the board:
     white_pawns = game.pieces.where(:type => "Pawn", :color => "white", :captured => nil).all
     white_rooks = game.pieces.where(:type => "Rook", :color => "white", :captured => nil).all
     white_knights = game.pieces.where(:type => "Knight", :color => "white", :captured => nil).all
@@ -129,14 +130,45 @@ class Piece < ActiveRecord::Base
     white_queen = game.pieces.where(:type => "Queen", :color => "white", :captured => nil).first
     white_king = game.pieces.where(:type => "King", :color => "white", :captured => nil).first
 
+    # For each white piece, check for and store all valid moves:
+    # Problem:  the current methods in the Piece model and the individual piece type models rely on a single piece attempting to move on an update.
+    white_pawn_legal_moves = []
+    white_pawns.each do |white_pawn|
+      # Check that the pawn's path is clear when it tries to make a move allowable by its own movement rules:
+      # Problem: how to check for a piece present at the destination that is NOT the current piece?  Use the piece_id?
+        if white_pawn.move_count < 2 && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position + 2).first == nil
+          white_pawn_legal_moves += [white_pawn.x_position, white_pawn.y_position + 2]
+        elsif white_pawn.move_count >= 2 && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position + 1).first == nil
+          white_pawn_legal_moves += [white_pawn.x_position, white_pawn.y_position + 1]
+        end
+
+        # Check for a piece that is to a forward diagonal position of the pawn:
+        if
+
+        end
+
+      end
+    end
+
+    white_rook_legal_moves = []
+    white_rooks.each do |white_rook|
+      # white_rook_legal_moves +=
+    end
+
+    # all_white_legal_moves = white_pawn_legal_moves + white_rook_legal_moves + ...
+    # return all_white_legal_moves
+
+    # Return a two member array? [x, y] [specific_piece.x_position, specific_piece.y_position]
+
+  end
+
+  def black_possible_moves
     black_pawns = game.pieces.where(:type => "Pawn", :color => "black", :captured => nil).all
     black_rooks = game.pieces.where(:type => "Rook", :color => "black", :captured => nil).all
     black_knights = game.pieces.where(:type => "Knight", :color => "black", :captured => nil).all
     black_bishops = game.pieces.where(:type => "Bishop", :color => "black", :captured => nil).all
     black_queen = game.pieces.where(:type => "Queen", :color => "black", :captured => nil).first
     black_king = game.pieces.where(:type => "King", :color => "black", :captured => nil).first
-
-    # Return a two member array? [x, y] [specific_piece.x_position, specific_piece.y_position]
   end
 
   def checkmate?
