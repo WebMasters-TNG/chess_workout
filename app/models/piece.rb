@@ -104,22 +104,19 @@ class Piece < ActiveRecord::Base
     # a) Check whether the current player's king is in check where it is.  If so, determine a list of valid moves:
     bl_possible_moves = black_possible_moves
     bl_possible_moves.each do |bl_possible_move|
-      if self.color == "white" && bl_possible_move[0] == @white_king.x_position && bl_possible_move[1] == @white_king.y_position
-
-        # if
-        #   return true
-        # end
+      bl_possible_move[0].each do |black_pawn_possible_move|
+        if self.color == "white" && black_pawn_possible_move[0] == @white_king.x_position && black_pawn_possible_move[1] == @white_king.y_position
+          return true
+        end
       end
     end
+
     wt_possible_moves = white_possible_moves
     wt_possible_moves.each do |wt_possible_move|
-      if self.color == "black" && wt_possible_move[0] == @black_king.x_position && wt_possible_move[1] == @black_king.y_position
-
-        # if
-        #   return true
-        # end
-      else
-        return false
+      wt_possible_move[0].each do |white_pawn_possible_move|
+        if self.color == "black" && white_pawn_possible_move[0] == @black_king.x_position && white_pawn_possible_move[1] == @black_king.y_position
+          return true
+        end
       end
     end
     # 1) Capture threatening pieces
@@ -164,9 +161,6 @@ class Piece < ActiveRecord::Base
 
     # all_white_possible_moves = white_pawn_possible_moves + white_rook_possible_moves + ...
     # return all_white_possible_moves
-
-    # Return a two member array? [x, y] [specific_piece.x_position, specific_piece.y_position]
-
   end
 
   def black_possible_moves
