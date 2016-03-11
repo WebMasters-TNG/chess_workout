@@ -43,6 +43,10 @@ class King < Piece
   # => 3) Move King to unchecking position
   # ***********************************************************
 
+  def under_check
+    # Define permitted moves for the king, when under check.
+  end
+
   def move_size
     return false if @sx.abs > 1 || @sy.abs > 1
     @sx.abs <= 1 && @sy.abs <= 1

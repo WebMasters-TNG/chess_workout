@@ -102,10 +102,41 @@ class Piece < ActiveRecord::Base
 
   def check?
     # a) Check whether the current player's king is in check where it is.  If so, determine a list of valid moves:
+    if self.color == "white" && possible_moves[0] == @white_king.x_position && possible_moves[1] == @white_king.y_position
+
+      # if
+      #   return true
+      # end
+    elsif self.color == "black" && possible_moves[0] == @black_king.x_position && possible_moves[1] == @black_king.y_position
+
+      # if
+      #   return true
+      # end
+    else
+      return false
+    end
     # 1) Capture threatening pieces
     # 2) Block threatening pieces
     # 3) Move King to unchecking position
     # b) Check whether moving the current piece would place the king in check
+  end
+
+  def possible_moves
+    white_pawns = game.pieces.where(:type => "Pawn", :color => "white", :captured => nil).all
+    white_rooks = game.pieces.where(:type => "Rook", :color => "white", :captured => nil).all
+    white_knights = game.pieces.where(:type => "Knight", :color => "white", :captured => nil).all
+    white_bishops = game.pieces.where(:type => "Bishop", :color => "white", :captured => nil).all
+    white_queen = game.pieces.where(:type => "Queen", :color => "white", :captured => nil).first
+    white_king = game.pieces.where(:type => "King", :color => "white", :captured => nil).first
+
+    black_pawns = game.pieces.where(:type => "Pawn", :color => "black", :captured => nil).all
+    black_rooks = game.pieces.where(:type => "Rook", :color => "black", :captured => nil).all
+    black_knights = game.pieces.where(:type => "Knight", :color => "black", :captured => nil).all
+    black_bishops = game.pieces.where(:type => "Bishop", :color => "black", :captured => nil).all
+    black_queen = game.pieces.where(:type => "Queen", :color => "black", :captured => nil).first
+    black_king = game.pieces.where(:type => "King", :color => "black", :captured => nil).first
+
+    # Return a two member array? [x, y] [specific_piece.x_position, specific_piece.y_position]
   end
 
   def checkmate?
