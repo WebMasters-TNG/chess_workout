@@ -135,45 +135,47 @@ function initPage() {
     }
   };
 
+  // Check server for new moves via long polling
+
 }
 
-  // Check server for new moves via long polling
-  (function poll() {
-    setTimeout(function(){
-      $.ajax({ 
-        type: 'GET',
-        dataType: 'json',
-        url: game,
-        data: {"game_id": game_id, "move_id": last_move},
-        success: function (data) {
-          console.log(data['new_move']);
-          var lastServerMove = data['new_move'];
-          $(".board td").removeClass("moved_sq");
-          if (lastServerMove != 'none' && lastServerMove != null) {
-            lastServerMove.forEach(function(move) {
-              if (move['id'] > last_move) {
-                if (move['captured_piece'] == true) {
-                  if ($('td#' + move['old_y'] + move['old_x']).find(".piece").hasClass("white_piece") && gameTurn % 2 != 0) {
-                    $('td#' + move['old_y'] + move['old_x']).find(".piece").appendTo("#white_captured");
-                  } else if ($('td#' + move['old_y'] + move['old_x']).find(".piece").hasClass("black_piece") && gameTurn % 2 == 0) {
-                    $('td#' + move['old_y'] + move['old_x']).find(".piece").appendTo("#dark_captured");
-                  };
-                } else {
-                  $('td#' + move['old_y'] + move['old_x']).find('.piece').appendTo('td#' + move['new_y'] + move['new_x']);
+Game = {  
+  poll: function() {
+    $.ajax({ 
+      type: 'GET',
+      dataType: 'json',
+      url: game,
+      data: {"game_id": game_id, "move_id": last_move},
+      success: function (data) {
+        console.log(data['new_move']);
+        var lastServerMove = data['new_move'];
+        $(".board td").removeClass("moved_sq");
+        if (lastServerMove != null && lastServerMove.length > 0) {
+          lastServerMove.forEach(function(move) {
+            if (move['id'] > last_move) {
+              if (move['captured_piece'] == true) {
+                if ($('td#' + move['old_y'] + move['old_x']).find(".piece").hasClass("white_piece") && gameTurn % 2 != 0) {
+                  $('td#' + move['old_y'] + move['old_x']).find(".piece").appendTo("#white_captured");
+                } else if ($('td#' + move['old_y'] + move['old_x']).find(".piece").hasClass("black_piece") && gameTurn % 2 == 0) {
+                  $('td#' + move['old_y'] + move['old_x']).find(".piece").appendTo("#dark_captured");
                 };
-                last_move = move['id'];
+              } else {
+                $('td#' + move['old_y'] + move['old_x']).find('.piece').appendTo('td#' + move['new_y'] + move['new_x']);
               };
-            });
-            $('.game_turn').html(data['turn']);
-          } else {
-            console.log("No new moves");
-          };
-        },
-        error: function() {
-          console.log("No update available");
-        },
-        complete: poll
-      });
-    }, 5000);
-  })();
+              last_move = move['id'];
+            };
+          });
+          $('.game_turn').html(data['turn']);
+        } else {
+          console.log("No new moves");
+        };
+      },
+      error: function() {
+        console.log("No update available");
+      }
+    });
+    setTimeout(Game.poll, 5000);
+  }
+}
+
 

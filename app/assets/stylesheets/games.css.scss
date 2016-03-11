@@ -2,10 +2,24 @@ $piece_size: 80px;
 
 body {
   margin-top: 30px;
+  background-image: url("concrete_seamless.png");
+}
+
+
+.gamelist {
+  background-color: white;
+  -moz-box-shadow: 1px 1px 2px 0 #d0d0d0;
+  -webkit-box-shadow: 1px 1px 2px 0 #d0d0d0;
+  box-shadow: 1px 1px 2px 0 #d0d0d0;
+  background: #fff;
+  border: 2px solid #ccc;
+  border-color: #e4e4e4 #bebebd #bebebd #e4e4e4;
+  padding: 10px;
 }
 
 .moves_record {
   border: 1px solid black;
+  background-color: white;
   text-align: center;
   height: 200px;
   overflow-y: scroll
@@ -33,11 +47,13 @@ td, th {
 }
 
 .white_sq {
-  background-color: white;
+  background-image: url("whitemarble.gif");
+  opacity: 1;
 }
 
 .dark_sq {
-  background-color: rgb(113, 97, 72);
+  background-image: url("blackmarble.gif");
+  opacity: 1;
 }
 
 .moved_sq {
@@ -45,20 +61,16 @@ td, th {
 }
 
 .piece {
-  // border-radius: 50%;
-  // width: $piece_size;
-  // height: $piece_size;
   vertical-align: middle;
-  // line-height: $piece_size - 6;
   text-align: center;
   margin: 0;
-  // border-style: double;
   display: inline-block;
 }
 
 .piece_image {
   width: 70px;
   height: 70px;
+  opacity: 1;
 }
 
 .blank {
@@ -68,15 +80,4 @@ td, th {
   border-style: double;
   display: inline-block;
   visibility: hidden;
-}
-
-.white_piece {
-  // background-color: rgb(189, 168, 92);
-  // border-color: 1px black;
-}
-
-.black_piece {
-  // background-color: rgb(31, 24, 9);
-  // color: white;
-  // border-color: 1px white;
 }
