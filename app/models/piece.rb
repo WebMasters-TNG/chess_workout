@@ -166,33 +166,33 @@ class Piece < ActiveRecord::Base
       friendly_pieces_in_path.each do |friendly_piece_in_path|
         case friendly_piece_in_path.y_position
         when !white_rook.y_position - 1
-          white_rook_possible_moves += white_rook.y_position - 1
+          white_rook_possible_moves += [white_rook.x_position, white_rook.y_position - 1]
         when !white_rook.y_position - 2
-          white_rook_possible_moves += white_rook.y_position - 2
+          white_rook_possible_moves += [white_rook.x_position, white_rook.y_position - 2]
         when !white_rook.y_position - 3
-          white_rook_possible_moves += white_rook.y_position - 3
+          white_rook_possible_moves += [white_rook.x_position, white_rook.y_position - 3]
         when !white_rook.y_position - 4
-          white_rook_possible_moves += white_rook.y_position - 4
+          white_rook_possible_moves += [white_rook.x_position, white_rook.y_position - 4]
         when !white_rook.y_position - 5
-          white_rook_possible_moves += white_rook.y_position - 5
+          white_rook_possible_moves += [white_rook.x_position, white_rook.y_position - 5]
         when !white_rook.y_position - 6
-          white_rook_possible_moves += white_rook.y_position - 6
+          white_rook_possible_moves += [white_rook.x_position, white_rook.y_position - 6]
         when !white_rook.y_position - 7
-          white_rook_possible_moves += white_rook.y_position - 7
+          white_rook_possible_moves += [white_rook.x_position, white_rook.y_position - 7]
         when !white_rook.y_position + 1
-          white_rook_possible_moves += white_rook.y_position + 1
+          white_rook_possible_moves += [white_rook.x_position, white_rook.y_position - 1]
         when !white_rook.y_position + 2
-          white_rook_possible_moves += white_rook.y_position + 2
+          white_rook_possible_moves += [white_rook.x_position, white_rook.y_position - 2]
         when !white_rook.y_position + 3
-          white_rook_possible_moves += white_rook.y_position + 3
+          white_rook_possible_moves += [white_rook.x_position, white_rook.y_position - 3]
         when !white_rook.y_position + 4
-          white_rook_possible_moves += white_rook.y_position + 4
+          white_rook_possible_moves += [white_rook.x_position, white_rook.y_position - 4]
         when !white_rook.y_position + 5
-          white_rook_possible_moves += white_rook.y_position + 5
+          white_rook_possible_moves += [white_rook.x_position, white_rook.y_position - 5]
         when !white_rook.y_position + 6
-          white_rook_possible_moves += white_rook.y_position + 6
+          white_rook_possible_moves += [white_rook.x_position, white_rook.y_position - 6]
         when !white_rook.y_position + 7
-          white_rook_possible_moves += white_rook.y_position + 7
+          white_rook_possible_moves += [white_rook.x_position, white_rook.y_position - 7]
         end
       end
     end
