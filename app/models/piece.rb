@@ -143,15 +143,18 @@ class Piece < ActiveRecord::Base
     white_pawns.each do |white_pawn|
       # Check that the pawn's path is clear when it tries to make a move allowable by its own movement rules:
       # Problem: how to check for a piece present at the destination that is NOT the current piece?  Use the piece_id?
-        if white_pawn.move_count < 2 && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position + 2).first == nil
-          white_pawn_possible_moves += [white_pawn.x_position, white_pawn.y_position + 2]
-        elsif white_pawn.move_count >= 2 && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position + 1).first == nil
-          white_pawn_possible_moves += [white_pawn.x_position, white_pawn.y_position + 1]
+      # Has the pawn made its first move or not, and is there a piece at the location of movement or along the way?
+        if white_pawn.move_count < 2 && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position - 1).first == nil && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position - 2).first == nil
+          white_pawn_possible_moves += [white_pawn.x_position, white_pawn.y_position - 2]
+        elsif white_pawn.move_count >= 2 && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position - 1).first == nil
+          white_pawn_possible_moves += [white_pawn.x_position, white_pawn.y_position - 1]
         end
 
-        # Check for a piece that is to a forward diagonal position of the pawn:
-        if
-
+        # Check for a capturable piece that is to a forward diagonal position of the pawn:
+        if game.pieces.where(:x_position => white_pawn.x_position + 1, :y_position => white_pawn.y_position - 1, :color => "black").first != nil
+          white_pawn_possible_moves += [white_pawn.x_position + 1, white_pawn.y_position - 1]
+        elsif game.pieces.where(:x_position => white_pawn.x_position - 1, :y_position => white_pawn.y_position - 1, :color => "black").first != nil
+          white_pawn_possible_moves += [white_pawn.x_position - 1, white_pawn.y_position - 1]
         end
 
       end
@@ -175,7 +178,19 @@ class Piece < ActiveRecord::Base
 
     black_pawn_possible_moves = []
     black_pawn.each do |black_pawn|
+      # Has the pawn made its first move or not?
+        if black_pawn.move_count < 2 && game.pieces.where(:x_position => black_pawn.x_position, :y_position => black_pawn.y_position - 1).first == nil && game.pieces.where(:x_position => black_pawn.x_position, :y_position => black_pawn.y_position - 2).first == nil
+          black_pawn_possible_moves += [black_pawn.x_position, black_pawn.y_position - 2]
+        elsif black_pawn.move_count >= 2 && game.pieces.where(:x_position => black_pawn.x_position, :y_position => black_pawn.y_position - 1).first == nil
+          black_pawn_possible_moves += [black_pawn.x_position, black_pawn.y_position - 1]
+        end
 
+        # Check for a capturable piece that is to a forward diagonal position of the pawn:
+        if game.pieces.where(:x_position => black_pawn.x_position + 1, :y_position => black_pawn.y_position - 1, :color => "white").first
+          black_pawn_possible_moves += [black_pawn.x_position + 1, black_pawn.y_position - 1]
+        elsif game.pieces.where(:x_position => black_pawn.x_position - 1, :y_position => black_pawn.y_position - 1, :color => "white").first
+          black_pawn_possible_moves += [black_pawn.x_position - 1, black_pawn.y_position - 1]
+        end
     end
 
     black_rook_possible_moves = []
