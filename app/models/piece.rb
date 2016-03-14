@@ -274,11 +274,90 @@ class Piece < ActiveRecord::Base
 
     black_rook_possible_moves = []
     black_rook.each do |black_rook|
+      # Check that each black rook has a clear vertical path (no friendly pieces along the way or at the destination spot, or any enemy pieces along the way):
+      friendly_pieces_in_vpath = game.pieces.where(:x_position => black_rook.x_position, :color => "black").all
+      friendly_pieces_in_vpath.each do |friendly_piece_in_vpath|
+        enemy_pieces = game.pieces.where(:x_position => black_rook.x_position, :color => "white").all
+        enemy_pieces.each do |enemy_piece|
+          case friendly_piece_in_vpath.y_position
+          when !(black_rook.y_position - 1)
+            black_rook_possible_moves += [black_rook.x_position, black_rook.y_position - 1]
+          when !(black_rook.y_position - 2) && !(enemy_piece.y_position - 1)
+            black_rook_possible_moves += [black_rook.x_position, black_rook.y_position - 2]
+          when !black_rook.y_position - 3 && !(enemy_piece.y_position - 2)  && !(enemy_piece.y_position - 1)
+            black_rook_possible_moves += [black_rook.x_position, black_rook.y_position - 3]
+          when !black_rook.y_position - 4 && !(enemy_piece.y_position - 3) && !(enemy_piece.y_position - 2) && !(enemy_piece.y_position - 1)
+            black_rook_possible_moves += [black_rook.x_position, black_rook.y_position - 4]
+          when !black_rook.y_position - 5 && !(enemy_piece.y_position - 4) && !(enemy_piece.y_position - 3) && !(enemy_piece.y_position - 2) && !(enemy_piece.y_position - 1)
+            black_rook_possible_moves += [black_rook.x_position, black_rook.y_position - 5]
+          when !black_rook.y_position - 6 && !(enemy_piece.y_position - 5) && !(enemy_piece.y_position - 4) && !(enemy_piece.y_position - 3) && !(enemy_piece.y_position - 2) && !(enemy_piece.y_position - 1)
+            black_rook_possible_moves += [black_rook.x_position, black_rook.y_position - 6]
+          when !black_rook.y_position - 7 && !(enemy_piece.y_position - 6) && !(enemy_piece.y_position - 5) && !(enemy_piece.y_position - 4) && !(enemy_piece.y_position - 3) && !(enemy_piece.y_position - 2) && !(enemy_piece.y_position - 1)
+            black_rook_possible_moves += [black_rook.x_position, black_rook.y_position - 7]
+          when !black_rook.y_position + 1
+            black_rook_possible_moves += [black_rook.x_position, black_rook.y_position - 1]
+          when !black_rook.y_position + 2 && !(enemy_piece.y_position + 1)
+            black_rook_possible_moves += [black_rook.x_position, black_rook.y_position - 2]
+          when !black_rook.y_position + 3 && !(enemy_piece.y_position + 2) && !(enemy_piece.y_position + 1)
+            black_rook_possible_moves += [black_rook.x_position, black_rook.y_position - 3]
+          when !black_rook.y_position + 4 && !(enemy_piece.y_position + 3) && !(enemy_piece.y_position + 2) && !(enemy_piece.y_position + 1)
+            black_rook_possible_moves += [black_rook.x_position, black_rook.y_position - 4]
+          when !black_rook.y_position + 5 && !(enemy_piece.y_position + 4) && !(enemy_piece.y_position + 3) && !(enemy_piece.y_position + 2) && !(enemy_piece.y_position + 1)
+            black_rook_possible_moves += [black_rook.x_position, black_rook.y_position - 5]
+          when !black_rook.y_position + 6 && !(enemy_piece.y_position + 5) && !(enemy_piece.y_position + 6) && !(enemy_piece.y_position + 4) && !(enemy_piece.y_position + 3) && !(enemy_piece.y_position + 2) && !(enemy_piece.y_position + 1)
+            black_rook_possible_moves += [black_rook.x_position, black_rook.y_position - 6]
+          when !black_rook.y_position + 7 && !(enemy_piece.y_position + 6) && !(enemy_piece.y_position + 5) && !(enemy_piece.y_position + 4) && !(enemy_piece.y_position + 3) && !(enemy_piece.y_position + 2) && !(enemy_piece.y_position + 1)
+            black_rook_possible_moves += [black_rook.x_position, black_rook.y_position - 7]
+          end
+        end
+      end
 
+      # Check that each black rook has a clear horizontal path (no friendly pieces along the way or at the destination spot, or any enemy pieces along the way):
+      friendly_pieces_in_hpath = game.pieces.where(:y_position => black_rook.y_position, :color => "black").all
+      friendly_pieces_in_hpath.each do |friendly_pieces_in_hpath|
+        enemy_pieces = game.pieces.where(:y_position => black_rook.y_position, :color => "white").all
+        enemy_pieces.each do |enemy_piece|
+          case friendly_piece_in_vpath.x_position
+          when !(black_rook.x_position - 1)
+            black_rook_possible_moves += [black_rook.x_position - 1, black_rook.y_position]
+          when !(black_rook.x_position - 2) && !(enemy_piece.x_position - 1)
+            black_rook_possible_moves += [black_rook.x_position - 2, black_rook.y_position]
+          when !(black_rook.x_position - 3) && !(enemy_piece.x_position - 2) && !(enemy_piece.x_position - 1)
+            black_rook_possible_moves += [black_rook.x_position - 3, black_rook.y_position]
+          when !(black_rook.x_position - 4) && !(enemy_piece.x_position - 3) && !(enemy_piece.x_position - 2) && !(enemy_piece.x_position - 1)
+            black_rook_possible_moves += [black_rook.x_position - 4, black_rook.y_position]
+          when !(black_rook.x_position - 5) && !(enemy_piece.x_position - 4) && !(enemy_piece.x_position - 3) && !(enemy_piece.x_position - 2) && !(enemy_piece.x_position - 1)
+            black_rook_possible_moves += [black_rook.x_position - 5, black_rook.y_position]
+          when !(black_rook.x_position - 6) && !(enemy_piece.x_position - 5) && !(enemy_piece.x_position - 4) && !(enemy_piece.x_position - 3) && !(enemy_piece.x_position - 2) && !(enemy_piece.x_position - 1)
+            black_rook_possible_moves += [black_rook.x_position - 6, black_rook.y_position]
+          when !(black_rook.x_position - 7) && !(enemy_piece.x_position - 6) && !(enemy_piece.x_position - 5) && !(enemy_piece.x_position - 4) && !(enemy_piece.x_position - 3) && !(enemy_piece.x_position - 2) && !(enemy_piece.x_position - 1)
+            black_rook_possible_moves += [black_rook.x_position - 7, black_rook.y_position]
+          when !(black_rook.x_position + 1)
+            black_rook_possible_moves += [black_rook.x_position + 1, black_rook.y_position]
+          when !(black_rook.x_position + 2) && !(enemy_piece.x_position + 1)
+            black_rook_possible_moves += [black_rook.x_position + 2, black_rook.y_position]
+          when !(black_rook.x_position + 3) && !(enemy_piece.x_position + 2) && !(enemy_piece.x_position + 1)
+            black_rook_possible_moves += [black_rook.x_position + 3, black_rook.y_position]
+          when !(black_rook.x_position + 4) && !(enemy_piece.x_position + 3) && !(enemy_piece.x_position + 2) && !(enemy_piece.x_position + 1)
+            black_rook_possible_moves += [black_rook.x_position + 4, black_rook.y_position]
+          when !(black_rook.x_position + 5) && !(enemy_piece.x_position + 4) && !(enemy_piece.x_position + 3) && !(enemy_piece.x_position + 2) && !(enemy_piece.x_position + 1)
+            black_rook_possible_moves += [black_rook.x_position + 5, black_rook.y_position]
+          when !(black_rook.x_position + 6) && !(enemy_piece.x_position + 5) && !(enemy_piece.x_position + 4) && !(enemy_piece.x_position + 3) && !(enemy_piece.x_position + 2) && !(enemy_piece.x_position + 1)
+            black_rook_possible_moves += [black_rook.x_position + 6, black_rook.y_position]
+          when !(black_rook.x_position + 7) && !(enemy_piece.x_position + 6) && !(enemy_piece.x_position + 5) && !(enemy_piece.x_position + 4) && !(enemy_piece.x_position + 3) && !(enemy_piece.x_position + 2) && !(enemy_piece.x_position + 1)
+            black_rook_possible_moves += [black_rook.x_position + 7, black_rook.y_position]
+          end
+        end
+      end
     end
 
-    # all_black_possible_moves = black_pawn_possible_moves + black_rook_possible_moves + ...
-    # return all_black_possible_moves
+    black_knight_possible_moves = []
+    black_bishop_possible_moves = []
+    black_queen_possible_moves = []
+    black_king_possible_moves = []
+
+    all_black_possible_moves = black_pawn_possible_moves + black_rook_possible_moves + black_bishop_possible_moves + black_queen_possible_moves + black_king_possible_moves
+    return all_black_possible_moves
   end
 
   def checkmate?
