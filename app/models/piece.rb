@@ -162,11 +162,11 @@ class Piece < ActiveRecord::Base
     white_rook_possible_moves = []
     white_rooks.each do |white_rook|
       # Check that each white rook has a clear vertical path (no friendly pieces along the way or at the destination spot, or any enemy pieces along the way):
-      friendly_pieces_in_path = game.pieces.where(:x_position => white_rook.x_position, :color => "white").all
-      friendly_pieces_in_path.each do |friendly_piece_in_path|
+      friendly_pieces_in_vpath = game.pieces.where(:x_position => white_rook.x_position, :color => "white").all
+      friendly_pieces_in_vpath.each do |friendly_piece_in_vpath|
         enemy_pieces = game.pieces.where(:x_position => white_rook.x_position, :color => "black").all
         enemy_pieces.each do |enemy_piece|
-          case friendly_piece_in_path.y_position
+          case friendly_piece_in_vpath.y_position
           when !(white_rook.y_position - 1)
             white_rook_possible_moves += [white_rook.x_position, white_rook.y_position - 1]
           when !(white_rook.y_position - 2) && !(enemy_piece.y_position - 1)
@@ -195,6 +195,44 @@ class Piece < ActiveRecord::Base
             white_rook_possible_moves += [white_rook.x_position, white_rook.y_position - 6]
           when !white_rook.y_position + 7 && !(enemy_piece.y_position + 6) && !(enemy_piece.y_position + 5) && !(enemy_piece.y_position + 4) && !(enemy_piece.y_position + 3) && !(enemy_piece.y_position + 2) && !(enemy_piece.y_position + 1)
             white_rook_possible_moves += [white_rook.x_position, white_rook.y_position - 7]
+          end
+        end
+      end
+
+      # Check that each white rook has a clear horizontal path (no friendly pieces along the way or at the destination spot, or any enemy pieces along the way):
+      friendly_pieces_in_hpath = game.pieces.where(:y_position => white_rook.y_position, :color => "white").all
+      friendly_pieces_in_hpath.each do |friendly_pieces_in_hpath|
+        enemy_pieces = game.pieces.where(:y_position => white_rook.y_position, :color => "black").all
+        enemy_pieces.each do |enemy_piece|
+          case friendly_piece_in_vpath.x_position
+          when !(white_rook.x_position - 1)
+            white_rook_possible_moves += [white_rook.x_position - 1, white_rook.y_position]
+          when !(white_rook.x_position - 2) && !(enemy_piece.x_position - 1)
+            white_rook_possible_moves += [white_rook.x_position - 2, white_rook.y_position]
+          when !(white_rook.x_position - 3) && !(enemy_piece.x_position - 2) && !(enemy_piece.x_position - 1)
+            white_rook_possible_moves += [white_rook.x_position - 3, white_rook.y_position]
+          when !(white_rook.x_position - 4) && !(enemy_piece.x_position - 3) && !(enemy_piece.x_position - 2) && !(enemy_piece.x_position - 1)
+            white_rook_possible_moves += [white_rook.x_position - 4, white_rook.y_position]
+          when !(white_rook.x_position - 5) && !(enemy_piece.x_position - 4) && !(enemy_piece.x_position - 3) && !(enemy_piece.x_position - 2) && !(enemy_piece.x_position - 1)
+            white_rook_possible_moves += [white_rook.x_position - 5, white_rook.y_position]
+          when !(white_rook.x_position - 6) && !(enemy_piece.x_position - 5) && !(enemy_piece.x_position - 4) && !(enemy_piece.x_position - 3) && !(enemy_piece.x_position - 2) && !(enemy_piece.x_position - 1)
+            white_rook_possible_moves += [white_rook.x_position - 6, white_rook.y_position]
+          when !(white_rook.x_position - 7) && !(enemy_piece.x_position - 6) && !(enemy_piece.x_position - 5) && !(enemy_piece.x_position - 4) && !(enemy_piece.x_position - 3) && !(enemy_piece.x_position - 2) && !(enemy_piece.x_position - 1)
+            white_rook_possible_moves += [white_rook.x_position - 7, white_rook.y_position]
+          when !(white_rook.x_position + 1)
+            white_rook_possible_moves += [white_rook.x_position + 1, white_rook.y_position]
+          when !(white_rook.x_position + 2) && !(enemy_piece.x_position + 1)
+            white_rook_possible_moves += [white_rook.x_position + 2, white_rook.y_position]
+          when !(white_rook.x_position + 3) && !(enemy_piece.x_position + 2) && !(enemy_piece.x_position + 1)
+            white_rook_possible_moves += [white_rook.x_position + 3, white_rook.y_position]
+          when !(white_rook.x_position + 4) && !(enemy_piece.x_position + 3) && !(enemy_piece.x_position + 2) && !(enemy_piece.x_position + 1)
+            white_rook_possible_moves += [white_rook.x_position + 4, white_rook.y_position]
+          when !(white_rook.x_position + 5) && !(enemy_piece.x_position + 4) && !(enemy_piece.x_position + 3) && !(enemy_piece.x_position + 2) && !(enemy_piece.x_position + 1)
+            white_rook_possible_moves += [white_rook.x_position + 5, white_rook.y_position]
+          when !(white_rook.x_position + 6) && !(enemy_piece.x_position + 5) && !(enemy_piece.x_position + 4) && !(enemy_piece.x_position + 3) && !(enemy_piece.x_position + 2) && !(enemy_piece.x_position + 1)
+            white_rook_possible_moves += [white_rook.x_position + 6, white_rook.y_position]
+          when !(white_rook.x_position + 7) && !(enemy_piece.x_position + 6) && !(enemy_piece.x_position + 5) && !(enemy_piece.x_position + 4) && !(enemy_piece.x_position + 3) && !(enemy_piece.x_position + 2) && !(enemy_piece.x_position + 1)
+            white_rook_possible_moves += [white_rook.x_position + 7, white_rook.y_position]
           end
         end
       end
