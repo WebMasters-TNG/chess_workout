@@ -12,6 +12,12 @@ class Piece < ActiveRecord::Base
     @sx = @x1 - @x0 # sx = displacement_x
     @sy = @y1 - @y0 # sy = displacement_y
     return false if pinned?
+    if self.color == "white"
+      @black_king = game.pieces.where(:type => "King", :color => "black").first
+    else
+      @white_king = game.pieces.where(:type => "King", :color => "white").first
+    end
+    return false if check?
     true
   end
 
@@ -69,11 +75,11 @@ class Piece < ActiveRecord::Base
     # Check for checkmate if the destination square has the king of the opposite color.
     # binding.pry
     if self.color == "white"
-      @black_king = game.pieces.where(:type => "King", :color => "black").first
+      # @black_king = game.pieces.where(:type => "King", :color => "black").first
       # binding.pry
       checkmate? if @black_king.x_position == @x1 && @black_king.y_position == @y1
     else
-      @white_king = game.pieces.where(:type => "King", :color => "white").first
+      # @white_king = game.pieces.where(:type => "King", :color => "white").first
       checkmate? if @white_king.x_position == @x1 && @white_king.y_position == @y1
     end
     true
