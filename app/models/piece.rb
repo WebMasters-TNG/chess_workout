@@ -211,6 +211,56 @@ class Piece < ActiveRecord::Base
     end
 
     white_knight_possible_moves = []
+    white_knights.each do |white_knight|
+      # Check the 8 possible L-shaped moves for a friendly piece at the destination square only.
+      # 2 up, 1 right:
+      friendly_piece = game.pieces.where(:color => "white", :x_position => white_knight.x_position + 1, :y_position => white_knight.y_position + 2).first
+      if white_knight.x_position + 1 != friendly_piece.x_position && white_knight.y_position + 2 != friendly_piece.y_position && white_knight.x_position + 1 < 9 && white_knight.y_position + 2 < 9
+        white_knight_possible_moves += [white_knight.x_position + 1, white_knight.y_position + 2]
+      end
+
+      # 2 up, 1 left:
+      friendly_piece = game.pieces.where(:color => "white", :x_position => white_knight.x_position - 1, :y_position => white_knight.y_position + 2).first
+      if white_knight.x_position - 1 != friendly_piece.x_position && white_knight.y_position + 2 != friendly_piece.y_position && white_knight.x_position - 1 > 0 && white_knight.y_position + 2 < 9
+        white_knight_possible_moves += [white_knight.x_position - 1, white_knight.y_position + 2]
+      end
+
+      # 1 up, 2 right:
+      friendly_piece = game.pieces.where(:color => "white", :x_position => white_knight.x_position + 2, :y_position => white_knight.y_position + 1).first
+      if white_knight.x_position + 2 != friendly_piece.x_position && white_knight.y_position + 1 != friendly_piece.y_position && white_knight.x_position + 2 < 9 && white_knight.y_position + 1 < 9
+        white_knight_possible_moves += [white_knight.x_position + 2, white_knight.y_position + 1]
+      end
+
+      # 1 up, 2 left:
+      friendly_piece = game.pieces.where(:color => "white", :x_position => white_knight.x_position - 2, :y_position => white_knight.y_position + 1).first
+      if white_knight.x_position - 2 != friendly_piece.x_position && white_knight.y_position + 1 != friendly_piece.y_position && white_knight.x_position - 2 > 0 && white_knight.y_position + 1 < 9
+        white_knight_possible_moves += [white_knight.x_position - 2, white_knight.y_position + 1]
+      end
+
+      # 2 down, 1 right:
+      friendly_piece = game.pieces.where(:color => "white", :x_position => white_knight.x_position + 1, :y_position => white_knight.y_position - 2).first
+      if white_knight.x_position + 1 != friendly_piece.x_position && white_knight.y_position - 2 != friendly_piece.y_position && white_knight.x_position + 1 < 9 && white_knight.y_position - 2 > 0
+        white_knight_possible_moves += [white_knight.x_position + 1, white_knight.y_position - 2]
+      end
+
+      # 2 down, 1 left:
+      friendly_piece = game.pieces.where(:color => "white", :x_position => white_knight.x_position - 1, :y_position => white_knight.y_position - 2).first
+      if white_knight.x_position - 1 != friendly_piece.x_position && white_knight.y_position - 2 != friendly_piece.y_position && white_knight.x_position - 1 > 0 && white_knight.y_position - 2 > 0
+        white_knight_possible_moves += [white_knight.x_position - 1, white_knight.y_position - 2]
+      end
+
+      # 1 down, 2 right:
+      friendly_piece = game.pieces.where(:color => "white", :x_position => white_knight.x_position + 2, :y_position => white_knight.y_position - 1).first
+      if white_knight.x_position + 2 != friendly_piece.x_position && white_knight.y_position - 1 != friendly_piece.y_position && white_knight.x_position + 2 < 9 && white_knight.y_position - 1 > 0
+        white_knight_possible_moves += [white_knight.x_position + 2, white_knight.y_position - 1]
+      end
+
+      # 1 down, 2 left:
+      friendly_piece = game.pieces.where(:color => "white", :x_position => white_knight.x_position - 2, :y_position => white_knight.y_position - 1).first
+      if white_knight.x_position - 2 != friendly_piece.x_position && white_knight.y_position - 1 != friendly_piece.y_position && white_knight.x_position - 2 > 0 && white_knight.y_position - 1 > 0
+        white_knight_possible_moves += [white_knight.x_position - 2, white_knight.y_position - 1]
+      end
+    end
 
     white_bishop_possible_moves = []
     white_bishops.each do |white_bishop|
