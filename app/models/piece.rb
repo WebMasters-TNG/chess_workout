@@ -304,19 +304,19 @@ class Piece < ActiveRecord::Base
             black_rook_possible_moves += [black_rook.x_position, black_rook.y_position - 6]
           when (!black_rook.y_position - 7) && black_rook.y_position - 7 > 0 && !(enemy_piece.y_position - 6) && !(enemy_piece.y_position - 5) && !(enemy_piece.y_position - 4) && !(enemy_piece.y_position - 3) && !(enemy_piece.y_position - 2) && !(enemy_piece.y_position - 1)
             black_rook_possible_moves += [black_rook.x_position, black_rook.y_position - 7]
-          when (!black_rook.y_position + 1) && black_rook.y_position + 1 > 9
+          when (!black_rook.y_position + 1) && black_rook.y_position + 1 < 9
             black_rook_possible_moves += [black_rook.x_position, black_rook.y_position - 1]
-          when (!black_rook.y_position + 2) && black_rook.y_position + 2 > 9 && !(enemy_piece.y_position + 1)
+          when (!black_rook.y_position + 2) && black_rook.y_position + 2 < 9 && !(enemy_piece.y_position + 1)
             black_rook_possible_moves += [black_rook.x_position, black_rook.y_position - 2]
-          when (!black_rook.y_position + 3) && black_rook.y_position + 3 > 9 && !(enemy_piece.y_position + 2) && !(enemy_piece.y_position + 1)
+          when (!black_rook.y_position + 3) && black_rook.y_position + 3 < 9 && !(enemy_piece.y_position + 2) && !(enemy_piece.y_position + 1)
             black_rook_possible_moves += [black_rook.x_position, black_rook.y_position - 3]
-          when (!black_rook.y_position + 4) && black_rook.y_position + 4 > 9 && !(enemy_piece.y_position + 3) && !(enemy_piece.y_position + 2) && !(enemy_piece.y_position + 1)
+          when (!black_rook.y_position + 4) && black_rook.y_position + 4 < 9 && !(enemy_piece.y_position + 3) && !(enemy_piece.y_position + 2) && !(enemy_piece.y_position + 1)
             black_rook_possible_moves += [black_rook.x_position, black_rook.y_position - 4]
-          when (!black_rook.y_position + 5) && black_rook.y_position + 5 > 9 && !(enemy_piece.y_position + 4) && !(enemy_piece.y_position + 3) && !(enemy_piece.y_position + 2) && !(enemy_piece.y_position + 1)
+          when (!black_rook.y_position + 5) && black_rook.y_position + 5 < 9 && !(enemy_piece.y_position + 4) && !(enemy_piece.y_position + 3) && !(enemy_piece.y_position + 2) && !(enemy_piece.y_position + 1)
             black_rook_possible_moves += [black_rook.x_position, black_rook.y_position - 5]
-          when (!black_rook.y_position + 6) && black_rook.y_position + 6 > 9 && !(enemy_piece.y_position + 5) && !(enemy_piece.y_position + 6) && !(enemy_piece.y_position + 4) && !(enemy_piece.y_position + 3) && !(enemy_piece.y_position + 2) && !(enemy_piece.y_position + 1)
+          when (!black_rook.y_position + 6) && black_rook.y_position + 6 < 9 && !(enemy_piece.y_position + 5) && !(enemy_piece.y_position + 6) && !(enemy_piece.y_position + 4) && !(enemy_piece.y_position + 3) && !(enemy_piece.y_position + 2) && !(enemy_piece.y_position + 1)
             black_rook_possible_moves += [black_rook.x_position, black_rook.y_position - 6]
-          when (!black_rook.y_position + 7) && black_rook.y_position + 7 > 9 && !(enemy_piece.y_position + 6) && !(enemy_piece.y_position + 5) && !(enemy_piece.y_position + 4) && !(enemy_piece.y_position + 3) && !(enemy_piece.y_position + 2) && !(enemy_piece.y_position + 1)
+          when (!black_rook.y_position + 7) && black_rook.y_position + 7 < 9 && !(enemy_piece.y_position + 6) && !(enemy_piece.y_position + 5) && !(enemy_piece.y_position + 4) && !(enemy_piece.y_position + 3) && !(enemy_piece.y_position + 2) && !(enemy_piece.y_position + 1)
             black_rook_possible_moves += [black_rook.x_position, black_rook.y_position - 7]
           end
         end
