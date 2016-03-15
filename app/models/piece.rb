@@ -91,74 +91,10 @@ class Piece < ActiveRecord::Base
     self.moves.first.nil?
   end
 
-
-
-
-  # def path_clear?
-  #   sx_arr = [0]
-  #   sy_arr = [0]
-  #   if @sx > 0
-  #     sx_arr = (1).upto(@sx - 1).to_a
-  #   elsif @sx < 0
-  #     sx_arr = (-1).downto(@sx + 1).to_a
-  #   end
-  #   if @sy > 0
-  #     sy_arr = (1).upto(@sy - 1).to_a
-  #   elsif @sy < 0
-  #     sy_arr = (-1).downto(@sy + 1).to_a
-  #   end
-
-  #   if diagonal_move?
-  #     return true if @sx.abs == 1
-  #     sx_arr.each_with_index do |i, index_i|
-  #       sy_arr.each_with_index do |j, index_j|
-  #         if index_i == index_j
-  #           return false unless self.game.pieces.where(captured: nil, x_position: @x0 + i, y_position: @y0 + j).empty?
-  #         end
-  #       end
-  #     end
-  #   end
-
-  #   if straight_move?
-  #     sx_arr.each do |i|
-  #       sy_arr.each do |j|
-  #         return false unless self.game.pieces.where(captured: nil, x_position: @x0 + i, y_position: @y0 + j).empty?
-  #       end
-  #     end
-  #   end
-  #   true
-  # end
-
-
-
-  # Check if this requesting piece is already captured.
-  # def this_captured?
-  #   !self.captured.blank?
-  # end
-
-  # def capture_dest_piece?(x, y)
-  #   dest_piece = destination_piece(x, y)
-  #   return false if !dest_piece.nil? && dest_piece.color == self.color
-  # end
-
-  # def capture_piece(params)
-  #   x1 = params[:x_position].to_i
-  #   y1 = params[:y_position].to_i
-  #   dest_piece = destination_piece(x1, y1)
-  #   dest_piece.update_attributes(captured: true) if !dest_piece.nil?
-  # end
-
   def self.join_as_black(user)
     self.all.each do |black_piece|
       black_piece.update_attributes(player_id: user.id)
     end
   end
-
-  # def same_sq?(params)
-  #   x0 = self.x_position
-  #   y0 = self.y_position
-  #   x1 = params[:x_position].to_i
-  #   y1 = params[:y_position].to_i
-  #   x0 == x1 && y0 == y1
-  # end
+  
 end

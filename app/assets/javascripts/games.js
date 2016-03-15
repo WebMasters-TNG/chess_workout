@@ -135,11 +135,23 @@ function initPage() {
     }
   };
 
-  // Check server for new moves via long polling
 
+  // function promotion(new_x, new_y) {
+  //   var targetPiece = $('td#' + new_y + new_x).find(".piece");
+  //   if (new_y == 1 && targetPiece.is("#white-pawn")) {
+  //     targetPiece.empty();
+  //     targetPiece.append(white_promotion);
+  //     targetPiece.attr("id", "#white-queen");
+  //   } else if (new_y == 8 && targetPiece.is("#black-pawn")) {
+  //     targetPiece.empty();
+  //     targetPiece.append(black_promotion);
+  //     targetPiece.attr("id", "#black-queen");
+  //   };
+  // };
 }
 
 Game = {  
+  // Long polling function to check for new moves
   poll: function() {
     $.ajax({ 
       type: 'GET',
@@ -154,13 +166,22 @@ Game = {
           lastServerMove.forEach(function(move) {
             if (move['id'] > last_move) {
               if (move['captured_piece'] == true) {
-                if ($('td#' + move['old_y'] + move['old_x']).find(".piece").hasClass("white_piece") && gameTurn % 2 != 0) {
+                if ($('td#' + move['old_y'] + move['old_x']).find(".piece").hasClass("white_piece") && data['turn'] % 2 != 0) {
                   $('td#' + move['old_y'] + move['old_x']).find(".piece").appendTo("#white_captured");
-                } else if ($('td#' + move['old_y'] + move['old_x']).find(".piece").hasClass("black_piece") && gameTurn % 2 == 0) {
+                } else if ($('td#' + move['old_y'] + move['old_x']).find(".piece").hasClass("black_piece") && data['turn'] % 2 == 0) {
                   $('td#' + move['old_y'] + move['old_x']).find(".piece").appendTo("#dark_captured");
                 };
               } else {
                 $('td#' + move['old_y'] + move['old_x']).find('.piece').appendTo('td#' + move['new_y'] + move['new_x']);
+                // Game.promotion;
+                var targetPiece = $('td#' + move['new_y'] + move['new_x']).find(".piece");
+                if (move['new_y'] == 1 && targetPiece.is("#white-Pawn")) {
+                  targetPiece.empty().append('<img src="/assets/White Queen.svg" class="piece_image">');
+                  targetPiece.attr("id", "#white-Queen");
+                } else if (move['new_y'] == 8 && targetPiece.is("#black-Pawn")) {
+                  targetPiece.empty().append('<img src="/assets/Black Queen.svg" class="piece_image">');
+                  targetPiece.attr("id", "#black-Queen");
+                };
               };
               last_move = move['id'];
             };
@@ -175,7 +196,22 @@ Game = {
       }
     });
     setTimeout(Game.poll, 5000);
-  }
+  },
+
+  // Check to see if pawn promotion and update piece image accordingly
+  // promotion: function() {
+  //   var targetPiece = $('td#' + move['new_y'] + move['new_x']).find(".piece");
+  //   if (new_y == 1 && targetPiece.is("#white-pawn")) {
+  //     targetPiece.empty();
+  //     targetPiece.append("White Queen");
+  //     targetPiece.attr("id", "#white-queen");
+  //   } else if (new_y == 8 && targetPiece.is("#black-pawn")) {
+  //     targetPiece.empty();
+  //     targetPiece.append("Black Queen");
+  //     targetPiece.attr("id", "#black-queen");
+  //   };
+  // }
 }
+
 
 
