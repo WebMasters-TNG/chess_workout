@@ -204,43 +204,87 @@ class Piece < ActiveRecord::Base
 
       # Check that each white rook has a clear horizontal path (no friendly pieces along the way or at the destination spot, or any enemy pieces along the way):
       friendly_pieces_in_hpath = game.pieces.where(:y_position => white_rook.y_position, :color => "white").all
-      friendly_pieces_in_hpath.each do |friendly_pieces_in_hpath|
+      friendly_pieces_in_hpath.each do |friendly_piece_in_hpath|
         enemy_pieces = game.pieces.where(:y_position => white_rook.y_position, :color => "black").all
         enemy_pieces.each do |enemy_piece|
-        # for n in 1..8 do
-            case friendly_piece_in_hpath.x_position
-            when !(white_rook.x_position - 1) && white_rook.x_position - 1 > 0
-              white_rook_possible_moves += [white_rook.x_position - 1, white_rook.y_position]
-            when !(white_rook.x_position - 2) && white_rook.x_position - 2 > 0 && !(enemy_piece.x_position - 1)
-              white_rook_possible_moves += [white_rook.x_position - 2, white_rook.y_position]
-            when !(white_rook.x_position - 3) && white_rook.x_position - 3 > 0 && !(enemy_piece.x_position - 2) && !(enemy_piece.x_position - 1)
-              white_rook_possible_moves += [white_rook.x_position - 3, white_rook.y_position]
-            when !(white_rook.x_position - 4) && white_rook.x_position - 4 > 0 && !(enemy_piece.x_position - 3) && !(enemy_piece.x_position - 2) && !(enemy_piece.x_position - 1)
-              white_rook_possible_moves += [white_rook.x_position - 4, white_rook.y_position]
-            when !(white_rook.x_position - 5) && white_rook.x_position - 5 > 0 && !(enemy_piece.x_position - 4) && !(enemy_piece.x_position - 3) && !(enemy_piece.x_position - 2) && !(enemy_piece.x_position - 1)
-              white_rook_possible_moves += [white_rook.x_position - 5, white_rook.y_position]
-            when !(white_rook.x_position - 6) && white_rook.x_position - 6 > 0 && !(enemy_piece.x_position - 5) && !(enemy_piece.x_position - 4) && !(enemy_piece.x_position - 3) && !(enemy_piece.x_position - 2) && !(enemy_piece.x_position - 1)
-              white_rook_possible_moves += [white_rook.x_position - 6, white_rook.y_position]
-            when !(white_rook.x_position - 7) && white_rook.x_position - 7 > 0 && !(enemy_piece.x_position - 6) && !(enemy_piece.x_position - 5) && !(enemy_piece.x_position - 4) && !(enemy_piece.x_position - 3) && !(enemy_piece.x_position - 2) && !(enemy_piece.x_position - 1)
-              white_rook_possible_moves += [white_rook.x_position - 7, white_rook.y_position]
-            when !(white_rook.x_position + 1) && white_rook.x_position + 1 < 9
-              white_rook_possible_moves += [white_rook.x_position + 1, white_rook.y_position]
-            when !(white_rook.x_position + 2) && white_rook.x_position + 2 < 9 && !(enemy_piece.x_position + 1)
-              white_rook_possible_moves += [white_rook.x_position + 2, white_rook.y_position]
-            when !(white_rook.x_position + 3) && white_rook.x_position + 3 < 9 && !(enemy_piece.x_position + 2) && !(enemy_piece.x_position + 1)
-              white_rook_possible_moves += [white_rook.x_position + 3, white_rook.y_position]
-            when !(white_rook.x_position + 4) && white_rook.x_position + 4 < 9 && !(enemy_piece.x_position + 3) && !(enemy_piece.x_position + 2) && !(enemy_piece.x_position + 1)
-              white_rook_possible_moves += [white_rook.x_position + 4, white_rook.y_position]
-            when !(white_rook.x_position + 5) && white_rook.x_position + 5 < 9 && !(enemy_piece.x_position + 4) && !(enemy_piece.x_position + 3) && !(enemy_piece.x_position + 2) && !(enemy_piece.x_position + 1)
-              white_rook_possible_moves += [white_rook.x_position + 5, white_rook.y_position]
-            when !(white_rook.x_position + 6) && white_rook.x_position + 6 < 9 && !(enemy_piece.x_position + 5) && !(enemy_piece.x_position + 4) && !(enemy_piece.x_position + 3) && !(enemy_piece.x_position + 2) && !(enemy_piece.x_position + 1)
-              white_rook_possible_moves += [white_rook.x_position + 6, white_rook.y_position]
-            when !(white_rook.x_position + 7) && white_rook.x_position + 7 < 9 && !(enemy_piece.x_position + 6) && !(enemy_piece.x_position + 5) && !(enemy_piece.x_position + 4) && !(enemy_piece.x_position + 3) && !(enemy_piece.x_position + 2) && !(enemy_piece.x_position + 1)
-              white_rook_possible_moves += [white_rook.x_position + 7, white_rook.y_position]
+          for n in 1..8
+            # Check the move isn't blocked by any friendly pieces, and is within the boundaries of the 8 X 8 board:
+            if friendly_piece_in_hpath.x_position != white_rook.x_position - n && white_rook.x_position - n > 0
+              for m in 1..8
+                # Check that there are no enemy pieces along the way to the destination square:
+                if !(enemy_piece.x_position - m + 1)
+                  white_rook_possible_moves += [white_rook.x_position - m, white_rook.y_position]
+                end
+              end
+            elsif friendly_piece_in_hpath.x_position != white_rook.x_position + n && white_rook.x_position + n < 9
+              for m in 1..8
+                if !(enemy_piece.x_position + m - 1)
+                  white_rook_possible_moves += [white_rook.x_position + m, white_rook.y_position]
+                end
+              end
             end
-        # end
+          end
         end
       end
+
+      # Check that each white rook has a clear vertical path:
+      friendly_pieces_in_vpath = game.pieces.where(:x_position => white_rook.x_position, :color => "white").all
+      friendly_pieces_in_vpath.each do |friendly_piece_in_vpath|
+        enemy_pieces = game.pieces.where(:x_position => white_rook.y_position, :color => "black").all
+        enemy_pieces.each do |enemy_piece|
+          for n in 1..8
+            if friendly_piece_in_vpath.y_position != white_rook.y_position - n && white_rook.y_position - n > 0
+              for m in 1..8
+                if !(enemy_piece.y_position - m + 1)
+                  white_rook_possible_moves += [white_rook.x_position, white_rook.y_position - m]
+                end
+              end
+            elsif friendly_piece_in_vpath.y_position != white_rook.y_position + n && white_rook.y_position + n < 9
+              for m in 1..8
+                if !(enemy_piece.y_position + m - 1)
+                  white_rook_possible_moves += [white_rook.x_position, white_rook.y_position + m]
+                end
+              end
+            end
+          end
+        end
+      end
+
+        # *** Dirty solution:  change the case when statement to a whole bunch of separate if ... end statements, so that they are all evaluated. ***
+
+        #     case friendly_piece_in_hpath.x_position
+        #     when !(white_rook.x_position - 1) && white_rook.x_position - 1 > 0
+        #       white_rook_possible_moves += [white_rook.x_position - 1, white_rook.y_position]
+        #     when !(white_rook.x_position - 2) && white_rook.x_position - 2 > 0 && !(enemy_piece.x_position - 1)
+        #       white_rook_possible_moves += [white_rook.x_position - 2, white_rook.y_position]
+        #     when !(white_rook.x_position - 3) && white_rook.x_position - 3 > 0 && !(enemy_piece.x_position - 2) && !(enemy_piece.x_position - 1)
+        #       white_rook_possible_moves += [white_rook.x_position - 3, white_rook.y_position]
+        #     when !(white_rook.x_position - 4) && white_rook.x_position - 4 > 0 && !(enemy_piece.x_position - 3) && !(enemy_piece.x_position - 2) && !(enemy_piece.x_position - 1)
+        #       white_rook_possible_moves += [white_rook.x_position - 4, white_rook.y_position]
+        #     when !(white_rook.x_position - 5) && white_rook.x_position - 5 > 0 && !(enemy_piece.x_position - 4) && !(enemy_piece.x_position - 3) && !(enemy_piece.x_position - 2) && !(enemy_piece.x_position - 1)
+        #       white_rook_possible_moves += [white_rook.x_position - 5, white_rook.y_position]
+        #     when !(white_rook.x_position - 6) && white_rook.x_position - 6 > 0 && !(enemy_piece.x_position - 5) && !(enemy_piece.x_position - 4) && !(enemy_piece.x_position - 3) && !(enemy_piece.x_position - 2) && !(enemy_piece.x_position - 1)
+        #       white_rook_possible_moves += [white_rook.x_position - 6, white_rook.y_position]
+        #     when !(white_rook.x_position - 7) && white_rook.x_position - 7 > 0 && !(enemy_piece.x_position - 6) && !(enemy_piece.x_position - 5) && !(enemy_piece.x_position - 4) && !(enemy_piece.x_position - 3) && !(enemy_piece.x_position - 2) && !(enemy_piece.x_position - 1)
+        #       white_rook_possible_moves += [white_rook.x_position - 7, white_rook.y_position]
+        #     when !(white_rook.x_position + 1) && white_rook.x_position + 1 < 9
+        #       white_rook_possible_moves += [white_rook.x_position + 1, white_rook.y_position]
+        #     when !(white_rook.x_position + 2) && white_rook.x_position + 2 < 9 && !(enemy_piece.x_position + 1)
+        #       white_rook_possible_moves += [white_rook.x_position + 2, white_rook.y_position]
+        #     when !(white_rook.x_position + 3) && white_rook.x_position + 3 < 9 && !(enemy_piece.x_position + 2) && !(enemy_piece.x_position + 1)
+        #       white_rook_possible_moves += [white_rook.x_position + 3, white_rook.y_position]
+        #     when !(white_rook.x_position + 4) && white_rook.x_position + 4 < 9 && !(enemy_piece.x_position + 3) && !(enemy_piece.x_position + 2) && !(enemy_piece.x_position + 1)
+        #       white_rook_possible_moves += [white_rook.x_position + 4, white_rook.y_position]
+        #     when !(white_rook.x_position + 5) && white_rook.x_position + 5 < 9 && !(enemy_piece.x_position + 4) && !(enemy_piece.x_position + 3) && !(enemy_piece.x_position + 2) && !(enemy_piece.x_position + 1)
+        #       white_rook_possible_moves += [white_rook.x_position + 5, white_rook.y_position]
+        #     when !(white_rook.x_position + 6) && white_rook.x_position + 6 < 9 && !(enemy_piece.x_position + 5) && !(enemy_piece.x_position + 4) && !(enemy_piece.x_position + 3) && !(enemy_piece.x_position + 2) && !(enemy_piece.x_position + 1)
+        #       white_rook_possible_moves += [white_rook.x_position + 6, white_rook.y_position]
+        #     when !(white_rook.x_position + 7) && white_rook.x_position + 7 < 9 && !(enemy_piece.x_position + 6) && !(enemy_piece.x_position + 5) && !(enemy_piece.x_position + 4) && !(enemy_piece.x_position + 3) && !(enemy_piece.x_position + 2) && !(enemy_piece.x_position + 1)
+        #       white_rook_possible_moves += [white_rook.x_position + 7, white_rook.y_position]
+        #     end
+        # # end
+        # end
+      # end
     end
 
     white_knight_possible_moves = []
@@ -248,6 +292,28 @@ class Piece < ActiveRecord::Base
     white_bishop_possible_moves = []
     white_bishops.each do |white_bishop|
       # Check that each white bishop has clear diagonal path (4 possible diagonal directions)
+      friendly_pieces = game.pieces.where(:color => "white").all
+      friendly_pieces.each do |friendly_piece|
+        enemy_pieces = game.pieces.where(:color => "black").all
+        enemy_pieces.each do |enemy_piece|
+          # Check upper right diagonal paths:
+          if white_bishop.x_position + 1 != friendly_piece.x_position && white_bishop.y_positon + 1 != friendly_piece.y_position && white_bishop.x_position + 1 < 9 && white_bishop.y_position + 1 < 9
+            white_bishop_possible_moves += [white_bishop.x_position + 1, white_bishop.y_position + 1]
+          elsif white_bishop.x_position + 2 != friendly_piece.x_position && white_bishop.y_position + 2 != friendly_piece.y_position && white_bishop.x_position + 2 < 9 && white_bishop.y_position + 2 < 9
+            white_bishop_possible_moves += [white_bishop.x_position + 2, white_bishop.y_position + 2]
+          elsif white_bishop.x_position + 3 != friendly_piece.x_position && white_bishop.y_position + 3 != friendly_piece.y_position && white_bishop.x_position + 3 < 9 && white_bishop.y_position + 3 < 9
+            white_bishop_possible_moves += [white_bishop.x_position + 3, white_bishop.y_position + 3]
+          elsif white_bishop.x_position + 4 != friendly_piece.x_position && white_bishop.y_position + 4 != friendly_piece.y_position && white_bishop.x_position + 4 < 9 && white_bishop.y_position + 4 < 9
+            white_bishop_possible_moves += [white_bishop.x_position + 4, white_bishop.y_position + 4]
+          elsif white_bishop.x_position + 5 != friendly_piece.x_position && white_bishop.y_position + 5 != friendly_piece.y_position && white_bishop.x_position + 5 < 9 && white_bishop.y_position + 5 < 9
+            white_bishop_possible_moves += [white_bishop.x_position + 5, white_bishop.y_position + 5]
+          elsif white_bishop.x_position + 6 != friendly_piece.x_position && white_bishop.y_position + 6 != friendly_piece.y_position && white_bishop.x_position + 6 < 9 && white_bishop.y_position + 6 < 9
+            white_bishop_possible_moves += [white_bishop.x_position + 6, white_bishop.y_position + 6]
+          elsif white_bishop.x_position + 7 != friendly_piece.x_position && white_bishop.y_position + 7 != friendly_piece.y_position && white_bishop.x_position + 7 < 9 && white_bishop.y_position + 7 < 9
+            white_bishop_possible_moves += [white_bishop.x_position + 7, white_bishop.y_position + 7]
+          end
+        end
+      end
     end
 
     white_queen_possible_moves = []
