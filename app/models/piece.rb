@@ -208,7 +208,7 @@ class Piece < ActiveRecord::Base
         enemy_pieces = game.pieces.where(:y_position => white_rook.y_position, :color => "black").all
         enemy_pieces.each do |enemy_piece|
         # for n in 1..8 do
-            case friendly_piece_in_vpath.x_position
+            case friendly_piece_in_hpath.x_position
             when !(white_rook.x_position - 1) && white_rook.x_position - 1 > 0
               white_rook_possible_moves += [white_rook.x_position - 1, white_rook.y_position]
             when !(white_rook.x_position - 2) && white_rook.x_position - 2 > 0 && !(enemy_piece.x_position - 1)
@@ -327,7 +327,7 @@ class Piece < ActiveRecord::Base
       friendly_pieces_in_hpath.each do |friendly_pieces_in_hpath|
         enemy_pieces = game.pieces.where(:y_position => black_rook.y_position, :color => "white").all
         enemy_pieces.each do |enemy_piece|
-          case friendly_piece_in_vpath.x_position
+          case friendly_piece_in_hpath.x_position
           when !(black_rook.x_position - 1) && black_rook.x_position - 1 > 0
             black_rook_possible_moves += [black_rook.x_position - 1, black_rook.y_position]
           when !(black_rook.x_position - 2) && black_rook.x_position - 2 > 0 && !(enemy_piece.x_position - 1)
