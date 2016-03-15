@@ -187,6 +187,11 @@ Game = {
             };
           });
           $('.game_turn').html(data['turn']);
+          if (data['turn'] % 2 != 0) {
+            $(".player_move").html("White");
+          } else {
+            $(".player_move").html("Black");
+          };
         } else {
           console.log("No new moves");
         };

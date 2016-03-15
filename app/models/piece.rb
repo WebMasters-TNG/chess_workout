@@ -96,5 +96,5 @@ class Piece < ActiveRecord::Base
       black_piece.update_attributes(player_id: user.id)
     end
   end
-  
+
 end
