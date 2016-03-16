@@ -114,7 +114,7 @@ class Piece < ActiveRecord::Base
   end
 
   def check?
-    # a) Check whether the current player's king is in check where it is.  If so, determine a list of valid moves:
+    # a) Determine a list of valid enemy moves that could put a player's king in check based upon where it is:
     # all_white_possible_moves[0] == white_pawn_possible_moves
     # all_white_possible_moves[1] == white_rook_possible_moves
     # all_white_possible_moves[2] == white_knight_possible_moves
