@@ -738,8 +738,10 @@ def black_possible_moves
     # binding.pry
     if @white_king.captured == true && game.winner != "white"
       game.winner = "black"
+      return true
     elsif @black_king.captured == true && game.winner != "black"
       game.winner = "white"
+      return true
     else
       return false
     end
