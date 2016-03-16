@@ -5,7 +5,6 @@
   window.game = "<%= refresh_game_path %>"
   window.game_id = "<%= @game.id %>"
   window.last_move = "<%= @last_move_id %>"
-  
   Game.poll();
 <% end %>
 <br />
@@ -19,7 +18,9 @@
       <% end %>
     </span> Player's Move</h1> 
 </div>
-<br />
+<br class='clr' />
+<div class="game_message">
+</div>
 <div class="gameboard col-xs-6">
   <table class="board" id="chessboard">
     <% @game.black_player == current_user ? (index = 8.downto(1)) : (index = (1..8)) %>
