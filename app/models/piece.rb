@@ -122,14 +122,20 @@ class Piece < ActiveRecord::Base
     # all_white_possible_moves[4] == white_queen_possible_moves
     # all_white_possible_moves[5] == white_king_possible_moves
     for n in 0..5
-      if self.color == "white" && all_black_possible_moves[n][0] == @white_king.x_position && all_black_possible_moves[n][1] == @white_king.y_position
-        return true
+      # Each piece has up to 8 pairs of possible move coordinates returned.
+      for m in 0..7
+        # e.g. all_white_possible_moves[0][0] == [x, y] of first possible pawn move
+        if self.color == "white" && all_black_possible_moves[n][m][0] == @white_king.x_position && all_black_possible_moves[n][m][1] == @white_king.y_position
+          return true
+        end
       end
     end
 
     for n in 0..5
-      if self.color == "black" && all_white_possible_moves[n][0] == @black_king.x_position && all_white_possible_moves[n][1] == @black_king.y_position
-        return true
+      for m in 0..7
+        if self.color == "black" && all_white_possible_moves[n][m][0] == @black_king.x_position && all_white_possible_moves[n][m][1] == @black_king.y_position
+          return true
+        end
       end
     end
 
