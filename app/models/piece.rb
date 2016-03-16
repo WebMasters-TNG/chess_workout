@@ -17,7 +17,8 @@ class Piece < ActiveRecord::Base
     else
       @white_king = game.pieces.where(:type => "King", :color => "white").first
     end
-    return false if check?
+    # Will the opposing player's king be put into check if this move is made?
+    check?
     # *** Must also allow check to return false if the threatening piece is captured by the move. ***
     true
   end
@@ -85,9 +86,9 @@ class Piece < ActiveRecord::Base
     destination_piece.update_attributes(captured: true) if destination_piece
     # Check for checkmate if the destination square has the king of the opposite color.
     if self.color == "white"
-      checkmate? if @black_king.x_position == @x1 && @black_king.y_position == @y1
+      checkmate? if @x1 == @black_king.x_position && @y1 == @black_king.y_position
     else
-      checkmate? if @white_king.x_position == @x1 && @white_king.y_position == @y1
+      checkmate? if @x1 == @white_king.x_position && @y1 == @white_king.y_position
     end
     true
   end
@@ -114,7 +115,7 @@ class Piece < ActiveRecord::Base
   end
 
   def check?
-    # a) Determine a list of valid enemy moves that could put a player's king in check based upon where it is:
+    # a) Determine a list of valid enemy moves that could put an enemy's king in check based upon where it is:
     # all_white_possible_moves[0] == white_pawn_possible_moves
     # all_white_possible_moves[1] == white_rook_possible_moves
     # all_white_possible_moves[2] == white_knight_possible_moves
@@ -125,7 +126,7 @@ class Piece < ActiveRecord::Base
       # Each piece has up to 8 pairs of possible move coordinates returned.
       for m in 0..7
         # e.g. all_white_possible_moves[0][0] == [x, y] of first possible pawn move
-        if self.color == "white" && all_black_possible_moves[n][m][0] == @white_king.x_position && all_black_possible_moves[n][m][1] == @white_king.y_position
+        if self.color == "white" && all_white_possible_moves[n][m][0] == @black_king.x_position && all_white_possible_moves[n][m][1] == @black_king.y_position
           return true
         end
       end
@@ -133,7 +134,7 @@ class Piece < ActiveRecord::Base
 
     for n in 0..5
       for m in 0..7
-        if self.color == "black" && all_white_possible_moves[n][m][0] == @black_king.x_position && all_white_possible_moves[n][m][1] == @black_king.y_position
+        if self.color == "black" && all_black_possible_moves[n][m][0] == @white_king.x_position && all_black_possible_moves[n][m][1] == @white_king.y_position
           return true
         end
       end
