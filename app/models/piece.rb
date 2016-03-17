@@ -13,7 +13,7 @@ class Piece < ActiveRecord::Base
     @y1 = params[:y_position].to_i
     @sx = @x1 - @x0 # sx = displacement_x
     @sy = @y1 - @y0 # sy = displacement_y
-    return false if pinned?
+    # return false if pinned?
     true
   end
 

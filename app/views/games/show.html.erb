@@ -88,17 +88,17 @@
           <div class="piece <%= piece.color %>_piece" id="<%= piece.color %>-<%= piece.type %>" data-piece-url="<%= piece_path(piece) %>">
             <% case piece.type %>
               <% when "Pawn" %>
-                <%= image_tag "Black Pawn.svg", :class => "piece_image" %>
+                <%= image_tag "White Pawn.svg", :class => "piece_image" %>
               <% when "Rook" %>
-                <%= image_tag "Black Rook.svg", :class => "piece_image" %>
+                <%= image_tag "White Rook.svg", :class => "piece_image" %>
               <% when "Knight" %>
-                <%= image_tag "Black Knight.svg", :class => "piece_image" %>
+                <%= image_tag "White Knight.svg", :class => "piece_image" %>
               <% when "Bishop" %>
-                <%= image_tag "Black Bishop.svg", :class => "piece_image" %>
+                <%= image_tag "White Bishop.svg", :class => "piece_image" %>
               <% when "Queen" %>
-                <%= image_tag "Black Queen.svg", :class => "piece_image" %>
+                <%= image_tag "White Queen.svg", :class => "piece_image" %>
               <% when "King" %>
-                <%= image_tag "Black King.svg", :class => "piece_image" %>
+                <%= image_tag "White King.svg", :class => "piece_image" %>
             <% end %>
           </div>
         <% end %>
@@ -111,17 +111,17 @@
           <div class="piece <%= piece.color %>_piece" id="<%= piece.color %>-<%= piece.type %>" data-piece-url="<%= piece_path(piece) %>">
             <% case piece.type %>
               <% when "Pawn" %>
-                <%= image_tag "White Pawn.svg", :class => "piece_image" %>
+                <%= image_tag "Black Pawn.svg", :class => "piece_image" %>
               <% when "Rook" %>
-                <%= image_tag "White Rook.svg", :class => "piece_image" %>
+                <%= image_tag "Black Rook.svg", :class => "piece_image" %>
               <% when "Knight" %>
-                <%= image_tag "White Knight.svg", :class => "piece_image" %>
+                <%= image_tag "Black Knight.svg", :class => "piece_image" %>
               <% when "Bishop" %>
-                <%= image_tag "White Bishop.svg", :class => "piece_image" %>
+                <%= image_tag "Black Bishop.svg", :class => "piece_image" %>
               <% when "Queen" %>
-                <%= image_tag "White Queen.svg", :class => "piece_image" %>
+                <%= image_tag "Black Queen.svg", :class => "piece_image" %>
               <% when "King" %>
-                <%= image_tag "White King.svg", :class => "piece_image" %>
+                <%= image_tag "Black King.svg", :class => "piece_image" %>
             <% end %>
           </div>
         <% end %>
