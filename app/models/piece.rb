@@ -742,6 +742,8 @@ def black_possible_moves
       if self.color == "white"
         # Scan through the possible moves for the black king, to see if the black player can get out of check by moving his king.  Compare the possible moves of the black king with the possible moves of all of the white player's pieces.
         # @all_black_possible_moves[5] == black_king_possible_moves
+        # *** ALSO, scan through all potential friendly blocking moves (can the checking piece be blocked?). ***
+        # *** ALSO2, can the checking piece be captured? ***
         for o in 0..(@all_black_possible_moves[5].size - 1)
           # Scan through all possible moves of the player:
           for n in 0..5
@@ -754,7 +756,83 @@ def black_possible_moves
             end
           end
         end
-        if escape_checks.size > 0
+
+        threatening_pieces = []
+        # Find the piece that is placing the player's king in check:
+        for n in 0..5
+          for m in 0..7
+            if @all_black_possible_moves[n][m][0] == @white_king.x_position &&
+              @all_black_possible_moves[n][m][1] == @white_king.y_position
+              case n
+              when 0
+              when 1
+              when 2
+                # Knight
+                black_knights = game.pieces.where(:type => "Knight", :color => "black", :captured => nil).all
+                black_knights.each do |black_knight|
+                  # 2 up, 1 right to capture:
+                  if black_knight.x_position + 1 == @white_king.x_position && black_knight.y_position + 2 == @white_king.y_position
+                    threatening_pieces += [black_knight.x_position, black_knight.y_position]
+                  # 2 up, 1 left to capture:
+                  elsif black_knight.x_position - 1 == @white_king.x_position && black_knight.y_position + 2 == @white_king.y_position
+                    threatening_pieces += [black_knight.x_position, black_knight.y_position]
+                  # 1 up, 2 right to capture:
+                  elsif
+                  end
+                end
+              when 3
+              when 4
+              when 5
+
+              end
+            end
+          end
+        end
+
+        blocking_checks = []
+        # *** Find the possible moves of the threatening piece. ***
+        # Scan through all potential blocking moves by friendly pieces (blocking check), excluding the king:
+        for n in 0..4
+          for m in 0..7
+            case n
+            when 0
+            when 1
+            when 2
+            # Knight
+              black_knights = game.pieces.where(:type => "Knight", :color => "black", :captured => nil).all
+              black_knights.each do |black_knight|
+                # 2 up, 1 right to capture:
+                if black_knight.x_position + 1 == @white_king.x_position && black_knight.y_position + 2 == @white_king.y_position
+                  blocking_checks += []
+                # 2 up, 1 left to capture:
+                elsif black_knight.x_position - 1 == @white_king.x_position && black_knight.y_position + 2 == @white_king.y_position
+                  blocking_checks += []
+                # 1 up, 2 right to capture:
+                elsif
+                end
+              end
+            when 3
+            when 4
+
+            end
+            if @all_white_possible_moves[n][m][0] ==  && @all_white_possible_moves[n][m][1] ==
+              blocking_checks += [@all_white_possible_moves[n][m][0], @all_white_possible_moves[n][m][1]]
+            end
+          end
+        end
+
+        captured_checks = []
+        # Scan through all potential capturing moves of the enemy piece that is currently placing the player's king in check:
+        for n in 0..5
+          for m in 0..7
+            if @all_white_possible_moves[n][m][0] == threatening_pieces.x_position && @all_white_possible_moves[n][m][1] == threatening_pieces.y_position
+              captured_checks += [@all_white_possible_moves[n][m][0], @all_white_possible_moves[n][m][1]]
+            end
+          end
+        end
+
+        # *** What happens if there are multiple enemy pieces putting the player's king in check? ***
+        if (escape_checks.size > 0 || blocking_checks.size > 0 || captured_checks.size > 0) && threatening_pieces.size < 2
           return false
         else
           game.winner = "white"
