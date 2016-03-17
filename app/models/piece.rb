@@ -794,27 +794,27 @@ def black_possible_moves
         # Scan through all potential blocking moves by friendly pieces (blocking check), excluding the king:
         for n in 0..4
           for m in 0..7
-            case n
-            when 0
-            when 1
-            when 2
-            # Knight
-              black_knights = game.pieces.where(:type => "Knight", :color => "black", :captured => nil).all
-              black_knights.each do |black_knight|
-                # 2 up, 1 right to capture:
-                if black_knight.x_position + 1 == @white_king.x_position && black_knight.y_position + 2 == @white_king.y_position
-                  blocking_checks += []
-                # 2 up, 1 left to capture:
-                elsif black_knight.x_position - 1 == @white_king.x_position && black_knight.y_position + 2 == @white_king.y_position
-                  blocking_checks += []
-                # 1 up, 2 right to capture:
-                elsif
-                end
-              end
-            when 3
-            when 4
+            # case n
+            # when 0
+            # when 1
+            # when 2
+            # # Knight
+            #   white_knights = game.pieces.where(:type => "Knight", :color => "white", :captured => nil).all
+            #   white_knights.each do |white_knight|
+            #     # 2 up, 1 right to capture:
+            #     if white_knight.x_position + 1 ==  && white_knight.y_position + 2 ==
+            #       blocking_checks += []
+            #     # 2 up, 1 left to capture:
+            #     elsif white_knight.x_position - 1 ==  && white_knight.y_position + 2 ==
+            #       blocking_checks += []
+            #     # 1 up, 2 right to capture:
+            #     elsif
+            #     end
+            #   end
+            # when 3
+            # when 4
 
-            end
+            # end
             if @all_white_possible_moves[n][m][0] ==  && @all_white_possible_moves[n][m][1] ==
               blocking_checks += [@all_white_possible_moves[n][m][0], @all_white_possible_moves[n][m][1]]
             end
@@ -825,8 +825,10 @@ def black_possible_moves
         # Scan through all potential capturing moves of the enemy piece that is currently placing the player's king in check:
         for n in 0..5
           for m in 0..7
-            if @all_white_possible_moves[n][m][0] == threatening_pieces.x_position && @all_white_possible_moves[n][m][1] == threatening_pieces.y_position
-              captured_checks += [@all_white_possible_moves[n][m][0], @all_white_possible_moves[n][m][1]]
+            threatening_pieces.each do |threatening_piece|
+              if @all_white_possible_moves[n][m][0] == threatening_piece.x_position && @all_white_possible_moves[n][m][1] == threatening_piece.y_position
+                captured_checks += [@all_white_possible_moves[n][m][0], @all_white_possible_moves[n][m][1]]
+              end
             end
           end
         end
