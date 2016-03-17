@@ -75,27 +75,27 @@ class Piece < ActiveRecord::Base
     true
   end
 
-  def check?(player_color)
-    player_color == "white" ? opponent_color = "black" : opponent_color = "white"
-    opponent_king = game.pieces.where(type: "King", color: opponent_color).first
-    friendly_pieces = game.pieces.where(color: player_color, captured: nil).all
-    in_check = false
-    @threatening_pieces = []
-    friendly_pieces.each do |piece|
-      if piece.valid_move?(opponent_king.x_position, opponent_king.y_position)
-        in_check = true 
-        @threatening_pieces << piece
-    end
-    in_check
-  end
+  # def check?(player_color)
+  #   player_color == "white" ? opponent_color = "black" : opponent_color = "white"
+  #   opponent_king = game.pieces.where(type: "King", color: opponent_color).first
+  #   friendly_pieces = game.pieces.where(color: player_color, captured: nil).all
+  #   in_check = false
+  #   @threatening_pieces = []
+  #   friendly_pieces.each do |piece|
+  #     if piece.valid_move?(opponent_king.x_position, opponent_king.y_position)
+  #       in_check = true 
+  #       @threatening_pieces << piece
+  #   end
+  #   in_check
+  # end
 
-  def checkmate?
-    if check?(color)
+  # def checkmate?
+  #   if check?(color)
 
-    else
-      return false
-    end
-  end
+  #   else
+  #     return false
+  #   end
+  # end
 
   # ***********************************************************
   # Pinning needs specific attention!!
