@@ -8,7 +8,8 @@ class PiecesController < ApplicationController
 
   def update
     # current_piece.capture_piece? # Check for and update captured pieces as part of move validation
-    Piece.find_by_id(params[:id]).update_attributes(piece_params) # Do not use current_piece here solely for pawn promotion
+    current_piece.capture_destination_piece # Capture the opponent piece on destination square if one exists.
+    Piece.find_by_id(params[:id]).update_attributes(piece_params)
     current_piece.update_move
     current_game.next_turn
     # Send a message back to the JS after the update (after the data object is defined in the AJAX request) to confirm successful update or an error:
