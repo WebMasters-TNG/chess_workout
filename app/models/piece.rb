@@ -794,29 +794,21 @@ def black_possible_moves
         # Scan through all potential blocking moves by friendly pieces (blocking check), excluding the king:
         for n in 0..4
           for m in 0..7
-            # case n
-            # when 0
-            # when 1
-            # when 2
-            # # Knight
-            #   white_knights = game.pieces.where(:type => "Knight", :color => "white", :captured => nil).all
-            #   white_knights.each do |white_knight|
-            #     # 2 up, 1 right to capture:
-            #     if white_knight.x_position + 1 ==  && white_knight.y_position + 2 ==
-            #       blocking_checks += []
-            #     # 2 up, 1 left to capture:
-            #     elsif white_knight.x_position - 1 ==  && white_knight.y_position + 2 ==
-            #       blocking_checks += []
-            #     # 1 up, 2 right to capture:
-            #     elsif
-            #     end
-            #   end
-            # when 3
-            # when 4
-
-            # end
-            if @all_white_possible_moves[n][m][0] ==  && @all_white_possible_moves[n][m][1] ==
-              blocking_checks += [@all_white_possible_moves[n][m][0], @all_white_possible_moves[n][m][1]]
+            case n
+            # Blocking doesn't apply to pawns.
+            when 1
+              threatening_pieces.each do |black_rook|
+                # Complete potential capture path is up to 7 squares away:
+                for o in 1..7
+                  # Upward vertical potential capture of the king:
+                  if black_rook.x_position == @white_king.x_position && black_rook.y_position + n == @white_king.y_position && black_rook.x_position == @all_white_possible_moves[n][m][0] && black_rook.y_position + n - o == @all_white_possible_moves[n][m][1]
+                    blocking_checks += [@all_white_possible_moves[n][m][0], @all_white_possible_moves[n][m][1]]
+                  end
+                end
+              end
+            # Blocking doesn't apply to knights.
+            when 3
+            when 4
             end
           end
         end
