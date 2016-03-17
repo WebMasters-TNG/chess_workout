@@ -85,11 +85,11 @@ class Piece < ActiveRecord::Base
     Move.create(game_id: game.id, piece_id: destination_piece.id, old_x: @x1, old_y: @y1, captured_piece: true) if destination_piece
     destination_piece.update_attributes(captured: true) if destination_piece
     # Check for checkmate if the destination square has the king of the opposite color.
-    if self.color == "white"
-      checkmate? if @x1 == @black_king.x_position && @y1 == @black_king.y_position
-    else
-      checkmate? if @x1 == @white_king.x_position && @y1 == @white_king.y_position
-    end
+    # if self.color == "white"
+    #   checkmate? if @x1 == @black_king.x_position && @y1 == @black_king.y_position
+    # else
+    #   checkmate? if @x1 == @white_king.x_position && @y1 == @white_king.y_position
+    # end
     true
   end
 
@@ -122,11 +122,14 @@ class Piece < ActiveRecord::Base
     # all_white_possible_moves[3] == white_bishop_possible_moves
     # all_white_possible_moves[4] == white_queen_possible_moves
     # all_white_possible_moves[5] == white_king_possible_moves
+    white_possible_moves
+    black_possible_moves
     for n in 0..5
       # Each piece has up to 8 pairs of possible move coordinates returned.
       for m in 0..7
         # e.g. all_white_possible_moves[0][0] == [x, y] of first possible pawn move
-        if self.color == "white" && all_white_possible_moves[n][m][0] == @black_king.x_position && all_white_possible_moves[n][m][1] == @black_king.y_position
+        if self.color == "white" && @all_white_possible_moves[n][m][0] == @black_king.x_position &&
+          @all_white_possible_moves[n][m][1] == @black_king.y_position
           return true
         end
       end
@@ -134,7 +137,7 @@ class Piece < ActiveRecord::Base
 
     for n in 0..5
       for m in 0..7
-        if self.color == "black" && all_black_possible_moves[n][m][0] == @white_king.x_position && all_black_possible_moves[n][m][1] == @white_king.y_position
+        if self.color == "black" && @all_black_possible_moves[n][m][0] == @white_king.x_position && @all_black_possible_moves[n][m][1] == @white_king.y_position
           return true
         end
       end
@@ -160,9 +163,9 @@ class Piece < ActiveRecord::Base
     white_pawns.each do |white_pawn|
       # Check that the pawn's path is clear when it tries to make a move allowable by its own movement rules:
       # Has the pawn made its first move or not, and is there a piece at the location of movement or along the way?
-      if white_pawn.move_count < 2 && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position - 1).first == nil && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position - 2).first == nil
+      if white_pawn.y_position == 7 && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position - 1).first == nil && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position - 2).first == nil
         white_pawn_possible_moves += [white_pawn.x_position, white_pawn.y_position - 2]
-      elsif white_pawn.move_count >= 2 && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position - 1).first == nil && white_pawn.y_position - 1 > 0
+      elsif white_pawn.y_position != 7 && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position - 1).first == nil && white_pawn.y_position - 1 > 0
         white_pawn_possible_moves += [white_pawn.x_position, white_pawn.y_position - 1]
       end
 
@@ -435,8 +438,7 @@ class Piece < ActiveRecord::Base
       white_king_possible_moves += [white_king.x_position - 1, white_king.y_position]
     end
 
-    all_white_possible_moves = white_pawn_possible_moves + white_rook_possible_moves + white_bishop_possible_moves + white_queen_possible_moves + white_king_possible_moves
-    return all_white_possible_moves
+    @all_white_possible_moves = [white_pawn_possible_moves, white_rook_possible_moves, white_bishop_possible_moves, white_queen_possible_moves, white_king_possible_moves]
   end
 
 
@@ -454,9 +456,9 @@ def black_possible_moves
     black_pawns.each do |black_pawn|
       # Check that the pawn's path is clear when it tries to make a move allowable by its own movement rules:
       # Has the pawn made its first move or not, and is there a piece at the location of movement or along the way?
-      if black_pawn.move_count < 2 && game.pieces.where(:x_position => black_pawn.x_position, :y_position => black_pawn.y_position - 1).first == nil && game.pieces.where(:x_position => black_pawn.x_position, :y_position => black_pawn.y_position - 2).first == nil
+      if black_pawn.y_position == 2 && game.pieces.where(:x_position => black_pawn.x_position, :y_position => black_pawn.y_position - 1).first == nil && game.pieces.where(:x_position => black_pawn.x_position, :y_position => black_pawn.y_position - 2).first == nil
         black_pawn_possible_moves += [black_pawn.x_position, black_pawn.y_position - 2]
-      elsif black_pawn.move_count >= 2 && game.pieces.where(:x_position => black_pawn.x_position, :y_position => black_pawn.y_position - 1).first == nil && black_pawn.y_position - 1 > 0
+      elsif black_pawn.y_position != 2 && game.pieces.where(:x_position => black_pawn.x_position, :y_position => black_pawn.y_position - 1).first == nil && black_pawn.y_position - 1 > 0
         black_pawn_possible_moves += [black_pawn.x_position, black_pawn.y_position - 1]
       end
 
@@ -729,19 +731,53 @@ def black_possible_moves
       black_king_possible_moves += [black_king.x_position - 1, black_king.y_position]
     end
 
-    all_black_possible_moves = black_pawn_possible_moves + black_rook_possible_moves + black_bishop_possible_moves + black_queen_possible_moves + black_king_possible_moves
-    return all_black_possible_moves
+    @all_black_possible_moves = [black_pawn_possible_moves, black_rook_possible_moves, black_bishop_possible_moves, black_queen_possible_moves, black_king_possible_moves]
   end
 
+# *** Checkmate isn't when the king is captured.  It is when the king can be captured and there is no way to prevent it. ***
   def checkmate?
-    # If this king has been captured, mark the other player as the game's winner:
-    # binding.pry
-    if @white_king.captured == true && game.winner != "white"
-      game.winner = "black"
-      return true
-    elsif @black_king.captured == true && game.winner != "black"
-      game.winner = "white"
-      return true
+    escape_checks = []
+
+    if check?
+      if self.color == "white"
+        # Scan through the possible moves for the black king, to see if the black player can get out of check by moving his king.  Compare the possible moves of the black king with the possible moves of all of the white player's pieces.
+        # @all_black_possible_moves[5] == black_king_possible_moves
+        for o in 0..(@all_black_possible_moves[5].size - 1)
+          # Scan through all possible moves of the player:
+          for n in 0..5
+          # Each piece has up to 8 pairs of possible move coordinates returned.
+            for m in 0..7
+              # e.g. @all_white_possible_moves[0][0] == [x, y] of first possible pawn move
+              if @all_white_possible_moves[n][m][0] != @all_black_possible_moves[5][o][0] && @all_white_possible_moves[n][m][1] != @all_black_possible_moves[5][o][1]
+                escape_checks += [@all_black_possible_moves[5][o][0], @all_black_possible_moves[5][o][1]]
+              end
+            end
+          end
+        end
+        if escape_checks.size > 0
+          return false
+        else
+          game.winner = "white"
+          return true
+        end
+
+      elsif self.color == "black"
+        for o in 0..(@all_white_possible_moves[5].size - 1)
+          for n in 0..5
+            for m in 0..7
+              if @all_black_possible_moves[n][m][0] != @all_white_possible_moves[5][o][0] && @all_black_possible_moves[n][m][1] != @all_white_possible_moves[5][o][1]
+                escape_checks += [@all_white_possible_moves[5][o][0], @all_white_possible_moves[5][o][1]]
+              end
+            end
+          end
+        end
+        if escape_checks.size > 0
+          return false
+        else
+          game.winner = "black"
+          return true
+        end
+      end
     else
       return false
     end
