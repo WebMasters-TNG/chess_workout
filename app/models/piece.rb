@@ -63,9 +63,10 @@ class Piece < ActiveRecord::Base
 
   # Update status of captured piece accordingly and create new move to send to browser to update client side. 
   def capture_destination_piece
-    Move.create(game_id: game.id, piece_id: destination_piece.id, old_x: @x1, old_y: @y1, captured_piece: true) if destination_piece
-    destination_piece.update_attributes(captured: true) if destination_piece
-    true
+    if capture_piece?
+      Move.create(game_id: game.id, piece_id: destination_piece.id, old_x: @x1, old_y: @y1, captured_piece: true)
+      destination_piece.update_attributes(captured: true)
+    end
   end
 
   # Check to see if destination square is occupied by a piece, returning false if it is friendly or true if it is an opponent
@@ -74,24 +75,38 @@ class Piece < ActiveRecord::Base
     true
   end
 
-  def check?
-    color == "white" ? opponent_color = "black" : opponent_color = "white"
+  def check?(player_color)
+    player_color == "white" ? opponent_color = "black" : opponent_color = "white"
     opponent_king = game.pieces.where(type: "King", color: opponent_color).first
-
+    friendly_pieces = game.pieces.where(color: player_color, captured: nil).all
+    in_check = false
+    @threatening_pieces = []
+    friendly_pieces.each do |piece|
+      if piece.valid_move?(opponent_king.x_position, opponent_king.y_position)
+        in_check = true 
+        @threatening_pieces << piece
+    end
+    in_check
   end
 
   def checkmate?
+    if check?(color)
 
+    else
+      return false
+    end
   end
 
   # ***********************************************************
   # Pinning needs specific attention!!
   # => It involves checking whether the King will be under
   # check if this piece is moved.
-  # => AND!! This method MUST be called BEFORE capture_dest_piece?
+  # => AND!! This method MUST be called BEFORE capture_destination_piece?
   # or otherwise an innocent piece will be captured.
   # ***********************************************************
   def pinned?
+    color == "white" ? opponent_color = "black" : opponent_color = "white"
+    return true if check?(opponent_color)
     false # Placeholder value. Assume this current piece is not pinned.
   end
 
