@@ -766,6 +766,12 @@ def black_possible_moves
               case n
               when 0
               when 1
+                threatening_pieces.each do |black_rooK|
+                  # CHECK THIS CODE BELOW:
+                  # if black_rook.x_position == @white_king.x_position && black_rook.y_position + n == @white_king.y_position && black_rook.x_position == @all_white_possible_moves[n][m][0] && black_rook.y_position + n - o == @all_white_possible_moves[n][m][1]
+                  #     threatening_pieces += [@all_white_possible_moves[n][m][0], @all_white_possible_moves[n][m][1]]
+                  # end
+                end
               when 2
                 # Knight
                 black_knights = game.pieces.where(:type => "Knight", :color => "black", :captured => nil).all
