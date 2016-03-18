@@ -130,6 +130,7 @@ class Piece < ActiveRecord::Base
         # e.g. all_white_possible_moves[0][0] == [x, y] of first possible pawn move
         if self.color == "white" && @all_white_possible_moves[n][m][0] == @black_king.x_position &&
           @all_white_possible_moves[n][m][1] == @black_king.y_position
+          checkmate?
           return true
         end
       end
@@ -138,6 +139,7 @@ class Piece < ActiveRecord::Base
     for n in 0..5
       for m in 0..7
         if self.color == "black" && @all_black_possible_moves[n][m][0] == @white_king.x_position && @all_black_possible_moves[n][m][1] == @white_king.y_position
+          checkmate?
           return true
         end
       end
@@ -148,6 +150,8 @@ class Piece < ActiveRecord::Base
     # 3) Move King to unchecking position
     # b) Check whether moving the current piece would place the king in check
   end
+
+# *** Consider making a possible_moves method within each piece type model. ***
 
   def white_possible_moves
     # Store all of the active (non-captured) white pieces on the board:
@@ -165,6 +169,7 @@ class Piece < ActiveRecord::Base
       # Has the pawn made its first move or not, and is there a piece at the location of movement or along the way?
       if white_pawn.y_position == 7 && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position - 1).first == nil && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position - 2).first == nil
         white_pawn_possible_moves += [white_pawn.x_position, white_pawn.y_position - 2]
+      # *** The pawn can move - 1 or -2 on the first turn. ***
       elsif white_pawn.y_position != 7 && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position - 1).first == nil && white_pawn.y_position - 1 > 0
         white_pawn_possible_moves += [white_pawn.x_position, white_pawn.y_position - 1]
       end
@@ -757,6 +762,7 @@ def black_possible_moves
           end
         end
 
+        #  *** Might be able to use an instance variable within the check method. ***
         threatening_pieces = []
         # Find the piece that is placing the player's king in check:
         for n in 0..5
@@ -766,12 +772,12 @@ def black_possible_moves
               case n
               when 0
               when 1
-                threatening_pieces.each do |black_rooK|
+                # threatening_pieces.each do |black_rooK|
                   # CHECK THIS CODE BELOW:
                   # if black_rook.x_position == @white_king.x_position && black_rook.y_position + n == @white_king.y_position && black_rook.x_position == @all_white_possible_moves[n][m][0] && black_rook.y_position + n - o == @all_white_possible_moves[n][m][1]
                   #     threatening_pieces += [@all_white_possible_moves[n][m][0], @all_white_possible_moves[n][m][1]]
                   # end
-                end
+                # end
               when 2
                 # Knight
                 black_knights = game.pieces.where(:type => "Knight", :color => "black", :captured => nil).all
@@ -866,6 +872,7 @@ def black_possible_moves
     Move.create(game_id: game.id, piece_id: id, move_count: inc_move, old_x: @x0, new_x: @x1, old_y: @y0, new_y: @y1)
   end
 
+  # *** Use this for the pawns !!***
   def first_move?
     self.moves.first.nil?
   end
