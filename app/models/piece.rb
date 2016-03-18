@@ -38,6 +38,14 @@ class Piece < ActiveRecord::Base
     @sy.abs == @sx.abs
   end
 
+  def white?
+    self.color == 'white'
+  end
+
+  def black?
+    self.color == 'black'
+  end
+
   # Check to see if the movement pat is a valid straight move
   def straight_move?
     @x1 == @x0 || @y1 == @y0
@@ -114,6 +122,23 @@ class Piece < ActiveRecord::Base
     false # Placeholder value. Assume this current piece is not pinned.
   end
 
+  def possible_moves
+    @possible_moves ||= white_pieces_moves + black_pieces_moves
+  end
+
+  def white_pieces_moves
+    @possible_moves ||= self.game.white_pieces.map do |piece|
+      piece.possible_moves
+    end
+  end
+
+  def black_pieces_moves
+    @possible_moves ||= self.game.black_pieces.map do |piece|
+      piece.possible_moves
+    end
+
+  end
+
   def check?
     # a) Determine a list of valid player moves that could put an enemy's king in check based upon where it is:
     # all_white_possible_moves[0] == white_pawn_possible_moves
@@ -165,21 +190,22 @@ class Piece < ActiveRecord::Base
     # For each white piece, check for and store all valid moves:
     white_pawn_possible_moves = []
     white_pawns.each do |white_pawn|
-      # Check that the pawn's path is clear when it tries to make a move allowable by its own movement rules:
-      # Has the pawn made its first move or not, and is there a piece at the location of movement or along the way?
-      if white_pawn.y_position == 7 && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position - 1).first == nil && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position - 2).first == nil
-        white_pawn_possible_moves += [white_pawn.x_position, white_pawn.y_position - 2]
-      # *** The pawn can move - 1 or -2 on the first turn. ***
-      elsif white_pawn.y_position != 7 && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position - 1).first == nil && white_pawn.y_position - 1 > 0
-        white_pawn_possible_moves += [white_pawn.x_position, white_pawn.y_position - 1]
-      end
+      white_pawn_possible_moves += white_pawn.possible_moves
+      # # Check that the pawn's path is clear when it tries to make a move allowable by its own movement rules:
+      # # Has the pawn made its first move or not, and is there a piece at the location of movement or along the way?
+      # if white_pawn.y_position == 7 && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position - 1).first == nil && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position - 2).first == nil
+      #   white_pawn_possible_moves += [white_pawn.x_position, white_pawn.y_position - 2]
+      # # *** The pawn can move - 1 or -2 on the first turn. ***
+      # elsif white_pawn.y_position != 7 && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position - 1).first == nil && white_pawn.y_position - 1 > 0
+      #   white_pawn_possible_moves += [white_pawn.x_position, white_pawn.y_position - 1]
+      # end
 
-      # Check for a capturable piece that is to a forward diagonal position of the pawn:
-      if game.pieces.where(:x_position => white_pawn.x_position + 1, :y_position => white_pawn.y_position - 1, :color => "black").first != nil && white_pawn.x_position + 1 < 9 && white_pawn.y_position - 1 > 0
-        white_pawn_possible_moves += [white_pawn.x_position + 1, white_pawn.y_position - 1]
-      elsif game.pieces.where(:x_position => white_pawn.x_position - 1, :y_position => white_pawn.y_position - 1, :color => "black").first != nil && white_pawn.x_position - 1 > 0 && white_pawn.y_position - 1 > 0
-        white_pawn_possible_moves += [white_pawn.x_position - 1, white_pawn.y_position - 1]
-      end
+      # # Check for a capturable piece that is to a forward diagonal position of the pawn:
+      # if game.pieces.where(:x_position => white_pawn.x_position + 1, :y_position => white_pawn.y_position - 1, :color => "black").first != nil && white_pawn.x_position + 1 < 9 && white_pawn.y_position - 1 > 0
+      #   white_pawn_possible_moves += [white_pawn.x_position + 1, white_pawn.y_position - 1]
+      # elsif game.pieces.where(:x_position => white_pawn.x_position - 1, :y_position => white_pawn.y_position - 1, :color => "black").first != nil && white_pawn.x_position - 1 > 0 && white_pawn.y_position - 1 > 0
+      #   white_pawn_possible_moves += [white_pawn.x_position - 1, white_pawn.y_position - 1]
+      # end
     end
 
     white_rook_possible_moves = []
