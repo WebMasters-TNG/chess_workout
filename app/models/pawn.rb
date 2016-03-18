@@ -9,6 +9,37 @@ class Pawn < Piece
     end
   end
 
+  def possible_moves
+    # white starts 7, 8
+    # black starts at 1, 2
+    # Check that the pawn's path is clear when it tries to make a move allowable by its own movement rules:
+    # Has the pawn made its first move or not, and is there a piece at the location of movement or along the way?
+    possible_moves = []
+    if self.white?
+      if self.first_move?
+        possible_moves += [white_pawn.x_position, white_pawn.y_position - 1]
+        possible_moves += [white_pawn.x_position, white_pawn.y_position - 2]
+      else
+        possible_moves += [white_pawn.x_position, white_pawn.y_position - 1] unless self.y_position < 1
+      end
+
+      # Check for a capturable piece that is to a forward diagonal position of the pawn:
+      if game.pieces.where(:x_position => white_pawn.x_position + 1, :y_position => white_pawn.y_position - 1, :color => "black").first != nil && white_pawn.x_position + 1 < 9 && white_pawn.y_position - 1 > 0
+        white_pawn_possible_moves += [white_pawn.x_position + 1, white_pawn.y_position - 1]
+      elsif game.pieces.where(:x_position => white_pawn.x_position - 1, :y_position => white_pawn.y_position - 1, :color => "black").first != nil && white_pawn.x_position - 1 > 0 && white_pawn.y_position - 1 > 0
+        white_pawn_possible_moves += [white_pawn.x_position - 1, white_pawn.y_position - 1]
+      end
+    else
+      # other logic
+    end
+  end
+
+  def black_piece_in_kill_zone?
+  end
+
+  def white_piece_in_kill_zone?
+  end
+
   # ***********************************************************
   # En passant ("in passing") needs specific attention!!
   # => A special pawn capture, that can only occur immediately after a pawn moves two ranks forward from its starting position and an enemy pawn could have captured it had the pawn moved only one square forward.
