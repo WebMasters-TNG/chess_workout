@@ -17,20 +17,22 @@ class Pawn < Piece
     possible_moves = []
     if self.white?
       if self.first_move?
-        possible_moves += [white_pawn.x_position, white_pawn.y_position - 1]
-        possible_moves += [white_pawn.x_position, white_pawn.y_position - 2]
+        possible_moves += [[self.x_position, self.y_position - 1]]
+        possible_moves += [[self.x_position, self.y_position - 2]]
+        # binding.pry
       else
-        possible_moves += [white_pawn.x_position, white_pawn.y_position - 1] unless self.y_position < 1
+        possible_moves += [[self.x_position, self.y_position - 1]] unless self.y_position < 1
       end
 
       # Check for a capturable piece that is to a forward diagonal position of the pawn:
-      if game.pieces.where(:x_position => white_pawn.x_position + 1, :y_position => white_pawn.y_position - 1, :color => "black").first != nil && white_pawn.x_position + 1 < 9 && white_pawn.y_position - 1 > 0
-        white_pawn_possible_moves += [white_pawn.x_position + 1, white_pawn.y_position - 1]
-      elsif game.pieces.where(:x_position => white_pawn.x_position - 1, :y_position => white_pawn.y_position - 1, :color => "black").first != nil && white_pawn.x_position - 1 > 0 && white_pawn.y_position - 1 > 0
-        white_pawn_possible_moves += [white_pawn.x_position - 1, white_pawn.y_position - 1]
+      if game.pieces.where(:x_position => self.x_position + 1, :y_position => self.y_position - 1, :color => "black").first != nil && self.x_position + 1 < 9 && self.y_position - 1 > 0
+        binding.pry
+        possible_moves += [[self.x_position + 1, self.y_position - 1]]
+      elsif game.pieces.where(:x_position => self.x_position - 1, :y_position => self.y_position - 1, :color => "black").first != nil && self.x_position - 1 > 0 && self.y_position - 1 > 0
+        possible_moves += [[self.x_position - 1, self.y_position - 1]]
       end
     else
-      # other logic
+      # other logic for black pieces
     end
   end
 

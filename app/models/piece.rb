@@ -189,10 +189,11 @@ class Piece < ActiveRecord::Base
 
     # For each white piece, check for and store all valid moves:
     white_pawn_possible_moves = []
+    n = 0
     white_pawns.each do |white_pawn|
-      white_pawn_possible_moves += white_pawn.possible_moves
-      # # Check that the pawn's path is clear when it tries to make a move allowable by its own movement rules:
-      # # Has the pawn made its first move or not, and is there a piece at the location of movement or along the way?
+      white_pawn_possible_moves[n] = [white_pawn.possible_moves]
+      # Check that the pawn's path is clear when it tries to make a move allowable by its own movement rules:
+      # Has the pawn made its first move or not, and is there a piece at the location of movement or along the way?
       # if white_pawn.y_position == 7 && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position - 1).first == nil && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position - 2).first == nil
       #   white_pawn_possible_moves += [white_pawn.x_position, white_pawn.y_position - 2]
       # # *** The pawn can move - 1 or -2 on the first turn. ***
@@ -206,6 +207,8 @@ class Piece < ActiveRecord::Base
       # elsif game.pieces.where(:x_position => white_pawn.x_position - 1, :y_position => white_pawn.y_position - 1, :color => "black").first != nil && white_pawn.x_position - 1 > 0 && white_pawn.y_position - 1 > 0
       #   white_pawn_possible_moves += [white_pawn.x_position - 1, white_pawn.y_position - 1]
       # end
+      # binding.pry
+      n += 1
     end
 
     white_rook_possible_moves = []
