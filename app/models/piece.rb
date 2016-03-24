@@ -191,7 +191,7 @@ class Piece < ActiveRecord::Base
     white_pawn_possible_moves = []
     n = 0
     white_pawns.each do |white_pawn|
-      white_pawn_possible_moves[n] = [white_pawn.possible_moves]
+      white_pawn_possible_moves += [white_pawn.possible_moves]
       # Check that the pawn's path is clear when it tries to make a move allowable by its own movement rules:
       # Has the pawn made its first move or not, and is there a piece at the location of movement or along the way?
       # if white_pawn.y_position == 7 && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position - 1).first == nil && game.pieces.where(:x_position => white_pawn.x_position, :y_position => white_pawn.y_position - 2).first == nil
@@ -226,14 +226,22 @@ class Piece < ActiveRecord::Base
         enemy_piece = game.pieces.where(:color => "black", :x_position => white_rook.x_position + n - 1, :y_position => white_rook.y_position).first
         enemy_pieces += [enemy_piece]
         # *** friendly_piece and enemy_piece are returning nil! ***
+        # Friendly pieces and enemy pieces are present in the path:
         if friendly_pieces[n] != nil && enemy_pieces[n] != nil
           if white_rook.x_position + n != friendly_pieces[n].x_position && white_rook.x_position + n != enemy_pieces[n].x_position && white_rook.x_position + n < 9
             white_rook_possible_moves += [white_rook.x_position + n, white_rook.y_position]
           end
+        # Only friendly pieces are present in the path:
         elsif friendly_pieces[n] != nil && enemy_pieces[n] == nil
           if white_rook.x_position + n != friendly_pieces[n].x_position && white_rook.x_position + n < 9
             white_rook_possible_moves += [white_rook.x_position + n, white_rook.y_position]
           end
+        # Only enemy pieces are present in the path:
+        elsif friendly_pieces[n] == nil && enemy_pieces[n] != nil
+          if white_rook.x_position + n != enemy_pieces[n].x_position && white_rook.x_position + n < 9
+            white_rook_possible_moves += [white_rook.x_position + n, white_rook.y_position]
+          end
+        # Neither friendly nor enemy pieces are present in the path:
         else
            if white_rook.x_position + n < 9
             white_rook_possible_moves += [white_rook.x_position + n, white_rook.y_position]
@@ -244,9 +252,25 @@ class Piece < ActiveRecord::Base
       # Check the left horizontal path:
       for n in 1..7
         friendly_piece = game.pieces.where(:color => "white", :x_position => white_rook.x_position - n, :y_position => white_rook.y_position).first
+        friendly_pieces += [friendly_piece]
         enemy_piece = game.pieces.where(:color => "black", :x_position => white_rook.x_position - n + 1, :y_position => white_rook.y_position).first
-        if white_rook.x_position - n != friendly_piece.x_position && white_rook.x_position - n != enemy_piece.x_position && white_rook.x_position - n > 0
-          white_rook_possible_moves += [white_rook.x_position - n, white_rook.y_position]
+        enemy_pieces += [enemy_piece]
+        if friendly_pieces[n] != nil && enemy_pieces[n] != nil
+          if white_rook.x_position - n != friendly_pieces[n].x_position && white_rook.x_position - n != enemy_pieces[n].x_position && white_rook.x_position - n > 0
+            white_rook_possible_moves += [white_rook.x_position - n, white_rook.y_position]
+          end
+        elsif friendly_pieces[n] != nil && enemy_pieces[n] == nil
+          if white_rook.x_position - n != friendly_pieces[n].x_position && white_rook.x_position - n > 0
+            white_rook_possible_moves += [white_rook.x_position - n, white_rook.y_position]
+          end
+        elsif friendly_pieces[n] == nil && enemy_pieces[n] != nil
+          if white_rook.x_position - n != enemy_pieces[n].x_position && white_rook.x_position - n > 0
+            white_rook_possible_moves += [white_rook.x_position - n, white_rook.y_position]
+          end
+        else
+           if white_rook.x_position - n > 0
+            white_rook_possible_moves += [white_rook.x_position - n, white_rook.y_position]
+          end
         end
       end
 
@@ -319,6 +343,7 @@ class Piece < ActiveRecord::Base
       if white_knight.x_position - 2 != friendly_piece.x_position && white_knight.y_position - 1 != friendly_piece.y_position && white_knight.x_position - 2 > 0 && white_knight.y_position - 1 > 0
         white_knight_possible_moves += [white_knight.x_position - 2, white_knight.y_position - 1]
       end
+      binding.pry
     end
 
     white_bishop_possible_moves = []
