@@ -215,7 +215,6 @@ class Piece < ActiveRecord::Base
     white_rooks.each do |white_rook|
       # Check that each white rook has a clear path (no friendly pieces along the way or at the destination spot, or any enemy pieces along the way).
       # Check the right horizontal path:
-      binding.pry
       friendly_pieces = []
       enemy_pieces = []
       for n in 1..7
@@ -255,16 +254,16 @@ class Piece < ActiveRecord::Base
         friendly_pieces += [friendly_piece]
         enemy_piece = game.pieces.where(:color => "black", :x_position => white_rook.x_position - n + 1, :y_position => white_rook.y_position).first
         enemy_pieces += [enemy_piece]
-        if friendly_pieces[n - 1] != nil && enemy_pieces[n - 1] != nil
-          if white_rook.x_position - n != friendly_pieces[n - 1].x_position && white_rook.x_position - n != enemy_pieces[n - 1].x_position && white_rook.x_position - n > 0
+        if friendly_pieces[n - 1 + 7] != nil && enemy_pieces[n - 1 + 7] != nil
+          if white_rook.x_position - n != friendly_pieces[n - 1 + 7].x_position && white_rook.x_position - n != enemy_pieces[n - 1 + 7].x_position && white_rook.x_position - n > 0
             white_rook_possible_moves += [[white_rook.x_position - n, white_rook.y_position]]
           end
-        elsif friendly_pieces[n - 1] != nil && enemy_pieces[n - 1] == nil
-          if white_rook.x_position - n != friendly_pieces[n - 1].x_position && white_rook.x_position - n > 0
+        elsif friendly_pieces[n - 1 + 7] != nil && enemy_pieces[n - 1 + 7] == nil
+          if white_rook.x_position - n != friendly_pieces[n - 1 + 7].x_position && white_rook.x_position - n > 0
             white_rook_possible_moves += [[white_rook.x_position - n, white_rook.y_position]]
           end
-        elsif friendly_pieces[n - 1] == nil && enemy_pieces[n - 1] != nil
-          if white_rook.x_position - n != enemy_pieces[n - 1].x_position && white_rook.x_position - n > 0
+        elsif friendly_pieces[n - 1 + 7] == nil && enemy_pieces[n - 1 + 7] != nil
+          if white_rook.x_position - n != enemy_pieces[n - 1 + 7].x_position && white_rook.x_position - n > 0
             white_rook_possible_moves += [[white_rook.x_position - n, white_rook.y_position]]
           end
         else
@@ -282,16 +281,16 @@ class Piece < ActiveRecord::Base
         enemy_piece = game.pieces.where(:color => "black", :x_position => white_rook.x_position, :y_position => white_rook.y_position - n + 1).first
         enemy_pieces += [enemy_piece]
 
-        if friendly_pieces[n - 1] != nil && enemy_pieces[n - 1] != nil
-          if white_rook.y_position - n != friendly_pieces[n - 1].y_position && white_rook.y_position - n != enemy_pieces[n - 1].y_position && white_rook.y_position - n > 0
+        if friendly_pieces[n - 1 + 14] != nil && enemy_pieces[n - 1 + 14] != nil
+          if white_rook.y_position - n != friendly_pieces[n - 1 + 14].y_position && white_rook.y_position - n != enemy_pieces[n - 1 + 14].y_position && white_rook.y_position - n > 0
             white_rook_possible_moves += [[white_rook.x_position, white_rook.y_position - n]]
           end
-        elsif friendly_pieces[n - 1] != nil && enemy_pieces[n - 1] == nil
-          if white_rook.y_position - n != friendly_pieces[n - 1].y_position && white_rook.y_position - n > 0
+        elsif friendly_pieces[n - 1 + 14] != nil && enemy_pieces[n - 1 + 14] == nil
+          if white_rook.y_position - n != friendly_pieces[n - 1 + 14].y_position && white_rook.y_position - n > 0
             white_rook_possible_moves += [[white_rook.x_position, white_rook.y_position - n]]
           end
-        elsif friendly_pieces[n - 1] == nil && enemy_pieces[n - 1] != nil
-          if white_rook.y_position - n != enemy_pieces[n - 1].y_position && white_rook.y_position - n > 0
+        elsif friendly_pieces[n - 1 + 14] == nil && enemy_pieces[n - 1 + 14] != nil
+          if white_rook.y_position - n != enemy_pieces[n - 1 + 14].y_position && white_rook.y_position - n > 0
             white_rook_possible_moves += [[white_rook.x_position, white_rook.y_position - n]]
           end
         else
@@ -303,22 +302,22 @@ class Piece < ActiveRecord::Base
 
       # Check the downward vertical path:
       # Note: "Down" is positive for white.
+      binding.pry
       for n in 1..7
         friendly_piece = game.pieces.where(:color => "white", :x_position => white_rook.x_position, :y_position => white_rook.y_position + n).first
         friendly_pieces += [friendly_piece]
         enemy_piece = game.pieces.where(:color => "black", :x_position => white_rook.x_position, :y_position => white_rook.y_position + n - 1).first
         enemy_pieces += [enemy_piece]
-        binding.pry
-        if friendly_pieces[n - 1] != nil && enemy_pieces[n - 1] != nil
-          if white_rook.y_position + n != friendly_pieces[n - 1].y_position && white_rook.y_position + n != enemy_pieces[n - 1].y_position && white_rook.y_position + n < 9
+        if friendly_pieces[n - 1 + 21] != nil && enemy_pieces[n - 1 + 21] != nil
+          if white_rook.y_position + n != friendly_pieces[n - 1 + 21].y_position && white_rook.y_position + n != enemy_pieces[n - 1 + 21].y_position && white_rook.y_position + n < 9
             white_rook_possible_moves += [[white_rook.x_position, white_rook.y_position + n]]
           end
-        elsif friendly_pieces[n - 1] != nil && enemy_pieces[n - 1] == nil
-          if white_rook.y_position + n != friendly_pieces[n - 1].y_position && white_rook.y_position + n < 9
+        elsif friendly_pieces[n - 1 + 21] != nil && enemy_pieces[n - 1 + 21] == nil
+          if white_rook.y_position + n != friendly_pieces[n - 1 + 21].y_position && white_rook.y_position + n < 9
             white_rook_possible_moves += [[white_rook.x_position, white_rook.y_position + n]]
           end
-        elsif friendly_pieces[n - 1] == nil && enemy_pieces[n - 1] != nil
-          if white_rook.y_position + n != enemy_pieces[n - 1].y_position && white_rook.y_position + n < 9
+        elsif friendly_pieces[n - 1 + 21] == nil && enemy_pieces[n - 1 + 21] != nil
+          if white_rook.y_position + n != enemy_pieces[n - 1 + 21].y_position && white_rook.y_position + n < 9
             white_rook_possible_moves += [[white_rook.x_position, white_rook.y_position + n]]
           end
         else
