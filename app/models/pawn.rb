@@ -42,8 +42,8 @@ class Pawn < Piece
 
       # Check for a capturable piece that is to a forward diagonal position of the pawn:
       if game.pieces.where(:x_position => self.x_position + 1, :y_position => self.y_position + 1, :color => "white").first != nil && self.x_position + 1 < 9 && self.y_position + 1 < 9
-        binding.pry
         possible_moves += [[self.x_position + 1, self.y_position + 1]]
+        binding.pry
       elsif game.pieces.where(:x_position => self.x_position - 1, :y_position => self.y_position + 1, :color => "white").first != nil && self.x_position - 1 > 0 && self.y_position + 1 < 9
         possible_moves += [[self.x_position - 1, self.y_position + 1]]
       end
