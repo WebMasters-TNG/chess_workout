@@ -224,26 +224,29 @@ class Piece < ActiveRecord::Base
         # Enemy
         enemy_piece = game.pieces.where(:color => "black", :x_position => white_rook.x_position + n - 1, :y_position => white_rook.y_position).first
         enemy_pieces += [enemy_piece]
+      end
+      for m in 1..7
         # *** friendly_piece and enemy_piece are returning nil! ***
         # Friendly pieces and enemy pieces are present in the path:
-        if friendly_pieces[n - 1] != nil && enemy_pieces[n - 1] != nil
-          if white_rook.x_position + n != friendly_pieces[n - 1].x_position && white_rook.x_position + n != enemy_pieces[n - 1].x_position && white_rook.x_position + n < 9
-            white_rook_possible_moves += [[white_rook.x_position + n, white_rook.y_position]]
-          end
+        if friendly_pieces[m - 1] != nil || enemy_pieces[m - 1] != nil
+          break
+          # if white_rook.x_position + n != friendly_pieces[n - 1].x_position && white_rook.x_position + n != enemy_pieces[n - 1].x_position && white_rook.x_position + n < 9
+          #   white_rook_possible_moves += [[white_rook.x_position + n, white_rook.y_position]]
+          # end
         # Only friendly pieces are present in the path:
-        elsif friendly_pieces[n - 1] != nil && enemy_pieces[n - 1] == nil
-          if white_rook.x_position + n != friendly_pieces[n - 1].x_position && white_rook.x_position + n < 9
-            white_rook_possible_moves += [[white_rook.x_position + n, white_rook.y_position]]
-          end
-        # Only enemy pieces are present in the path:
-        elsif friendly_pieces[n - 1] == nil && enemy_pieces[n - 1] != nil
-          if white_rook.x_position + n != enemy_pieces[n - 1].x_position && white_rook.x_position + n < 9
-            white_rook_possible_moves += [[white_rook.x_position + n, white_rook.y_position]]
-          end
+        # elsif friendly_pieces[n - 1] != nil && enemy_pieces[n - 1] == nil
+        #   if white_rook.x_position + n != friendly_pieces[n - 1].x_position && white_rook.x_position + n < 9
+        #     white_rook_possible_moves += [[white_rook.x_position + n, white_rook.y_position]]
+        #   end
+        # # Only enemy pieces are present in the path:
+        # elsif friendly_pieces[n - 1] == nil && enemy_pieces[n - 1] != nil
+        #   if white_rook.x_position + n != enemy_pieces[n - 1].x_position && white_rook.x_position + n < 9
+        #     white_rook_possible_moves += [[white_rook.x_position + n, white_rook.y_position]]
+        #   end
         # Neither friendly nor enemy pieces are present in the path:
         else
-           if white_rook.x_position + n < 9
-            white_rook_possible_moves += [[white_rook.x_position + n, white_rook.y_position]]
+           if white_rook.x_position + m < 9
+            white_rook_possible_moves += [[white_rook.x_position + m, white_rook.y_position]]
           end
         end
       end
@@ -254,21 +257,24 @@ class Piece < ActiveRecord::Base
         friendly_pieces += [friendly_piece]
         enemy_piece = game.pieces.where(:color => "black", :x_position => white_rook.x_position - n + 1, :y_position => white_rook.y_position).first
         enemy_pieces += [enemy_piece]
-        if friendly_pieces[n - 1 + 7] != nil && enemy_pieces[n - 1 + 7] != nil
-          if white_rook.x_position - n != friendly_pieces[n - 1 + 7].x_position && white_rook.x_position - n != enemy_pieces[n - 1 + 7].x_position && white_rook.x_position - n > 0
-            white_rook_possible_moves += [[white_rook.x_position - n, white_rook.y_position]]
-          end
-        elsif friendly_pieces[n - 1 + 7] != nil && enemy_pieces[n - 1 + 7] == nil
-          if white_rook.x_position - n != friendly_pieces[n - 1 + 7].x_position && white_rook.x_position - n > 0
-            white_rook_possible_moves += [[white_rook.x_position - n, white_rook.y_position]]
-          end
-        elsif friendly_pieces[n - 1 + 7] == nil && enemy_pieces[n - 1 + 7] != nil
-          if white_rook.x_position - n != enemy_pieces[n - 1 + 7].x_position && white_rook.x_position - n > 0
-            white_rook_possible_moves += [[white_rook.x_position - n, white_rook.y_position]]
-          end
+      end
+      for m in 1..7
+        if friendly_pieces[m - 1 + 7] != nil || enemy_pieces[m - 1 + 7] != nil
+          break
+          # if white_rook.x_position - n != friendly_pieces[n - 1 + 7].x_position && white_rook.x_position - n != enemy_pieces[n - 1 + 7].x_position && white_rook.x_position - n > 0
+          #   white_rook_possible_moves += [[white_rook.x_position - n, white_rook.y_position]]
+          # end
+        # elsif friendly_pieces[n - 1 + 7] != nil && enemy_pieces[n - 1 + 7] == nil
+        #   if white_rook.x_position - n != friendly_pieces[n - 1 + 7].x_position && white_rook.x_position - n > 0
+        #     white_rook_possible_moves += [[white_rook.x_position - n, white_rook.y_position]]
+        #   end
+        # elsif friendly_pieces[n - 1 + 7] == nil && enemy_pieces[n - 1 + 7] != nil
+        #   if white_rook.x_position - n != enemy_pieces[n - 1 + 7].x_position && white_rook.x_position - n > 0
+        #     white_rook_possible_moves += [[white_rook.x_position - n, white_rook.y_position]]
+        #   end
         else
-           if white_rook.x_position - n > 0
-            white_rook_possible_moves += [[white_rook.x_position - n, white_rook.y_position]]
+           if white_rook.x_position - m > 0
+            white_rook_possible_moves += [[white_rook.x_position - m, white_rook.y_position]]
           end
         end
       end
@@ -280,23 +286,31 @@ class Piece < ActiveRecord::Base
         friendly_pieces += [friendly_piece]
         enemy_piece = game.pieces.where(:color => "black", :x_position => white_rook.x_position, :y_position => white_rook.y_position - n + 1).first
         enemy_pieces += [enemy_piece]
-
-        if friendly_pieces[n - 1 + 14] != nil && enemy_pieces[n - 1 + 14] != nil
-          if white_rook.y_position - n != friendly_pieces[n - 1 + 14].y_position && white_rook.y_position - n != enemy_pieces[n - 1 + 14].y_position && white_rook.y_position - n > 0
-            white_rook_possible_moves += [[white_rook.x_position, white_rook.y_position - n]]
-          end
-        elsif friendly_pieces[n - 1 + 14] != nil && enemy_pieces[n - 1 + 14] == nil
-          if white_rook.y_position - n != friendly_pieces[n - 1 + 14].y_position && white_rook.y_position - n > 0
-            white_rook_possible_moves += [[white_rook.x_position, white_rook.y_position - n]]
-          end
-        elsif friendly_pieces[n - 1 + 14] == nil && enemy_pieces[n - 1 + 14] != nil
-          if white_rook.y_position - n != enemy_pieces[n - 1 + 14].y_position && white_rook.y_position - n > 0
-            white_rook_possible_moves += [[white_rook.x_position, white_rook.y_position - n]]
-          end
+      end
+      for m in 1..7
+        if friendly_pieces[m - 1 + 14] != nil || enemy_pieces[m - 1 + 14] != nil
+          # if white_rook.y_position - n != friendly_pieces[n - 1 + 14].y_position && white_rook.y_position - n != enemy_pieces[n - 1 + 14].y_position && white_rook.y_position - n > 0
+            break
+            # white_rook_possible_moves += [[white_rook.x_position, white_rook.y_position - n]]
+          # end
+        # elsif friendly_pieces[n - 1 + 14] != nil && enemy_pieces[n - 1 + 14] == nil
+        #   # if white_rook.y_position - n != friendly_pieces[n - 1 + 14].y_position && white_rook.y_position - n > 0
+        #   #   white_rook_possible_moves += [[white_rook.x_position, white_rook.y_position - n]]
+        #     break
+        #   # end
+        # elsif friendly_pieces[n - 1 + 14] == nil && enemy_pieces[n - 1 + 14] != nil
+        #   # if white_rook.y_position - n != enemy_pieces[n - 1 + 14].y_position && white_rook.y_position - n > 0
+        #   #   white_rook_possible_moves += [[white_rook.x_position, white_rook.y_position - n]]
+        #     break
+        #   # end
         else
-          if white_rook.y_position - n > 0
-            white_rook_possible_moves += [[white_rook.x_position, white_rook.y_position - n]]
-          end
+          # Check for blocking pieces in the square before the destination:
+          # for m in 0..6
+            if white_rook.y_position - m > 0
+              # && friendly_pieces[n - 1 + 14] == nil && enemy_pieces[n + 1 + 14] == nil
+              white_rook_possible_moves += [[white_rook.x_position, white_rook.y_position - m]]
+            end
+          # end
         end
       end
 
@@ -308,21 +322,24 @@ class Piece < ActiveRecord::Base
         friendly_pieces += [friendly_piece]
         enemy_piece = game.pieces.where(:color => "black", :x_position => white_rook.x_position, :y_position => white_rook.y_position + n - 1).first
         enemy_pieces += [enemy_piece]
-        if friendly_pieces[n - 1 + 21] != nil && enemy_pieces[n - 1 + 21] != nil
-          if white_rook.y_position + n != friendly_pieces[n - 1 + 21].y_position && white_rook.y_position + n != enemy_pieces[n - 1 + 21].y_position && white_rook.y_position + n < 9
-            white_rook_possible_moves += [[white_rook.x_position, white_rook.y_position + n]]
-          end
-        elsif friendly_pieces[n - 1 + 21] != nil && enemy_pieces[n - 1 + 21] == nil
-          if white_rook.y_position + n != friendly_pieces[n - 1 + 21].y_position && white_rook.y_position + n < 9
-            white_rook_possible_moves += [[white_rook.x_position, white_rook.y_position + n]]
-          end
-        elsif friendly_pieces[n - 1 + 21] == nil && enemy_pieces[n - 1 + 21] != nil
-          if white_rook.y_position + n != enemy_pieces[n - 1 + 21].y_position && white_rook.y_position + n < 9
-            white_rook_possible_moves += [[white_rook.x_position, white_rook.y_position + n]]
-          end
+      end
+      for m in 1..7
+        if friendly_pieces[m - 1 + 21] != nil || enemy_pieces[m - 1 + 21] != nil
+          break
+        #   if white_rook.y_position + n != friendly_pieces[n - 1 + 21].y_position && white_rook.y_position + n != enemy_pieces[n - 1 + 21].y_position && white_rook.y_position + n < 9
+        #     white_rook_possible_moves += [[white_rook.x_position, white_rook.y_position + n]]
+        #   end
+        # elsif friendly_pieces[n - 1 + 21] != nil && enemy_pieces[n - 1 + 21] == nil
+        #   if white_rook.y_position + n != friendly_pieces[n - 1 + 21].y_position && white_rook.y_position + n < 9
+        #     white_rook_possible_moves += [[white_rook.x_position, white_rook.y_position + n]]
+        #   end
+        # elsif friendly_pieces[n - 1 + 21] == nil && enemy_pieces[n - 1 + 21] != nil
+        #   if white_rook.y_position + n != enemy_pieces[n - 1 + 21].y_position && white_rook.y_position + n < 9
+        #     white_rook_possible_moves += [[white_rook.x_position, white_rook.y_position + n]]
+        #   end
         else
-          if white_rook.y_position + n < 9
-            white_rook_possible_moves += [[white_rook.x_position, white_rook.y_position + n]]
+          if white_rook.y_position + m < 9
+            white_rook_possible_moves += [[white_rook.x_position, white_rook.y_position + m]]
           end
         end
       end
