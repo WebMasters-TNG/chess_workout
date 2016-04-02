@@ -14,11 +14,17 @@ class Piece < ActiveRecord::Base
     return false if pinned?
     if self.color == "white"
       @black_king = game.pieces.where(:type => "King", :color => "black").first
+      if @black_king.captured != true
+        check?
+      end
     else
       @white_king = game.pieces.where(:type => "King", :color => "white").first
+      if @white_king.captured != true
+        check?
+      end
     end
     # Will the opposing player's king be put into check if this move is made?
-    check?
+    # check?
     # *** Must also allow check to return false if the threatening piece is captured by the move. ***
     true
   end
