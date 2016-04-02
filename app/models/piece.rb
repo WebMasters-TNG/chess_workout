@@ -855,6 +855,7 @@ def black_possible_moves
       end
     end
 
+
     black_queen_possible_moves = []
     # Check the 8 possible movement paths for the queen.
     # Check upward vertical paths:
