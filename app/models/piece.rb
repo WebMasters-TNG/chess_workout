@@ -666,17 +666,23 @@ def black_possible_moves
 
         # Check that the pawn's path is clear when it tries to make a move allowable by its own movement rules:
         # Has the pawn made its first move or not, and is there a piece at the location of movement or along the way?
-        if black_pawn.y_position == 2 && game.pieces.where(:x_position => black_pawn.x_position, :y_position => black_pawn.y_position - 1).first == nil && game.pieces.where(:x_position => black_pawn.x_position, :y_position => black_pawn.y_position - 2).first == nil
-          black_pawn_possible_moves += [black_pawn.x_position, black_pawn.y_position - 2]
-        elsif black_pawn.y_position != 2 && game.pieces.where(:x_position => black_pawn.x_position, :y_position => black_pawn.y_position - 1).first == nil && black_pawn.y_position - 1 > 0
-          black_pawn_possible_moves += [black_pawn.x_position, black_pawn.y_position - 1]
+        # The path both 1 and 2 spaces "up" from the black pawn is clear:
+        if black_pawn.y_position == 2 && game.pieces.where(:x_position => black_pawn.x_position, :y_position => black_pawn.y_position + 1).first == nil && game.pieces.where(:x_position => black_pawn.x_position, :y_position => black_pawn.y_position + 2).first == nil
+          black_pawn_possible_moves += [[black_pawn.x_position, black_pawn.y_position + 2]]
+          black_pawn_possible_moves += [[black_pawn.x_position, black_pawn.y_position + 1]]
+        # The path 2 spaces "up" from the black pawn is blocked:
+        elsif black_pawn.y_position == 2 && game.pieces.where(:x_position => black_pawn.x_position, :y_position => black_pawn.y_position + 1).first == nil
+          black_pawn_possible_moves += [[black_pawn.x_position, black_pawn.y_position + 1]]
+        # The pawn has already made its first move:
+        elsif black_pawn.y_position != 2 && game.pieces.where(:x_position => black_pawn.x_position, :y_position => black_pawn.y_position + 1).first == nil && black_pawn.y_position + 1 < 9
+          black_pawn_possible_moves += [[black_pawn.x_position, black_pawn.y_position + 1]]
         end
 
         # Check for a capturable piece that is to a forward diagonal position of the pawn:
-        if game.pieces.where(:x_position => black_pawn.x_position + 1, :y_position => black_pawn.y_position - 1, :color => "white").first != nil && black_pawn.x_position + 1 < 9 && black_pawn.y_position - 1 > 0
-          black_pawn_possible_moves += [black_pawn.x_position + 1, black_pawn.y_position - 1]
-        elsif game.pieces.where(:x_position => black_pawn.x_position - 1, :y_position => black_pawn.y_position - 1, :color => "white").first != nil && black_pawn.x_position - 1 > 0 && black_pawn.y_position - 1 > 0
-          black_pawn_possible_moves += [black_pawn.x_position - 1, black_pawn.y_position - 1]
+        if game.pieces.where(:x_position => black_pawn.x_position + 1, :y_position => black_pawn.y_position + 1, :color => "white").first != nil && black_pawn.x_position + 1 < 9 && black_pawn.y_position + 1 < 9
+          black_pawn_possible_moves += [[black_pawn.x_position + 1, black_pawn.y_position + 1]]
+        elsif game.pieces.where(:x_position => black_pawn.x_position - 1, :y_position => black_pawn.y_position + 1, :color => "white").first != nil && black_pawn.x_position - 1 > 0 && black_pawn.y_position + 1 < 9
+          black_pawn_possible_moves += [[black_pawn.x_position - 1, black_pawn.y_position + 1]]
         end
       end
     end
