@@ -598,49 +598,49 @@ class Piece < ActiveRecord::Base
       # Check downward vertical paths:
       friendly_piece = game.pieces.where(:color => "white", :x_position => white_king.x_position, :y_position => white_king.y_position + 1).first
       if friendly_piece == nil && white_king.y_position + 1 < 9
-        white_king_possible_moves += [white_king.x_position, white_king.y_position + 1]
+        white_king_possible_moves += [[white_king.x_position, white_king.y_position + 1]]
       end
 
       # Check upward vertical paths:
       friendly_piece = game.pieces.where(:color => "white", :x_position => white_king.x_position, :y_position => white_king.y_position - 1).first
       if friendly_piece == nil && white_king.y_position - 1 > 0
-        white_king_possible_moves += [white_king.x_position, white_king.y_position - 1]
+        white_king_possible_moves += [[white_king.x_position, white_king.y_position - 1]]
       end
 
       # Check lower right diagonal paths:
       friendly_piece = game.pieces.where(:color => "white", :x_position => white_king.x_position + 1, :y_position => white_king.y_position + 1).first
       if friendly_piece == nil && white_king.x_position + 1 < 9 && white_king.y_position + 1 < 9
-        white_king_possible_moves += [white_king.x_position + 1, white_king.y_position + 1]
+        white_king_possible_moves += [[white_king.x_position + 1, white_king.y_position + 1]]
       end
 
       # Check lower left diagonal paths:
       friendly_piece = game.pieces.where(:color => "white", :x_position => white_king.x_position - 1, :y_position => white_king.y_position + 1).first
       if friendly_piece == nil && white_king.x_position - 1 > 0 && white_king.y_position + 1 < 9
-        white_king_possible_moves += [white_king.x_position - 1, white_king.y_position + 1]
+        white_king_possible_moves += [[white_king.x_position - 1, white_king.y_position + 1]]
       end
 
       # Check upper right diagonal paths:
       friendly_piece = game.pieces.where(:color => "white", :x_position => white_king.x_position + 1, :y_position => white_king.y_position - 1).first
       if friendly_piece == nil && white_king.x_position + 1 < 9 && white_king.y_position - 1 > 0
-        white_king_possible_moves += [white_king.x_position + 1, white_king.y_position - 1]
+        white_king_possible_moves += [[white_king.x_position + 1, white_king.y_position - 1]]
       end
 
       # Check upper left diagonal paths:
       friendly_piece = game.pieces.where(:color => "white", :x_position => white_king.x_position - 1, :y_position => white_king.y_position - 1).first
       if friendly_piece == nil && white_king.x_position - 1 > 0 && white_king.y_position - 1 > 0
-        white_king_possible_moves += [white_king.x_position - 1, white_king.y_position - 1]
+        white_king_possible_moves += [[white_king.x_position - 1, white_king.y_position - 1]]
       end
 
       # Check the right horizontal path:
       friendly_piece = game.pieces.where(:color => "white", :x_position => white_king.x_position + 1, :y_position => white_king.y_position).first
       if friendly_piece == nil && white_king.x_position + 1 < 9
-        white_king_possible_moves += [white_king.x_position + 1, white_king.y_position]
+        white_king_possible_moves += [[white_king.x_position + 1, white_king.y_position]]
       end
 
       # Check the left horizontal path:
       friendly_piece = game.pieces.where(:color => "white", :x_position => white_king.x_position - 1, :y_position => white_king.y_position).first
       if friendly_piece == nil && white_king.x_position - 1 > 0
-        white_king_possible_moves += [white_king.x_position - 1, white_king.y_position]
+        white_king_possible_moves += [[white_king.x_position - 1, white_king.y_position]]
       end
     end
 
