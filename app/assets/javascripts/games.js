@@ -135,19 +135,10 @@ function initPage() {
     }
   };
 
-
-  // function promotion(new_x, new_y) {
-  //   var targetPiece = $('td#' + new_y + new_x).find(".piece");
-  //   if (new_y == 1 && targetPiece.is("#white-pawn")) {
-  //     targetPiece.empty();
-  //     targetPiece.append(white_promotion);
-  //     targetPiece.attr("id", "#white-queen");
-  //   } else if (new_y == 8 && targetPiece.is("#black-pawn")) {
-  //     targetPiece.empty();
-  //     targetPiece.append(black_promotion);
-  //     targetPiece.attr("id", "#black-queen");
-  //   };
-  // };
+//  example function to render hidden elements for game messages
+//   function myFunction() {
+//     document.getElementById("panel").style.display = "block";
+// }
 }
 
 Game = {  
