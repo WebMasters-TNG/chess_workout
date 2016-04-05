@@ -155,26 +155,32 @@ class Piece < ActiveRecord::Base
     # all_white_possible_moves[5] == white_king_possible_moves
     white_possible_moves
     black_possible_moves
-    for n in 0..5
-      # Each piece has up to 8 pairs of possible move coordinates returned.
-      for m in 0..7
-        # e.g. all_white_possible_moves[0][0] == [x, y] of first possible pawn move
-        if @all_white_possible_moves[n][m] != nil
-          if self.color == "white" && @all_white_possible_moves[n][m][0] == @black_king.x_position &&
-            @all_white_possible_moves[n][m][1] == @black_king.y_position
-            checkmate?
-            return true
+    if self.color == "white"
+      for n in 0..5
+        # Each piece has up to 8 pairs of possible move coordinates returned.
+        for m in 0..7
+          # e.g. all_white_possible_moves[0][0] == [x, y] of first possible pawn move
+          if @all_white_possible_moves[n][m] != nil
+            # if self.color == "white" &&
+            if @all_white_possible_moves[n][m][0] == @black_king.x_position &&
+              @all_white_possible_moves[n][m][1] == @black_king.y_position
+              checkmate?
+              return true
+            end
           end
         end
       end
     end
 
-    for n in 0..5
-      for m in 0..7
-        if @all_black_possible_moves[n][m] != nil
-          if self.color == "black" && @all_black_possible_moves[n][m][0] == @white_king.x_position && @all_black_possible_moves[n][m][1] == @white_king.y_position
-            checkmate?
-            return true
+    if self.color == "black"
+      for n in 0..5
+        for m in 0..7
+          if @all_black_possible_moves[n][m] != nil
+            # if self.color == "black" &&
+            if @all_black_possible_moves[n][m][0] == @white_king.x_position && @all_black_possible_moves[n][m][1] == @white_king.y_position
+              checkmate?
+              return true
+            end
           end
         end
       end
@@ -232,10 +238,10 @@ class Piece < ActiveRecord::Base
         friendly_pieces = []
         enemy_pieces = []
         for n in 1..7
-          friendly_piece = game.pieces.where(:color => "white", :x_position => white_rook.x_position + n, :y_position => white_rook.y_position).first
+          friendly_piece = game.pieces.where(:color => "white", :x_position => white_rook.x_position + n, :y_position => white_rook.y_position, :captured => nil).first
           friendly_pieces += [friendly_piece]
           # Enemy pieces at the destination square can be captured, but others on the movement path (n - 1) will block the white rook:
-          enemy_piece = game.pieces.where(:color => "black", :x_position => white_rook.x_position + n - 1, :y_position => white_rook.y_position).first
+          enemy_piece = game.pieces.where(:color => "black", :x_position => white_rook.x_position + n - 1, :y_position => white_rook.y_position, :captured => nil).first
           enemy_pieces += [enemy_piece]
         end
         for m in 1..7
@@ -252,9 +258,9 @@ class Piece < ActiveRecord::Base
 
         # Check the left horizontal path:
         for n in 1..7
-          friendly_piece = game.pieces.where(:color => "white", :x_position => white_rook.x_position - n, :y_position => white_rook.y_position).first
+          friendly_piece = game.pieces.where(:color => "white", :x_position => white_rook.x_position - n, :y_position => white_rook.y_position, :captured => nil).first
           friendly_pieces += [friendly_piece]
-          enemy_piece = game.pieces.where(:color => "black", :x_position => white_rook.x_position - n + 1, :y_position => white_rook.y_position).first
+          enemy_piece = game.pieces.where(:color => "black", :x_position => white_rook.x_position - n + 1, :y_position => white_rook.y_position, :captured => nil).first
           enemy_pieces += [enemy_piece]
         end
         for m in 1..7
@@ -270,9 +276,9 @@ class Piece < ActiveRecord::Base
          # Check the upward vertical path:
          # Note:  "Up" is negative for white.
         for n in 1..7
-          friendly_piece = game.pieces.where(:color => "white", :x_position => white_rook.x_position, :y_position => white_rook.y_position - n).first
+          friendly_piece = game.pieces.where(:color => "white", :x_position => white_rook.x_position, :y_position => white_rook.y_position - n, :captured => nil).first
           friendly_pieces += [friendly_piece]
-          enemy_piece = game.pieces.where(:color => "black", :x_position => white_rook.x_position, :y_position => white_rook.y_position - n + 1).first
+          enemy_piece = game.pieces.where(:color => "black", :x_position => white_rook.x_position, :y_position => white_rook.y_position - n + 1, :captured => nil).first
           enemy_pieces += [enemy_piece]
         end
         for m in 1..7
@@ -288,9 +294,9 @@ class Piece < ActiveRecord::Base
         # Check the downward vertical path:
         # Note: "Down" is positive for white.
         for n in 1..7
-          friendly_piece = game.pieces.where(:color => "white", :x_position => white_rook.x_position, :y_position => white_rook.y_position + n).first
+          friendly_piece = game.pieces.where(:color => "white", :x_position => white_rook.x_position, :y_position => white_rook.y_position + n, :captured => nil).first
           friendly_pieces += [friendly_piece]
-          enemy_piece = game.pieces.where(:color => "black", :x_position => white_rook.x_position, :y_position => white_rook.y_position + n - 1).first
+          enemy_piece = game.pieces.where(:color => "black", :x_position => white_rook.x_position, :y_position => white_rook.y_position + n - 1, :captured => nil).first
           enemy_pieces += [enemy_piece]
         end
         for m in 1..7
@@ -312,49 +318,49 @@ class Piece < ActiveRecord::Base
 
         # Check the 8 possible L-shaped moves for a friendly piece at the destination square only.
         # 2 down, 1 right:
-        friendly_piece = game.pieces.where(:color => "white", :x_position => white_knight.x_position + 1, :y_position => white_knight.y_position + 2).first
+        friendly_piece = game.pieces.where(:color => "white", :x_position => white_knight.x_position + 1, :y_position => white_knight.y_position + 2, :captured => nil).first
         if friendly_piece == nil && white_knight.x_position + 1 < 9 && white_knight.y_position + 2 < 9
           white_knight_possible_moves += [[white_knight.x_position + 1, white_knight.y_position + 2]]
         end
 
         # 2 down, 1 left:
-        friendly_piece = game.pieces.where(:color => "white", :x_position => white_knight.x_position - 1, :y_position => white_knight.y_position + 2).first
+        friendly_piece = game.pieces.where(:color => "white", :x_position => white_knight.x_position - 1, :y_position => white_knight.y_position + 2, :captured => nil).first
         if friendly_piece == nil && white_knight.x_position - 1 > 0 && white_knight.y_position + 2 < 9
           white_knight_possible_moves += [[white_knight.x_position - 1, white_knight.y_position + 2]]
         end
 
         # 1 down, 2 right:
-        friendly_piece = game.pieces.where(:color => "white", :x_position => white_knight.x_position + 2, :y_position => white_knight.y_position + 1).first
+        friendly_piece = game.pieces.where(:color => "white", :x_position => white_knight.x_position + 2, :y_position => white_knight.y_position + 1, :captured => nil).first
         if friendly_piece == nil && white_knight.x_position + 2 < 9 && white_knight.y_position + 1 < 9
           white_knight_possible_moves += [[white_knight.x_position + 2, white_knight.y_position + 1]]
         end
 
         # 1 down, 2 left:
-        friendly_piece = game.pieces.where(:color => "white", :x_position => white_knight.x_position - 2, :y_position => white_knight.y_position + 1).first
+        friendly_piece = game.pieces.where(:color => "white", :x_position => white_knight.x_position - 2, :y_position => white_knight.y_position + 1, :captured => nil).first
         if friendly_piece == nil && white_knight.x_position - 2 > 0 && white_knight.y_position + 1 < 9
           white_knight_possible_moves += [[white_knight.x_position - 2, white_knight.y_position + 1]]
         end
 
         # 2 up, 1 right:
-        friendly_piece = game.pieces.where(:color => "white", :x_position => white_knight.x_position + 1, :y_position => white_knight.y_position - 2).first
+        friendly_piece = game.pieces.where(:color => "white", :x_position => white_knight.x_position + 1, :y_position => white_knight.y_position - 2, :captured => nil).first
         if friendly_piece == nil && white_knight.x_position + 1 < 9 && white_knight.y_position - 2 > 0
           white_knight_possible_moves += [[white_knight.x_position + 1, white_knight.y_position - 2]]
         end
 
         # 2 up, 1 left:
-        friendly_piece = game.pieces.where(:color => "white", :x_position => white_knight.x_position - 1, :y_position => white_knight.y_position - 2).first
+        friendly_piece = game.pieces.where(:color => "white", :x_position => white_knight.x_position - 1, :y_position => white_knight.y_position - 2, :captured => nil).first
         if friendly_piece == nil && white_knight.x_position - 1 > 0 && white_knight.y_position - 2 > 0
           white_knight_possible_moves += [[white_knight.x_position - 1, white_knight.y_position - 2]]
         end
 
         # 1 up, 2 right:
-        friendly_piece = game.pieces.where(:color => "white", :x_position => white_knight.x_position + 2, :y_position => white_knight.y_position - 1).first
+        friendly_piece = game.pieces.where(:color => "white", :x_position => white_knight.x_position + 2, :y_position => white_knight.y_position - 1, :captured => nil).first
         if friendly_piece == nil && white_knight.x_position + 2 < 9 && white_knight.y_position - 1 > 0
           white_knight_possible_moves += [[white_knight.x_position + 2, white_knight.y_position - 1]]
         end
 
         # 1 up, 2 left:
-        friendly_piece = game.pieces.where(:color => "white", :x_position => white_knight.x_position - 2, :y_position => white_knight.y_position - 1).first
+        friendly_piece = game.pieces.where(:color => "white", :x_position => white_knight.x_position - 2, :y_position => white_knight.y_position - 1, :captured => nil).first
         if friendly_piece == nil && white_knight.x_position - 2 > 0 && white_knight.y_position - 1 > 0
           white_knight_possible_moves += [[white_knight.x_position - 2, white_knight.y_position - 1]]
         end
@@ -373,9 +379,9 @@ class Piece < ActiveRecord::Base
         # Check that each white bishop has clear diagonal path (4 possible diagonal directions)
         # Check lower right diagonal paths:
         for n in 1..7
-          friendly_piece = game.pieces.where(:color => "white", :x_position => white_bishop.x_position + n, :y_position => white_bishop.y_position + n).first
+          friendly_piece = game.pieces.where(:color => "white", :x_position => white_bishop.x_position + n, :y_position => white_bishop.y_position + n, :captured => nil).first
           friendly_pieces += [friendly_piece]
-          enemy_piece = game.pieces.where(:color => "black", :x_position => white_bishop.x_position + n - 1, :y_position => white_bishop.y_position + n - 1).first
+          enemy_piece = game.pieces.where(:color => "black", :x_position => white_bishop.x_position + n - 1, :y_position => white_bishop.y_position + n - 1, :captured => nil).first
           enemy_pieces += [enemy_piece]
         end
         for m in 1..7
@@ -390,9 +396,9 @@ class Piece < ActiveRecord::Base
 
         # Check lower left diagonal paths:
         for n in 1..7
-          friendly_piece = game.pieces.where(:color => "white", :x_position => white_bishop.x_position - n, :y_position => white_bishop.y_position + n).first
+          friendly_piece = game.pieces.where(:color => "white", :x_position => white_bishop.x_position - n, :y_position => white_bishop.y_position + n, :captured => nil).first
           friendly_pieces += [friendly_piece]
-          enemy_piece = game.pieces.where(:color => "black", :x_position => white_bishop.x_position - n + 1, :y_position => white_bishop.y_position + n - 1).first
+          enemy_piece = game.pieces.where(:color => "black", :x_position => white_bishop.x_position - n + 1, :y_position => white_bishop.y_position + n - 1, :captured => nil).first
           enemy_pieces += [enemy_piece]
         end
         for m in 1..7
@@ -407,9 +413,9 @@ class Piece < ActiveRecord::Base
 
         # Check upper right diagonal paths:
         for n in 1..7
-          friendly_piece = game.pieces.where(:color => "white", :x_position => white_bishop.x_position + n, :y_position => white_bishop.y_position - n).first
+          friendly_piece = game.pieces.where(:color => "white", :x_position => white_bishop.x_position + n, :y_position => white_bishop.y_position - n, :captured => nil).first
           friendly_pieces += [friendly_piece]
-          enemy_piece = game.pieces.where(:color => "black", :x_position => white_bishop.x_position + n - 1, :y_position => white_bishop.y_position - n + 1).first
+          enemy_piece = game.pieces.where(:color => "black", :x_position => white_bishop.x_position + n - 1, :y_position => white_bishop.y_position - n + 1, :captured => nil).first
           enemy_pieces += [enemy_piece]
         end
         for m in 1..7
@@ -424,9 +430,9 @@ class Piece < ActiveRecord::Base
 
         # Check upper left diagonal paths:
         for n in 1..7
-          friendly_piece = game.pieces.where(:color => "white", :x_position => white_bishop.x_position - n, :y_position => white_bishop.y_position - n).first
+          friendly_piece = game.pieces.where(:color => "white", :x_position => white_bishop.x_position - n, :y_position => white_bishop.y_position - n, :captured => nil).first
           friendly_pieces += [friendly_piece]
-          enemy_piece = game.pieces.where(:color => "black", :x_position => white_bishop.x_position - n + 1, :y_position => white_bishop.y_position - n + 1).first
+          enemy_piece = game.pieces.where(:color => "black", :x_position => white_bishop.x_position - n + 1, :y_position => white_bishop.y_position - n + 1, :captured => nil).first
           enemy_pieces += [enemy_piece]
         end
         for m in 1..7
@@ -452,9 +458,9 @@ class Piece < ActiveRecord::Base
       # Check the 8 possible movement paths for the queen.
       # Check the right horizontal path:
       for n in 1..7
-        friendly_piece = game.pieces.where(:color => "white", :x_position => white_queen.x_position + n, :y_position => white_queen.y_position).first
+        friendly_piece = game.pieces.where(:color => "white", :x_position => white_queen.x_position + n, :y_position => white_queen.y_position, :captured => nil).first
         friendly_pieces += [friendly_piece]
-        enemy_piece = game.pieces.where(:color => "black", :x_position => white_queen.x_position + n - 1, :y_position => white_queen.y_position).first
+        enemy_piece = game.pieces.where(:color => "black", :x_position => white_queen.x_position + n - 1, :y_position => white_queen.y_position, :captured => nil).first
         enemy_pieces += [enemy_piece]
       end
       for m in 1..7
@@ -469,9 +475,9 @@ class Piece < ActiveRecord::Base
 
       # Check the left horizontal path:
       for n in 1..7
-        friendly_piece = game.pieces.where(:color => "white", :x_position => white_queen.x_position - n, :y_position => white_queen.y_position).first
+        friendly_piece = game.pieces.where(:color => "white", :x_position => white_queen.x_position - n, :y_position => white_queen.y_position, :captured => nil).first
         friendly_pieces += [friendly_piece]
-        enemy_piece = game.pieces.where(:color => "black", :x_position => white_queen.x_position - n + 1, :y_position => white_queen.y_position).first
+        enemy_piece = game.pieces.where(:color => "black", :x_position => white_queen.x_position - n + 1, :y_position => white_queen.y_position, :captured => nil).first
         enemy_pieces += [enemy_piece]
       end
       for m in 1..7
@@ -487,9 +493,9 @@ class Piece < ActiveRecord::Base
        # Check the upward vertical path:
        # Note:  "Up" is negative for white.
       for n in 1..7
-        friendly_piece = game.pieces.where(:color => "white", :x_position => white_queen.x_position, :y_position => white_queen.y_position - n).first
+        friendly_piece = game.pieces.where(:color => "white", :x_position => white_queen.x_position, :y_position => white_queen.y_position - n, :captured => nil).first
         friendly_pieces += [friendly_piece]
-        enemy_piece = game.pieces.where(:color => "black", :x_position => white_queen.x_position, :y_position => white_queen.y_position - n + 1).first
+        enemy_piece = game.pieces.where(:color => "black", :x_position => white_queen.x_position, :y_position => white_queen.y_position - n + 1, :captured => nil).first
         enemy_pieces += [enemy_piece]
       end
       for m in 1..7
@@ -505,9 +511,9 @@ class Piece < ActiveRecord::Base
       # Check the downward vertical path:
       # Note: "Down" is positive for white.
       for n in 1..7
-        friendly_piece = game.pieces.where(:color => "white", :x_position => white_queen.x_position, :y_position => white_queen.y_position + n).first
+        friendly_piece = game.pieces.where(:color => "white", :x_position => white_queen.x_position, :y_position => white_queen.y_position + n, :captured => nil).first
         friendly_pieces += [friendly_piece]
-        enemy_piece = game.pieces.where(:color => "black", :x_position => white_queen.x_position, :y_position => white_queen.y_position + n - 1).first
+        enemy_piece = game.pieces.where(:color => "black", :x_position => white_queen.x_position, :y_position => white_queen.y_position + n - 1, :captured => nil).first
         enemy_pieces += [enemy_piece]
       end
       for m in 1..7
@@ -522,9 +528,9 @@ class Piece < ActiveRecord::Base
 
       # Check lower right diagonal paths:
       for n in 1..7
-        friendly_piece = game.pieces.where(:color => "white", :x_position => white_queen.x_position + n, :y_position => white_queen.y_position + n).first
+        friendly_piece = game.pieces.where(:color => "white", :x_position => white_queen.x_position + n, :y_position => white_queen.y_position + n, :captured => nil).first
         friendly_pieces += [friendly_piece]
-        enemy_piece = game.pieces.where(:color => "black", :x_position => white_queen.x_position + n - 1, :y_position => white_queen.y_position + n - 1).first
+        enemy_piece = game.pieces.where(:color => "black", :x_position => white_queen.x_position + n - 1, :y_position => white_queen.y_position + n - 1, :captured => nil).first
         enemy_pieces += [enemy_piece]
       end
       for m in 1..7
@@ -539,9 +545,9 @@ class Piece < ActiveRecord::Base
 
       # Check lower left diagonal paths:
       for n in 1..7
-        friendly_piece = game.pieces.where(:color => "white", :x_position => white_queen.x_position - n, :y_position => white_queen.y_position + n).first
+        friendly_piece = game.pieces.where(:color => "white", :x_position => white_queen.x_position - n, :y_position => white_queen.y_position + n, :captured => nil).first
         friendly_pieces += [friendly_piece]
-        enemy_piece = game.pieces.where(:color => "black", :x_position => white_queen.x_position - n + 1, :y_position => white_queen.y_position + n - 1).first
+        enemy_piece = game.pieces.where(:color => "black", :x_position => white_queen.x_position - n + 1, :y_position => white_queen.y_position + n - 1, :captured => nil).first
         enemy_pieces += [enemy_piece]
       end
       for m in 1..7
@@ -556,9 +562,9 @@ class Piece < ActiveRecord::Base
 
       # Check upper right diagonal paths:
       for n in 1..7
-        friendly_piece = game.pieces.where(:color => "white", :x_position => white_queen.x_position + n, :y_position => white_queen.y_position - n).first
+        friendly_piece = game.pieces.where(:color => "white", :x_position => white_queen.x_position + n, :y_position => white_queen.y_position - n, :captured => nil).first
         friendly_pieces += [friendly_piece]
-        enemy_piece = game.pieces.where(:color => "black", :x_position => white_queen.x_position + n - 1, :y_position => white_queen.y_position - n + 1).first
+        enemy_piece = game.pieces.where(:color => "black", :x_position => white_queen.x_position + n - 1, :y_position => white_queen.y_position - n + 1, :captured => nil).first
         enemy_pieces += [enemy_piece]
       end
       for m in 1..7
@@ -573,9 +579,9 @@ class Piece < ActiveRecord::Base
 
       # Check upper left diagonal paths:
       for n in 1..7
-        friendly_piece = game.pieces.where(:color => "white", :x_position => white_queen.x_position - n, :y_position => white_queen.y_position - n).first
+        friendly_piece = game.pieces.where(:color => "white", :x_position => white_queen.x_position - n, :y_position => white_queen.y_position - n, :captured => nil).first
         friendly_pieces += [friendly_piece]
-        enemy_piece = game.pieces.where(:color => "black", :x_position => white_queen.x_position - n + 1, :y_position => white_queen.y_position - n + 1).first
+        enemy_piece = game.pieces.where(:color => "black", :x_position => white_queen.x_position - n + 1, :y_position => white_queen.y_position - n + 1, :captured => nil).first
         enemy_pieces += [enemy_piece]
       end
       for m in 1..7
@@ -596,49 +602,49 @@ class Piece < ActiveRecord::Base
 
       # Check the 8 possible movement paths for the king.
       # Check downward vertical paths:
-      friendly_piece = game.pieces.where(:color => "white", :x_position => white_king.x_position, :y_position => white_king.y_position + 1).first
+      friendly_piece = game.pieces.where(:color => "white", :x_position => white_king.x_position, :y_position => white_king.y_position + 1, :captured => nil).first
       if friendly_piece == nil && white_king.y_position + 1 < 9
         white_king_possible_moves += [[white_king.x_position, white_king.y_position + 1]]
       end
 
       # Check upward vertical paths:
-      friendly_piece = game.pieces.where(:color => "white", :x_position => white_king.x_position, :y_position => white_king.y_position - 1).first
+      friendly_piece = game.pieces.where(:color => "white", :x_position => white_king.x_position, :y_position => white_king.y_position - 1, :captured => nil).first
       if friendly_piece == nil && white_king.y_position - 1 > 0
         white_king_possible_moves += [[white_king.x_position, white_king.y_position - 1]]
       end
 
       # Check lower right diagonal paths:
-      friendly_piece = game.pieces.where(:color => "white", :x_position => white_king.x_position + 1, :y_position => white_king.y_position + 1).first
+      friendly_piece = game.pieces.where(:color => "white", :x_position => white_king.x_position + 1, :y_position => white_king.y_position + 1, :captured => nil).first
       if friendly_piece == nil && white_king.x_position + 1 < 9 && white_king.y_position + 1 < 9
         white_king_possible_moves += [[white_king.x_position + 1, white_king.y_position + 1]]
       end
 
       # Check lower left diagonal paths:
-      friendly_piece = game.pieces.where(:color => "white", :x_position => white_king.x_position - 1, :y_position => white_king.y_position + 1).first
+      friendly_piece = game.pieces.where(:color => "white", :x_position => white_king.x_position - 1, :y_position => white_king.y_position + 1, :captured => nil).first
       if friendly_piece == nil && white_king.x_position - 1 > 0 && white_king.y_position + 1 < 9
         white_king_possible_moves += [[white_king.x_position - 1, white_king.y_position + 1]]
       end
 
       # Check upper right diagonal paths:
-      friendly_piece = game.pieces.where(:color => "white", :x_position => white_king.x_position + 1, :y_position => white_king.y_position - 1).first
+      friendly_piece = game.pieces.where(:color => "white", :x_position => white_king.x_position + 1, :y_position => white_king.y_position - 1, :captured => nil).first
       if friendly_piece == nil && white_king.x_position + 1 < 9 && white_king.y_position - 1 > 0
         white_king_possible_moves += [[white_king.x_position + 1, white_king.y_position - 1]]
       end
 
       # Check upper left diagonal paths:
-      friendly_piece = game.pieces.where(:color => "white", :x_position => white_king.x_position - 1, :y_position => white_king.y_position - 1).first
+      friendly_piece = game.pieces.where(:color => "white", :x_position => white_king.x_position - 1, :y_position => white_king.y_position - 1, :captured => nil).first
       if friendly_piece == nil && white_king.x_position - 1 > 0 && white_king.y_position - 1 > 0
         white_king_possible_moves += [[white_king.x_position - 1, white_king.y_position - 1]]
       end
 
       # Check the right horizontal path:
-      friendly_piece = game.pieces.where(:color => "white", :x_position => white_king.x_position + 1, :y_position => white_king.y_position).first
+      friendly_piece = game.pieces.where(:color => "white", :x_position => white_king.x_position + 1, :y_position => white_king.y_position, :captured => nil).first
       if friendly_piece == nil && white_king.x_position + 1 < 9
         white_king_possible_moves += [[white_king.x_position + 1, white_king.y_position]]
       end
 
       # Check the left horizontal path:
-      friendly_piece = game.pieces.where(:color => "white", :x_position => white_king.x_position - 1, :y_position => white_king.y_position).first
+      friendly_piece = game.pieces.where(:color => "white", :x_position => white_king.x_position - 1, :y_position => white_king.y_position, :captured => nil).first
       if friendly_piece == nil && white_king.x_position - 1 > 0
         white_king_possible_moves += [[white_king.x_position - 1, white_king.y_position]]
       end
@@ -667,21 +673,21 @@ def black_possible_moves
         # Check that the pawn's path is clear when it tries to make a move allowable by its own movement rules:
         # Has the pawn made its first move or not, and is there a piece at the location of movement or along the way?
         # The path both 1 and 2 spaces "up" from the black pawn is clear:
-        if black_pawn.y_position == 2 && game.pieces.where(:x_position => black_pawn.x_position, :y_position => black_pawn.y_position + 1).first == nil && game.pieces.where(:x_position => black_pawn.x_position, :y_position => black_pawn.y_position + 2).first == nil
+        if black_pawn.y_position == 2 && game.pieces.where(:x_position => black_pawn.x_position, :y_position => black_pawn.y_position + 1, :captured => nil).first == nil && game.pieces.where(:x_position => black_pawn.x_position, :y_position => black_pawn.y_position + 2, :captured => nil).first == nil
           black_pawn_possible_moves += [[black_pawn.x_position, black_pawn.y_position + 2]]
           black_pawn_possible_moves += [[black_pawn.x_position, black_pawn.y_position + 1]]
         # The path 2 spaces "up" from the black pawn is blocked:
-        elsif black_pawn.y_position == 2 && game.pieces.where(:x_position => black_pawn.x_position, :y_position => black_pawn.y_position + 1).first == nil
+        elsif black_pawn.y_position == 2 && game.pieces.where(:x_position => black_pawn.x_position, :y_position => black_pawn.y_position + 1, :captured => nil).first == nil
           black_pawn_possible_moves += [[black_pawn.x_position, black_pawn.y_position + 1]]
         # The pawn has already made its first move:
-        elsif black_pawn.y_position != 2 && game.pieces.where(:x_position => black_pawn.x_position, :y_position => black_pawn.y_position + 1).first == nil && black_pawn.y_position + 1 < 9
+        elsif black_pawn.y_position != 2 && game.pieces.where(:x_position => black_pawn.x_position, :y_position => black_pawn.y_position + 1, :captured => nil).first == nil && black_pawn.y_position + 1 < 9
           black_pawn_possible_moves += [[black_pawn.x_position, black_pawn.y_position + 1]]
         end
 
         # Check for a capturable piece that is to a forward diagonal position of the pawn:
-        if game.pieces.where(:x_position => black_pawn.x_position + 1, :y_position => black_pawn.y_position + 1, :color => "white").first != nil && black_pawn.x_position + 1 < 9 && black_pawn.y_position + 1 < 9
+        if game.pieces.where(:x_position => black_pawn.x_position + 1, :y_position => black_pawn.y_position + 1, :color => "white", :captured => nil).first != nil && black_pawn.x_position + 1 < 9 && black_pawn.y_position + 1 < 9
           black_pawn_possible_moves += [[black_pawn.x_position + 1, black_pawn.y_position + 1]]
-        elsif game.pieces.where(:x_position => black_pawn.x_position - 1, :y_position => black_pawn.y_position + 1, :color => "white").first != nil && black_pawn.x_position - 1 > 0 && black_pawn.y_position + 1 < 9
+        elsif game.pieces.where(:x_position => black_pawn.x_position - 1, :y_position => black_pawn.y_position + 1, :color => "white", :captured => nil).first != nil && black_pawn.x_position - 1 > 0 && black_pawn.y_position + 1 < 9
           black_pawn_possible_moves += [[black_pawn.x_position - 1, black_pawn.y_position + 1]]
         end
       end
@@ -697,10 +703,10 @@ def black_possible_moves
         enemy_pieces = []
         # Check the right horizontal path:
         for n in 1..7
-          friendly_piece = game.pieces.where(:color => "black", :x_position => black_rook.x_position + n, :y_position => black_rook.y_position).first
+          friendly_piece = game.pieces.where(:color => "black", :x_position => black_rook.x_position + n, :y_position => black_rook.y_position, :captured => nil).first
           friendly_pieces += [friendly_piece]
           # Enemy pieces at the destination square can be captured, but others on the movement path will block the black rook:
-          enemy_piece = game.pieces.where(:color => "white", :x_position => black_rook.x_position + n - 1, :y_position => black_rook.y_position).first
+          enemy_piece = game.pieces.where(:color => "white", :x_position => black_rook.x_position + n - 1, :y_position => black_rook.y_position, :captured => nil).first
           enemy_pieces += [enemy_piece]
         end
         for m in 1..7
@@ -717,9 +723,9 @@ def black_possible_moves
 
         # Check the left horizontal path:
         for n in 1..7
-          friendly_piece = game.pieces.where(:color => "black", :x_position => black_rook.x_position - n, :y_position => black_rook.y_position).first
+          friendly_piece = game.pieces.where(:color => "black", :x_position => black_rook.x_position - n, :y_position => black_rook.y_position, :captured => nil).first
           friendly_pieces += [friendly_piece]
-          enemy_piece = game.pieces.where(:color => "white", :x_position => black_rook.x_position - n + 1, :y_position => black_rook.y_position).first
+          enemy_piece = game.pieces.where(:color => "white", :x_position => black_rook.x_position - n + 1, :y_position => black_rook.y_position, :captured => nil).first
           enemy_pieces += [enemy_piece]
         end
         for m in 1..7
@@ -735,9 +741,9 @@ def black_possible_moves
 
         # Check the upward vertical path:
         for n in 1..7
-          friendly_piece = game.pieces.where(:color => "black", :x_position => black_rook.x_position, :y_position => black_rook.y_position + n).first
+          friendly_piece = game.pieces.where(:color => "black", :x_position => black_rook.x_position, :y_position => black_rook.y_position + n, :captured => nil).first
           friendly_pieces += [friendly_piece]
-          enemy_piece = game.pieces.where(:color => "white", :x_position => black_rook.x_position, :y_position => black_rook.y_position + n - 1).first
+          enemy_piece = game.pieces.where(:color => "white", :x_position => black_rook.x_position, :y_position => black_rook.y_position + n - 1, :captured => nil).first
           enemy_pieces += [enemy_piece]
         end
         for m in 1..7
@@ -752,9 +758,9 @@ def black_possible_moves
 
         # Check the downward vertical path:
         for n in 1..7
-          friendly_piece = game.pieces.where(:color => "black", :x_position => black_rook.x_position, :y_position => black_rook.y_position - n).first
+          friendly_piece = game.pieces.where(:color => "black", :x_position => black_rook.x_position, :y_position => black_rook.y_position - n, :captured => nil).first
           friendly_pieces += [friendly_piece]
-          enemy_piece = game.pieces.where(:color => "white", :x_position => black_rook.x_position, :y_position => black_rook.y_position - n + 1).first
+          enemy_piece = game.pieces.where(:color => "white", :x_position => black_rook.x_position, :y_position => black_rook.y_position - n + 1, :captured => nil).first
           enemy_pieces += [enemy_piece]
         end
         for m in 1..7
@@ -777,49 +783,49 @@ def black_possible_moves
 
         # Check the 8 possible L-shaped moves for a friendly piece at the destination square only.
         # 2 up, 1 right:
-        friendly_piece = game.pieces.where(:color => "black", :x_position => black_knight.x_position + 1, :y_position => black_knight.y_position + 2).first
+        friendly_piece = game.pieces.where(:color => "black", :x_position => black_knight.x_position + 1, :y_position => black_knight.y_position + 2, :captured => nil).first
         if friendly_piece == nil && black_knight.x_position + 1 < 9 && black_knight.y_position + 2 < 9
           black_knight_possible_moves += [[black_knight.x_position + 1, black_knight.y_position + 2]]
         end
 
         # 2 up, 1 left:
-        friendly_piece = game.pieces.where(:color => "black", :x_position => black_knight.x_position - 1, :y_position => black_knight.y_position + 2).first
+        friendly_piece = game.pieces.where(:color => "black", :x_position => black_knight.x_position - 1, :y_position => black_knight.y_position + 2, :captured => nil).first
         if friendly_piece == nil && black_knight.x_position - 1 > 0 && black_knight.y_position + 2 < 9
           black_knight_possible_moves += [[black_knight.x_position - 1, black_knight.y_position + 2]]
         end
 
         # 1 up, 2 right:
-        friendly_piece = game.pieces.where(:color => "black", :x_position => black_knight.x_position + 2, :y_position => black_knight.y_position + 1).first
+        friendly_piece = game.pieces.where(:color => "black", :x_position => black_knight.x_position + 2, :y_position => black_knight.y_position + 1, :captured => nil).first
         if friendly_piece == nil && black_knight.x_position + 2 < 9 && black_knight.y_position + 1 < 9
           black_knight_possible_moves += [[black_knight.x_position + 2, black_knight.y_position + 1]]
         end
 
         # 1 up, 2 left:
-        friendly_piece = game.pieces.where(:color => "black", :x_position => black_knight.x_position - 2, :y_position => black_knight.y_position + 1).first
+        friendly_piece = game.pieces.where(:color => "black", :x_position => black_knight.x_position - 2, :y_position => black_knight.y_position + 1, :captured => nil).first
         if friendly_piece == nil && black_knight.x_position - 2 > 0 && black_knight.y_position + 1 < 9
           black_knight_possible_moves += [[black_knight.x_position - 2, black_knight.y_position + 1]]
         end
 
         # 2 down, 1 right:
-        friendly_piece = game.pieces.where(:color => "black", :x_position => black_knight.x_position + 1, :y_position => black_knight.y_position - 2).first
+        friendly_piece = game.pieces.where(:color => "black", :x_position => black_knight.x_position + 1, :y_position => black_knight.y_position - 2, :captured => nil).first
         if friendly_piece == nil && black_knight.x_position + 1 < 9 && black_knight.y_position - 2 > 0
           black_knight_possible_moves += [[black_knight.x_position + 1, black_knight.y_position - 2]]
         end
 
         # 2 down, 1 left:
-        friendly_piece = game.pieces.where(:color => "black", :x_position => black_knight.x_position - 1, :y_position => black_knight.y_position - 2).first
+        friendly_piece = game.pieces.where(:color => "black", :x_position => black_knight.x_position - 1, :y_position => black_knight.y_position - 2, :captured => nil).first
         if friendly_piece == nil && black_knight.x_position - 1 > 0 && black_knight.y_position - 2 > 0
           black_knight_possible_moves += [[black_knight.x_position - 1, black_knight.y_position - 2]]
         end
 
         # 1 down, 2 right:
-        friendly_piece = game.pieces.where(:color => "black", :x_position => black_knight.x_position + 2, :y_position => black_knight.y_position - 1).first
+        friendly_piece = game.pieces.where(:color => "black", :x_position => black_knight.x_position + 2, :y_position => black_knight.y_position - 1, :captured => nil).first
         if friendly_piece == nil && black_knight.x_position + 2 < 9 && black_knight.y_position - 1 > 0
           black_knight_possible_moves += [[black_knight.x_position + 2, black_knight.y_position - 1]]
         end
 
         # 1 down, 2 left:
-        friendly_piece = game.pieces.where(:color => "black", :x_position => black_knight.x_position - 2, :y_position => black_knight.y_position - 1).first
+        friendly_piece = game.pieces.where(:color => "black", :x_position => black_knight.x_position - 2, :y_position => black_knight.y_position - 1, :captured => nil).first
         if friendly_piece == nil && black_knight.x_position - 2 > 0 && black_knight.y_position - 1 > 0
           black_knight_possible_moves += [[black_knight.x_position - 2, black_knight.y_position - 1]]
         end
@@ -837,10 +843,10 @@ def black_possible_moves
 
         # Check upper right diagonal paths:
         for n in 1..7
-          friendly_piece = game.pieces.where(:color => "black", :x_position => black_bishop.x_position + n, :y_position => black_bishop.y_position + n).first
+          friendly_piece = game.pieces.where(:color => "black", :x_position => black_bishop.x_position + n, :y_position => black_bishop.y_position + n, :captured => nil).first
           friendly_pieces += [friendly_piece]
           # Enemy pieces at the destination square can be captured, but others on the movement path will block the black bishop:
-          enemy_piece = game.pieces.where(:color => "white", :x_position => black_bishop.x_position + n - 1, :y_position => black_bishop.y_position + n - 1).first
+          enemy_piece = game.pieces.where(:color => "white", :x_position => black_bishop.x_position + n - 1, :y_position => black_bishop.y_position + n - 1, :captured => nil).first
           enemy_pieces += [enemy_piece]
         end
         for m in 1..7
@@ -855,9 +861,9 @@ def black_possible_moves
 
         # Check upper left diagonal paths:
         for n in 1..7
-          friendly_piece = game.pieces.where(:color => "black", :x_position => black_bishop.x_position - n, :y_position => black_bishop.y_position + n).first
+          friendly_piece = game.pieces.where(:color => "black", :x_position => black_bishop.x_position - n, :y_position => black_bishop.y_position + n, :captured => nil).first
           friendly_pieces += [friendly_piece]
-          enemy_piece = game.pieces.where(:color => "white", :x_position => black_bishop.x_position - n + 1, :y_position => black_bishop.y_position + n - 1).first
+          enemy_piece = game.pieces.where(:color => "white", :x_position => black_bishop.x_position - n + 1, :y_position => black_bishop.y_position + n - 1, :captured => nil).first
           enemy_pieces += [enemy_piece]
         end
         for m in 1..7
@@ -872,9 +878,9 @@ def black_possible_moves
 
         # Check lower right diagonal paths:
         for n in 1..7
-          friendly_piece = game.pieces.where(:color => "black", :x_position => black_bishop.x_position + n, :y_position => black_bishop.y_position - n).first
+          friendly_piece = game.pieces.where(:color => "black", :x_position => black_bishop.x_position + n, :y_position => black_bishop.y_position - n, :captured => nil).first
           friendly_pieces += [friendly_piece]
-          enemy_piece = game.pieces.where(:color => "white", :x_position => black_bishop.x_position + n - 1, :y_position => black_bishop.y_position - n + 1).first
+          enemy_piece = game.pieces.where(:color => "white", :x_position => black_bishop.x_position + n - 1, :y_position => black_bishop.y_position - n + 1, :captured => nil).first
           enemy_pieces += [enemy_piece]
         end
         for m in 1..7
@@ -889,9 +895,9 @@ def black_possible_moves
 
         # Check lower left diagonal paths:
         for n in 1..7
-          friendly_piece = game.pieces.where(:color => "black", :x_position => black_bishop.x_position - n, :y_position => black_bishop.y_position - n).first
+          friendly_piece = game.pieces.where(:color => "black", :x_position => black_bishop.x_position - n, :y_position => black_bishop.y_position - n, :captured => nil).first
           friendly_pieces += [friendly_piece]
-          enemy_piece = game.pieces.where(:color => "white", :x_position => black_bishop.x_position - n + 1, :y_position => black_bishop.y_position - n + 1).first
+          enemy_piece = game.pieces.where(:color => "white", :x_position => black_bishop.x_position - n + 1, :y_position => black_bishop.y_position - n + 1, :captured => nil).first
           enemy_pieces += [enemy_piece]
         end
         for m in 1..7
@@ -917,9 +923,9 @@ def black_possible_moves
 
       # Check upward vertical paths:
       for n in 1..7
-        friendly_piece = game.pieces.where(:color => "black", :x_position => black_queen.x_position, :y_position => black_queen.y_position + n).first
+        friendly_piece = game.pieces.where(:color => "black", :x_position => black_queen.x_position, :y_position => black_queen.y_position + n, :captured => nil).first
         friendly_pieces += [friendly_piece]
-          enemy_piece = game.pieces.where(:color => "white", :x_position => black_queen.x_position, :y_position => black_queen.y_position + n - 1).first
+          enemy_piece = game.pieces.where(:color => "white", :x_position => black_queen.x_position, :y_position => black_queen.y_position + n - 1, :captured => nil).first
         enemy_pieces += [enemy_piece]
       end
       for m in 1..7
@@ -934,9 +940,9 @@ def black_possible_moves
 
       # Check downward vertical paths:
       for n in 1..7
-        friendly_piece = game.pieces.where(:color => "black", :x_position => black_queen.x_position, :y_position => black_queen.y_position - n).first
+        friendly_piece = game.pieces.where(:color => "black", :x_position => black_queen.x_position, :y_position => black_queen.y_position - n, :captured => nil).first
         friendly_pieces += [friendly_piece]
-        enemy_piece = game.pieces.where(:color => "white", :x_position => black_queen.x_position, :y_position => black_queen.y_position - n + 1).first
+        enemy_piece = game.pieces.where(:color => "white", :x_position => black_queen.x_position, :y_position => black_queen.y_position - n + 1, :captured => nil).first
         enemy_pieces += [enemy_piece]
       end
       for m in 1..7
@@ -952,9 +958,9 @@ def black_possible_moves
 
       # Check upper right diagonal paths:
       for n in 1..7
-        friendly_piece = game.pieces.where(:color => "black", :x_position => black_queen.x_position + n, :y_position => black_queen.y_position + n).first
+        friendly_piece = game.pieces.where(:color => "black", :x_position => black_queen.x_position + n, :y_position => black_queen.y_position + n, :captured => nil).first
         friendly_pieces += [friendly_piece]
-        enemy_piece = game.pieces.where(:color => "white", :x_position => black_queen.x_position + n - 1, :y_position => black_queen.y_position + n - 1).first
+        enemy_piece = game.pieces.where(:color => "white", :x_position => black_queen.x_position + n - 1, :y_position => black_queen.y_position + n - 1, :captured => nil).first
         enemy_pieces += [enemy_piece]
       end
       for m in 1..7
@@ -969,9 +975,9 @@ def black_possible_moves
 
       # Check upper left diagonal paths:
       for n in 1..7
-        friendly_piece = game.pieces.where(:color => "black", :x_position => black_queen.x_position - n, :y_position => black_queen.y_position + n).first
+        friendly_piece = game.pieces.where(:color => "black", :x_position => black_queen.x_position - n, :y_position => black_queen.y_position + n, :captured => nil).first
         friendly_pieces += [friendly_piece]
-        enemy_piece = game.pieces.where(:color => "white", :x_position => black_queen.x_position - n + 1, :y_position => black_queen.y_position + n - 1).first
+        enemy_piece = game.pieces.where(:color => "white", :x_position => black_queen.x_position - n + 1, :y_position => black_queen.y_position + n - 1, :captured => nil).first
         enemy_pieces += [enemy_piece]
       end
       for m in 1..7
@@ -986,9 +992,9 @@ def black_possible_moves
 
       # Check lower right diagonal paths:
       for n in 1..7
-        friendly_piece = game.pieces.where(:color => "black", :x_position => black_queen.x_position + n, :y_position => black_queen.y_position - n).first
+        friendly_piece = game.pieces.where(:color => "black", :x_position => black_queen.x_position + n, :y_position => black_queen.y_position - n, :captured => nil).first
         friendly_pieces += [friendly_piece]
-        enemy_piece = game.pieces.where(:color => "white", :x_position => black_queen.x_position + n - 1, :y_position => black_queen.y_position - n + 1).first
+        enemy_piece = game.pieces.where(:color => "white", :x_position => black_queen.x_position + n - 1, :y_position => black_queen.y_position - n + 1, :captured => nil).first
         enemy_pieces += [enemy_piece]
       end
       for m in 1..7
@@ -1004,9 +1010,9 @@ def black_possible_moves
 
       # Check lower left diagonal paths:
       for n in 1..7
-        friendly_piece = game.pieces.where(:color => "black", :x_position => black_queen.x_position - n, :y_position => black_queen.y_position - n).first
+        friendly_piece = game.pieces.where(:color => "black", :x_position => black_queen.x_position - n, :y_position => black_queen.y_position - n, :captured => nil).first
         friendly_pieces += [friendly_piece]
-        enemy_piece = game.pieces.where(:color => "white", :x_position => black_queen.x_position - n + 1, :y_position => black_queen.y_position - n + 1).first
+        enemy_piece = game.pieces.where(:color => "white", :x_position => black_queen.x_position - n + 1, :y_position => black_queen.y_position - n + 1, :captured => nil).first
         enemy_pieces += [enemy_piece]
       end
       for m in 1..7
@@ -1021,9 +1027,9 @@ def black_possible_moves
 
       # Check the right horizontal path:
       for n in 1..7
-        friendly_piece = game.pieces.where(:color => "black", :x_position => black_queen.x_position + n, :y_position => black_queen.y_position).first
+        friendly_piece = game.pieces.where(:color => "black", :x_position => black_queen.x_position + n, :y_position => black_queen.y_position, :captured => nil).first
         friendly_pieces += [friendly_piece]
-        enemy_piece = game.pieces.where(:color => "white", :x_position => black_queen.x_position + n - 1, :y_position => black_queen.y_position).first
+        enemy_piece = game.pieces.where(:color => "white", :x_position => black_queen.x_position + n - 1, :y_position => black_queen.y_position, :captured => nil).first
         enemy_pieces += [enemy_piece]
       end
       for m in 1..7
@@ -1038,9 +1044,9 @@ def black_possible_moves
 
       # Check the left horizontal path:
       for n in 1..7
-        friendly_piece = game.pieces.where(:color => "black", :x_position => black_queen.x_position - n, :y_position => black_queen.y_position).first
+        friendly_piece = game.pieces.where(:color => "black", :x_position => black_queen.x_position - n, :y_position => black_queen.y_position, :captured => nil).first
         friendly_pieces += [friendly_piece]
-        enemy_piece = game.pieces.where(:color => "white", :x_position => black_queen.x_position - n + 1, :y_position => black_queen.y_position).first
+        enemy_piece = game.pieces.where(:color => "white", :x_position => black_queen.x_position - n + 1, :y_position => black_queen.y_position, :captured => nil).first
         enemy_pieces += [enemy_piece]
       end
       for m in 1..7
@@ -1060,49 +1066,49 @@ def black_possible_moves
     if black_king != nil
       # Check the 8 possible movement paths for the king.
       # Check upward vertical paths:
-      friendly_piece = game.pieces.where(:color => "black", :x_position => black_king.x_position, :y_position => black_king.y_position + 1).first
+      friendly_piece = game.pieces.where(:color => "black", :x_position => black_king.x_position, :y_position => black_king.y_position + 1, :captured => nil).first
       if friendly_piece == nil && black_king.y_position + 1 < 9
         black_king_possible_moves += [[black_king.x_position, black_king.y_position + 1]]
       end
 
       # Check downward vertical paths:
-      friendly_piece = game.pieces.where(:color => "black", :x_position => black_king.x_position, :y_position => black_king.y_position - 1).first
+      friendly_piece = game.pieces.where(:color => "black", :x_position => black_king.x_position, :y_position => black_king.y_position - 1, :captured => nil).first
       if friendly_piece == nil && black_king.y_position - 1 > 0
         black_king_possible_moves += [[black_king.x_position, black_king.y_position - 1]]
       end
 
       # Check upper right diagonal paths:
-      friendly_piece = game.pieces.where(:color => "black", :x_position => black_king.x_position + 1, :y_position => black_king.y_position + 1).first
+      friendly_piece = game.pieces.where(:color => "black", :x_position => black_king.x_position + 1, :y_position => black_king.y_position + 1, :captured => nil).first
       if friendly_piece == nil && black_king.x_position + 1 < 9 && black_king.y_position + 1 < 9
         black_king_possible_moves += [[black_king.x_position + 1, black_king.y_position + 1]]
       end
 
       # Check upper left diagonal paths:
-      friendly_piece = game.pieces.where(:color => "black", :x_position => black_king.x_position - 1, :y_position => black_king.y_position + 1).first
+      friendly_piece = game.pieces.where(:color => "black", :x_position => black_king.x_position - 1, :y_position => black_king.y_position + 1, :captured => nil).first
       if friendly_piece == nil && black_king.x_position - 1 > 0 && black_king.y_position + 1 < 9
         black_king_possible_moves += [[black_king.x_position - 1, black_king.y_position + 1]]
       end
 
       # Check lower right diagonal paths:
-      friendly_piece = game.pieces.where(:color => "black", :x_position => black_king.x_position + 1, :y_position => black_king.y_position - 1).first
+      friendly_piece = game.pieces.where(:color => "black", :x_position => black_king.x_position + 1, :y_position => black_king.y_position - 1, :captured => nil).first
       if friendly_piece == nil && black_king.x_position + 1 < 9 && black_king.y_position - 1 > 0
         black_king_possible_moves += [[black_king.x_position + 1, black_king.y_position - 1]]
       end
 
       # Check lower left diagonal paths:
-      friendly_piece = game.pieces.where(:color => "black", :x_position => black_king.x_position - 1, :y_position => black_king.y_position - 1).first
+      friendly_piece = game.pieces.where(:color => "black", :x_position => black_king.x_position - 1, :y_position => black_king.y_position - 1, :captured => nil).first
       if friendly_piece == nil && black_king.x_position - 1 > 0 && black_king.y_position - 1 > 0
         black_king_possible_moves += [[black_king.x_position - 1, black_king.y_position - 1]]
       end
 
       # Check the right horizontal path:
-      friendly_piece = game.pieces.where(:color => "black", :x_position => black_king.x_position + 1, :y_position => black_king.y_position).first
+      friendly_piece = game.pieces.where(:color => "black", :x_position => black_king.x_position + 1, :y_position => black_king.y_position, :captured => nil).first
       if friendly_piece == nil && black_king.x_position + 1 < 9
         black_king_possible_moves += [[black_king.x_position + 1, black_king.y_position]]
       end
 
       # Check the left horizontal path:
-      friendly_piece = game.pieces.where(:color => "black", :x_position => black_king.x_position - 1, :y_position => black_king.y_position).first
+      friendly_piece = game.pieces.where(:color => "black", :x_position => black_king.x_position - 1, :y_position => black_king.y_position, :captured => nil).first
       if friendly_piece == nil && black_king.x_position - 1 > 0
         black_king_possible_moves += [[black_king.x_position - 1, black_king.y_position]]
       end
