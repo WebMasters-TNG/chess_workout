@@ -15,39 +15,52 @@ class Pawn < Piece
     # Check that the pawn's path is clear when it tries to make a move allowable by its own movement rules:
     # Has the pawn made its first move or not, and is there a piece at the location of movement or along the way?
     possible_moves = []
+    # White pawn:
     if self.white?
-      if self.first_move? && game.pieces.where(:x_position => self.x_position, :y_position => self.y_position - 1).first == nil && game.pieces.where(:x_position => self.x_position, :y_position => self.y_position - 2).first == nil
+      # It is the pawn's first move, and both spaces in front of it are clear:
+      piece_in_front = game.pieces.where(:x_position => self.x_position, :y_position => self.y_position - 1, :captured => nil).first
+      piece_two_in_front = game.pieces.where(:x_position => self.x_position, :y_position => self.y_position - 2, :captured => nil).first
+      if self.first_move? && piece_in_front == nil && piece_two_in_front == nil
         possible_moves += [[self.x_position, self.y_position - 1]]
         possible_moves += [[self.x_position, self.y_position - 2]]
-        # binding.pry
-      elsif game.pieces.where(:x_position => self.x_position, :y_position => self.y_position - 1).first == nil
-        possible_moves += [[self.x_position, self.y_position - 1]] unless self.y_position < 2
+      elsif piece_in_front == nil && self.y_position - 1 > 0
+        possible_moves += [[self.x_position, self.y_position - 1]]
+        # unless self.y_position < 2
       end
 
       # Check for a capturable piece that is to a forward diagonal position of the pawn:
-      if game.pieces.where(:x_position => self.x_position + 1, :y_position => self.y_position - 1, :color => "black").first != nil && self.x_position + 1 < 9 && self.y_position - 1 > 0
-        binding.pry
+      enemy_to_upper_right = game.pieces.where(:x_position => self.x_position + 1, :y_position => self.y_position - 1, :color => "black", :captured => nil).first
+      enemy_to_upper_left = game.pieces.where(:x_position => self.x_position - 1, :y_position => self.y_position - 1, :color => "black", :captured => nil).first
+      if enemy_to_upper_right != nil && self.x_position + 1 < 9 && self.y_position - 1 > 0
         possible_moves += [[self.x_position + 1, self.y_position - 1]]
-      elsif game.pieces.where(:x_position => self.x_position - 1, :y_position => self.y_position - 1, :color => "black").first != nil && self.x_position - 1 > 0 && self.y_position - 1 > 0
+      end
+      if enemy_to_upper_left != nil && self.x_position - 1 > 0 && self.y_position - 1 > 0
         possible_moves += [[self.x_position - 1, self.y_position - 1]]
       end
+    # binding.pry
+
+    # Black pawn:
     else
-      if self.first_move? && game.pieces.where(:x_position => self.x_position, :y_position => self.y_position + 1).first == nil && game.pieces.where(:x_position => self.x_position, :y_position => self.y_position + 2).first == nil
+      piece_in_front = game.pieces.where(:x_position => self.x_position, :y_position => self.y_position + 1, :captured => nil).first
+      piece_two_in_front = game.pieces.where(:x_position => self.x_position, :y_position => self.y_position + 2, :captured => nil).first
+      if self.first_move? && piece_in_front == nil && piece_two_in_front == nil
         possible_moves += [[self.x_position, self.y_position + 1]]
         possible_moves += [[self.x_position, self.y_position + 2]]
-        # binding.pry
-      elsif game.pieces.where(:x_position => self.x_position, :y_position => self.y_position + 1).first == nil
+      elsif piece_in_front == nil
         possible_moves += [[self.x_position, self.y_position + 1]] unless self.y_position > 7
       end
 
       # Check for a capturable piece that is to a forward diagonal position of the pawn:
-      if game.pieces.where(:x_position => self.x_position + 1, :y_position => self.y_position + 1, :color => "white").first != nil && self.x_position + 1 < 9 && self.y_position + 1 < 9
+      enemy_to_upper_right = game.pieces.where(:x_position => self.x_position + 1, :y_position => self.y_position + 1, :color => "white", :captured => nil).first
+      enemy_to_upper_left = game.pieces.where(:x_position => self.x_position - 1, :y_position => self.y_position + 1, :color => "white", :captured => nil).first
+      if enemy_to_upper_right != nil && self.x_position + 1 < 9 && self.y_position + 1 < 9
         possible_moves += [[self.x_position + 1, self.y_position + 1]]
-        binding.pry
-      elsif game.pieces.where(:x_position => self.x_position - 1, :y_position => self.y_position + 1, :color => "white").first != nil && self.x_position - 1 > 0 && self.y_position + 1 < 9
+      end
+      if enemy_to_upper_left != nil && self.x_position - 1 > 0 && self.y_position + 1 < 9
         possible_moves += [[self.x_position - 1, self.y_position + 1]]
       end
     end
+    return possible_moves
   end
 
   def black_piece_in_kill_zone?
