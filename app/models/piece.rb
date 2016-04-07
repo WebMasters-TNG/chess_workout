@@ -80,30 +80,29 @@ class Piece < ActiveRecord::Base
     true
   end
 
-  def check?(player_color)
-    player_color == "white" ? opponent_color = "black" : opponent_color = "white"
-    opponent_king = game.pieces.where(type: "King", color: opponent_color).first
-    friendly_pieces = game.pieces.where(color: player_color, captured: nil).to_a
-    binding.pry
-    in_check = false
-    @threatening_pieces = []
-    friendly_pieces.each do |piece|
-      piece.set_coords({x_position: opponent_king.x_position, y_position: opponent_king.y_position})
-      if piece.legal_move?
-        in_check = true 
-        @threatening_pieces << piece
-      end
-    end
-    in_check
-  end
+  # def demo_check?(player_color)
+  #   player_color == "white" ? opponent_color = "black" : opponent_color = "white"
+  #   opponent_king = game.pieces.where(type: "King", color: opponent_color).first
+  #   friendly_pieces = game.pieces.where(color: player_color, captured: nil).to_a
+  #   in_check = false
+  #   @threatening_pieces = []
+  #   friendly_pieces.each do |piece|
+  #     piece.set_coords({x_position: opponent_king.x_position, y_position: opponent_king.y_position})
+  #     if piece.legal_move?
+  #       in_check = true 
+  #       @threatening_pieces << piece
+  #     end
+  #   end
+  #   in_check
+  # end
 
-  def checkmate?
-    if check?(color)
+  # def demo_checkmate?
+  #   if check?(color)
 
-    else
-      return false
-    end
-  end
+  #   else
+  #     return false
+  #   end
+  # end
 
   # ***********************************************************
   # Pinning needs specific attention!!
@@ -113,8 +112,9 @@ class Piece < ActiveRecord::Base
   # or otherwise an innocent piece will be captured.
   # ***********************************************************
   def pinned?
-    color == "white" ? opponent_color = "black" : opponent_color = "white"
-    return true if check?(opponent_color)
+    # color == "white" ? opponent_color = "black" : opponent_color = "white"
+    # update_attributes(x_position: @x1, y_position: @y1)
+    # return true if demo_check?(opponent_color)
     false # Placeholder value. Assume this current piece is not pinned.
   end
 
