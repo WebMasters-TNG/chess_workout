@@ -17,7 +17,6 @@ class Pawn < Piece
   # ***********************************************************
 
   def en_passant?(x0, y0, x1, y1)
-    # Assume this current piece is not pinned.
     # Check if player's pawn is at the correct vertical square (only possibilities are y = 4 for white, y = 5 for black).
     if self.color == "white" && y0 == 4
       # Check for an enemy pawn to either side of the player's pawn that has only made one move.
@@ -61,14 +60,6 @@ class Pawn < Piece
       return false
     end
 
-    # if #last move + #Pawn
-    #  # && (destination_piece(x0, y0) - destination_piece(x1, y1) == 2)
-
-    # end
-    # Check if enemy pawn's current position - 1y square would be capturable.
-
-    # If these two checks pass, move the player pawn to the enemy pawn's current position - y.
-
     # *** ALTERNATIVELY, we could have the player whose pawn is capturable with the en passant move have a flag set on their own pawn after a check for an adjacent pawn. ***
   end
 
@@ -92,13 +83,6 @@ class Pawn < Piece
   #   game.next_turn
   # end
 
-  # def backwards_move?
-  #   if self.color == "white"
-  #     @current_y > @target_y
-  #   elsif self.color == "black"
-  #     @current_y < @target_y
-  #   end
-
   def backwards_move?
     self.color == "white" ? @y0 < @y1 : @y0 > @y1
   end
@@ -117,14 +101,6 @@ class Pawn < Piece
   def move_size?
     if self.color == "white"
       # Check if the white pawn is at its starting y position.
-
-    #   return true if (@current_y - @target_y) <= 2 && @current_y == 7
-    #   true if (@current_y - @target_y) <= 1
-    # else
-    #   # Check if the black pawn is at its starting y position.
-    #   return true if (@target_y - @current_y) <= 2 && @current_y == 2
-    #   true if (@target_y - @current_y) <= 1
-
       return true if (@sy.abs) == 2 && @y0 == 7
     else
       # Check if the black pawn is at its starting y position.

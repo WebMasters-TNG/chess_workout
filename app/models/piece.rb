@@ -2,8 +2,6 @@ class Piece < ActiveRecord::Base
   # shared functionality for all pieces goes here
   belongs_to :game
   has_many :moves
-  # belongs_to :player, class_name: "User", foreign_key: :player_id
-  # Have the game keep track of which user a piece belongs to, instead of directly associating the pieces with a user.
 
   # Check if move is valid for selected piece
   def valid_move?(params)
@@ -72,6 +70,18 @@ class Piece < ActiveRecord::Base
   # Check to see if destination square is occupied by a piece, returning false if it is friendly or true if it is an opponent
   def capture_piece?
     return false if destination_piece && destination_piece.color == color
+    Move.create(game_id: game.id, piece_id: destination_piece.id, old_x: @x1, old_y: @y1, captured_piece: true) if destination_piece
+    destination_piece.update_attributes(captured: true) if destination_piece
+    # Check for checkmate if the destination square has the king of the opposite color.
+    # binding.pry
+    if self.color == "white"
+      @black_king = game.pieces.where(:type => "King", :color => "black").first
+      # binding.pry
+      checkmate? if @black_king.x_position == @x1 && @black_king.y_position == @y1
+    else
+      @white_king = game.pieces.where(:type => "King", :color => "white").first
+      checkmate? if @white_king.x_position == @x1 && @white_king.y_position == @y1
+    end
     true
   end
 
@@ -104,10 +114,71 @@ class Piece < ActiveRecord::Base
   # => AND!! This method MUST be called BEFORE capture_destination_piece?
   # or otherwise an innocent piece will be captured.
   # ***********************************************************
+
+  ## ***********************************************************
+  # Check & Checkmate needs specific attention!!
+  # => It involves all potentially threatening pieces
+  # => Three moves allowed under check
+  # => 1) Capture threatening pieces
+  # => 2) Block threatening pieces
+  # => 3) Move King to unchecking position
+  # ***********************************************************
   def pinned?
     color == "white" ? opponent_color = "black" : opponent_color = "white"
     return true if check?(opponent_color)
+    # Determine possible moves of all pieces that would put the king in check.
     false # Placeholder value. Assume this current piece is not pinned.
+  end
+
+  def check?
+    # a) Check whether the current player's king is in check where it is.  If so, determine a list of valid moves:
+    if self.color == "white" && possible_moves[0] == @white_king.x_position && possible_moves[1] == @white_king.y_position
+
+      # if
+      #   return true
+      # end
+    elsif self.color == "black" && possible_moves[0] == @black_king.x_position && possible_moves[1] == @black_king.y_position
+
+      # if
+      #   return true
+      # end
+    else
+      return false
+    end
+    # 1) Capture threatening pieces
+    # 2) Block threatening pieces
+    # 3) Move King to unchecking position
+    # b) Check whether moving the current piece would place the king in check
+  end
+
+  def possible_moves
+    white_pawns = game.pieces.where(:type => "Pawn", :color => "white", :captured => nil).all
+    white_rooks = game.pieces.where(:type => "Rook", :color => "white", :captured => nil).all
+    white_knights = game.pieces.where(:type => "Knight", :color => "white", :captured => nil).all
+    white_bishops = game.pieces.where(:type => "Bishop", :color => "white", :captured => nil).all
+    white_queen = game.pieces.where(:type => "Queen", :color => "white", :captured => nil).first
+    white_king = game.pieces.where(:type => "King", :color => "white", :captured => nil).first
+
+    black_pawns = game.pieces.where(:type => "Pawn", :color => "black", :captured => nil).all
+    black_rooks = game.pieces.where(:type => "Rook", :color => "black", :captured => nil).all
+    black_knights = game.pieces.where(:type => "Knight", :color => "black", :captured => nil).all
+    black_bishops = game.pieces.where(:type => "Bishop", :color => "black", :captured => nil).all
+    black_queen = game.pieces.where(:type => "Queen", :color => "black", :captured => nil).first
+    black_king = game.pieces.where(:type => "King", :color => "black", :captured => nil).first
+
+    # Return a two member array? [x, y] [specific_piece.x_position, specific_piece.y_position]
+  end
+
+  def checkmate?
+    # If this king has been captured, mark the other player as the game's winner:
+    # binding.pry
+    if @white_king.captured == true && game.winner != "white"
+      game.winner = "black"
+    elsif @black_king.captured == true && game.winner != "black"
+      game.winner = "white"
+    else
+      return false
+    end
   end
 
   def update_move

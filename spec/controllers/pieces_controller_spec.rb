@@ -990,7 +990,6 @@ RSpec.describe PiecesController, type: :controller do
           white_pawn.reload
 
           # *** Does the database still think that a black pawn is present at [2, 2]?  The same error doesn't come up when placing the white pawn at [2, 3] initially.  Moving the white pawn from [2, 3] to [2, 2] also works fine. ***
-          binding.pry
 
           put :update, :id => white_pawn.id, :piece => { :x_position => 2, :y_position => 2 }, :format => :js
           white_pawn.reload
@@ -1032,6 +1031,8 @@ RSpec.describe PiecesController, type: :controller do
         black_king = game.pieces.where(:type => "King", :color => "black").first
         black_king.update_attributes(:x_position => 5, :y_position => 6)
         black_king.reload
+
+        binding.pry
 
         # Capture the black king with the white pawn from [4, 7]:
         white_pawn = game.pieces.where(:type => "Pawn", :color => "white", :x_position => 4).first
