@@ -5,14 +5,19 @@ class Piece < ActiveRecord::Base
 
   # Check if move is valid for selected piece
   def valid_move?(params)
+    set_coords(params)
+    return false unless legal_move?
+    return false if pinned?
+    true
+  end
+
+  def set_coords(params)
     @x0 = self.x_position
     @y0 = self.y_position
     @x1 = params[:x_position].to_i
     @y1 = params[:y_position].to_i
     @sx = @x1 - @x0 # sx = displacement_x
     @sy = @y1 - @y0 # sy = displacement_y
-    return false if pinned?
-    true
   end
 
   # Check to see if the movement path is a valid diagonal move
@@ -59,10 +64,16 @@ class Piece < ActiveRecord::Base
     game.pieces.where(x_position: @x1, y_position: @y1, captured: nil).first
   end
 
-  # in the target square and, if so, update the status of the captured piece accordingly. This should be called
-  # after checking path_clear? with the exception being the knight.
+  # Update status of captured piece accordingly and create new move to send to browser to update client side. 
+  def capture_destination_piece
+    if destination_piece && capture_piece? 
+      Move.create(game_id: game.id, piece_id: destination_piece.id, old_x: @x1, old_y: @y1, captured_piece: true)
+      destination_piece.update_attributes(captured: true)
+    end
+  end
+
+  # Check to see if destination square is occupied by a piece, returning false if it is friendly or true if it is an opponent
   def capture_piece?
-    # captured_piece = game.pieces.where(x_position:  @x1, y_position: @y1, captured: nil).first
     return false if destination_piece && destination_piece.color == color
     Move.create(game_id: game.id, piece_id: destination_piece.id, old_x: @x1, old_y: @y1, captured_piece: true) if destination_piece
     destination_piece.update_attributes(captured: true) if destination_piece
@@ -79,11 +90,35 @@ class Piece < ActiveRecord::Base
     true
   end
 
+  # def demo_check?(player_color)
+  #   player_color == "white" ? opponent_color = "black" : opponent_color = "white"
+  #   opponent_king = game.pieces.where(type: "King", color: opponent_color).first
+  #   friendly_pieces = game.pieces.where(color: player_color, captured: nil).to_a
+  #   in_check = false
+  #   @threatening_pieces = []
+  #   friendly_pieces.each do |piece|
+  #     piece.set_coords({x_position: opponent_king.x_position, y_position: opponent_king.y_position})
+  #     if piece.legal_move?
+  #       in_check = true 
+  #       @threatening_pieces << piece
+  #     end
+  #   end
+  #   in_check
+  # end
+
+  # def demo_checkmate?
+  #   if check?(color)
+
+  #   else
+  #     return false
+  #   end
+  # end
+
   # ***********************************************************
   # Pinning needs specific attention!!
   # => It involves checking whether the King will be under
   # check if this piece is moved.
-  # => AND!! This method MUST be called BEFORE capture_dest_piece?
+  # => AND!! This method MUST be called BEFORE capture_destination_piece?
   # or otherwise an innocent piece will be captured.
   # ***********************************************************
 
@@ -97,6 +132,9 @@ class Piece < ActiveRecord::Base
   # ***********************************************************
   def pinned?
     # Determine possible moves of all pieces that would put the king in check.
+    # color == "white" ? opponent_color = "black" : opponent_color = "white"
+    # update_attributes(x_position: @x1, y_position: @y1)
+    # return true if demo_check?(opponent_color)
     false # Placeholder value. Assume this current piece is not pinned.
   end
 
