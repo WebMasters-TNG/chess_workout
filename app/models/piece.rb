@@ -162,6 +162,7 @@ class Piece < ActiveRecord::Base
       for n in 0..5
         # Pawns
         if n == 0
+          # There are pawns on the board
           if @all_white_possible_moves[n] != nil
             # There can be up to 8 pawns on the board
             for m in 0..7
@@ -181,8 +182,9 @@ class Piece < ActiveRecord::Base
               end
             end
           end
+        # Rooks, knights, and bishops
         elsif n == 1 || n == 2 || n == 3
-          # Rooks, knights, and bishops
+          # There are rooks, knights, or bishops on the board
           if @all_white_possible_moves[n] != nil
             # Rooks, knights, and bishops come in pairs
             for m in 0..1
@@ -198,8 +200,9 @@ class Piece < ActiveRecord::Base
               end
             end
           end
+        # Queen or king
         else
-          # Queen or king
+          # The queen or king is on the board
           if @all_white_possible_moves[n] != nil
             if @all_white_possible_moves[n][0] != nil
             # King or queen are unique pieces (m will always be 0)
