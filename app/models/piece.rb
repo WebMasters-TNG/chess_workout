@@ -319,7 +319,7 @@ class Piece < ActiveRecord::Base
   end
 
 
-def black_possible_moves
+  def black_possible_moves
     # Store all of the active (non-captured) black pieces on the board:
     black_pawns = game.pieces.where(:type => "Pawn", :color => "black", :captured => nil).all
     black_rooks = game.pieces.where(:type => "Rook", :color => "black", :captured => nil).all
