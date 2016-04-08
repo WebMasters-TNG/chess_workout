@@ -1,6 +1,5 @@
 class Pawn < Piece
-  def valid_move?(params)
-    return false unless super
+  def legal_move?
     if self.color == "white" && @sx.abs == 1 && @y1 == 3 && !diagonal_capture? || self.color == "black" && @sx.abs == 1 && @y1 == 6 && !diagonal_capture?
       return true if en_passant?(@x0, @y0, @x1, @y1)
     elsif !backwards_move? && (diagonal_capture? || pawn_straight_move?)

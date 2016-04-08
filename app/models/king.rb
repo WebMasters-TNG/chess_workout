@@ -1,7 +1,6 @@
 class King < Piece
 
-  def valid_move?(params)
-    return false unless super
+  def legal_move?
     return false unless (straight_move? || diagonal_move?) && path_clear?
     return false unless move_size || castle_move
     capture_piece?
