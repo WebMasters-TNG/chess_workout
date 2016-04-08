@@ -1,6 +1,5 @@
 class Knight < Piece
-  def valid_move?(params)
-    return false unless super
+  def legal_move?
     return false unless rectangle_move?
     capture_piece?
   end
@@ -12,7 +11,6 @@ class Knight < Piece
   end
 
   def possible_moves
-
     possible_moves = []
 
     if self.color == "white"
