@@ -40,6 +40,14 @@ class Game < ActiveRecord::Base
     self.save
   end
 
+  def white_pieces
+    self.pieces.where(color: 'white')
+  end
+
+  def black_pieces
+    self.pieces.where(color: 'black')
+  end
+
 	def join_as_black(user)
 		self.update_attributes(black_player_id: user.id)
 		self.pieces.where(color: "black").join_as_black(user)
