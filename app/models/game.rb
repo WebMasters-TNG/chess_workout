@@ -48,6 +48,29 @@ class Game < ActiveRecord::Base
     self.pieces.where(color: 'black')
   end
 
+  def piece_map
+    all_pieces_map ||= white_piece_map + black_piece_map
+    return all_pieces_map
+  end
+
+  def white_piece_map
+    white_pieces_map = []
+    active_white_pieces = pieces.where(color: "white", captured: nil)
+    active_white_pieces.each do |piece|
+      white_pieces_map << [piece.x_position, piece.y_position]
+    end
+    return white_pieces_map
+  end
+
+  def black_piece_map
+    black_pieces_map = []
+    active_black_pieces = pieces.where(color: "black", captured: nil)
+    active_black_pieces.each do |piece|
+      black_pieces_map << [piece.x_position, piece.y_position]
+    end
+    return black_pieces_map
+  end
+
 	def join_as_black(user)
 		self.update_attributes(black_player_id: user.id)
 		self.pieces.where(color: "black").join_as_black(user)
