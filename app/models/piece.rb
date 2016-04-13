@@ -90,10 +90,10 @@ class Piece < ActiveRecord::Base
     if self.color == "white"
       @black_king = game.pieces.where(:type => "King", :color => "black").first
       # binding.pry
-      checkmate? if @black_king.x_position == @x1 && @black_king.y_position == @y1
+      # checkmate? if @black_king.x_position == @x1 && @black_king.y_position == @y1
     else
       @white_king = game.pieces.where(:type => "King", :color => "white").first
-      checkmate? if @white_king.x_position == @x1 && @white_king.y_position == @y1
+      # checkmate? if @white_king.x_position == @x1 && @white_king.y_position == @y1
     end
     true
   end
@@ -160,11 +160,9 @@ class Piece < ActiveRecord::Base
     @possible_moves ||= self.game.black_pieces.map do |piece|
       piece.possible_moves
     end
-
   end
 
   def check?
-<<<<<<< HEAD
     # a) Determine a list of valid player moves that could put an enemy's king in check based upon where it is:
     # all_white_possible_moves[0] == white_pawn_possible_moves
     # all_white_possible_moves[1] == white_rook_possible_moves
