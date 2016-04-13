@@ -6,6 +6,114 @@ class King < Piece
     capture_piece?
   end
 
+  def possible_moves
+    possible_moves = []
+
+    # Check the 8 possible movement paths for the king.
+    if self.color == "white"
+      # White king
+      # Check downward vertical paths:
+      friendly_piece = game.pieces.where(:color => "white", :x_position => self.x_position, :y_position => self.y_position + 1, :captured => nil).first
+      if friendly_piece == nil && self.y_position + 1 < 9
+        possible_moves += [[self.x_position, self.y_position + 1]]
+      end
+
+      # Check upward vertical paths:
+      friendly_piece = game.pieces.where(:color => "white", :x_position => self.x_position, :y_position => self.y_position - 1, :captured => nil).first
+      if friendly_piece == nil && self.y_position - 1 > 0
+        possible_moves += [[self.x_position, self.y_position - 1]]
+      end
+
+      # Check lower right diagonal paths:
+      friendly_piece = game.pieces.where(:color => "white", :x_position => self.x_position + 1, :y_position => self.y_position + 1, :captured => nil).first
+      if friendly_piece == nil && self.x_position + 1 < 9 && self.y_position + 1 < 9
+        possible_moves += [[self.x_position + 1, self.y_position + 1]]
+      end
+
+      # Check lower left diagonal paths:
+      friendly_piece = game.pieces.where(:color => "white", :x_position => self.x_position - 1, :y_position => self.y_position + 1, :captured => nil).first
+      if friendly_piece == nil && self.x_position - 1 > 0 && self.y_position + 1 < 9
+        possible_moves += [[self.x_position - 1, self.y_position + 1]]
+      end
+
+      # Check upper right diagonal paths:
+      friendly_piece = game.pieces.where(:color => "white", :x_position => self.x_position + 1, :y_position => self.y_position - 1, :captured => nil).first
+      if friendly_piece == nil && self.x_position + 1 < 9 && self.y_position - 1 > 0
+        possible_moves += [[self.x_position + 1, self.y_position - 1]]
+      end
+
+      # Check upper left diagonal paths:
+      friendly_piece = game.pieces.where(:color => "white", :x_position => self.x_position - 1, :y_position => self.y_position - 1, :captured => nil).first
+      if friendly_piece == nil && self.x_position - 1 > 0 && self.y_position - 1 > 0
+        possible_moves += [[self.x_position - 1, self.y_position - 1]]
+      end
+
+      # Check the right horizontal path:
+      friendly_piece = game.pieces.where(:color => "white", :x_position => self.x_position + 1, :y_position => self.y_position, :captured => nil).first
+      if friendly_piece == nil && self.x_position + 1 < 9
+        possible_moves += [[self.x_position + 1, self.y_position]]
+      end
+
+      # Check the left horizontal path:
+      friendly_piece = game.pieces.where(:color => "white", :x_position => self.x_position - 1, :y_position => self.y_position, :captured => nil).first
+      if friendly_piece == nil && self.x_position - 1 > 0
+        possible_moves += [[self.x_position - 1, self.y_position]]
+      end
+
+    else
+    # Black king
+      # Check upward vertical paths:
+      friendly_piece = game.pieces.where(:color => "black", :x_position => self.x_position, :y_position => self.y_position + 1, :captured => nil).first
+      if friendly_piece == nil && self.y_position + 1 < 9
+        possible_moves += [[self.x_position, self.y_position + 1]]
+      end
+
+      # Check downward vertical paths:
+      friendly_piece = game.pieces.where(:color => "black", :x_position => self.x_position, :y_position => self.y_position - 1, :captured => nil).first
+      if friendly_piece == nil && self.y_position - 1 > 0
+        possible_moves += [[self.x_position, self.y_position - 1]]
+      end
+
+      # Check upper right diagonal paths:
+      friendly_piece = game.pieces.where(:color => "black", :x_position => self.x_position + 1, :y_position => self.y_position + 1, :captured => nil).first
+      if friendly_piece == nil && self.x_position + 1 < 9 && self.y_position + 1 < 9
+        possible_moves += [[self.x_position + 1, self.y_position + 1]]
+      end
+
+      # Check upper left diagonal paths:
+      friendly_piece = game.pieces.where(:color => "black", :x_position => self.x_position - 1, :y_position => self.y_position + 1, :captured => nil).first
+      if friendly_piece == nil && self.x_position - 1 > 0 && self.y_position + 1 < 9
+        possible_moves += [[self.x_position - 1, self.y_position + 1]]
+      end
+
+      # Check lower right diagonal paths:
+      friendly_piece = game.pieces.where(:color => "black", :x_position => self.x_position + 1, :y_position => self.y_position - 1, :captured => nil).first
+      if friendly_piece == nil && self.x_position + 1 < 9 && self.y_position - 1 > 0
+        possible_moves += [[self.x_position + 1, self.y_position - 1]]
+      end
+
+      # Check lower left diagonal paths:
+      friendly_piece = game.pieces.where(:color => "black", :x_position => self.x_position - 1, :y_position => self.y_position - 1, :captured => nil).first
+      if friendly_piece == nil && self.x_position - 1 > 0 && self.y_position - 1 > 0
+        possible_moves += [[self.x_position - 1, self.y_position - 1]]
+      end
+
+      # Check the right horizontal path:
+      friendly_piece = game.pieces.where(:color => "black", :x_position => self.x_position + 1, :y_position => self.y_position, :captured => nil).first
+      if friendly_piece == nil && self.x_position + 1 < 9
+        possible_moves += [[self.x_position + 1, self.y_position]]
+      end
+
+      # Check the left horizontal path:
+      friendly_piece = game.pieces.where(:color => "black", :x_position => self.x_position - 1, :y_position => self.y_position, :captured => nil).first
+      if friendly_piece == nil && self.x_position - 1 > 0
+        possible_moves += [[self.x_position - 1, self.y_position]]
+      end
+    end
+
+    return possible_moves
+  end
+
   # ***********************************************************
   # Castling needs specific attention!!
   # => It involves either Rook

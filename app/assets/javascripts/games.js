@@ -183,6 +183,23 @@ Game = {
           } else {
             $(".player_move").html("Black");
           };
+          if (data['status'] == 'check') {
+            if (data['turn'] % 2 != 0) {
+              $('.game_message').html("White in Check!");
+            } else {
+              $('.game_message').html("Black in Check!");
+            };
+          } else if (data['status'] == 'checkmate') {
+            if (data['turn'] % 2 != 0) {
+              $('.game_message').html("Checkmate: Black Wins!");
+              $(".move_info").html("");
+            } else {
+              $('.game_message').html("Checkmate: White Wins!");
+              $(".move_info").html("");
+            };
+          } else {
+            $('.game_message').html("");
+          };
         } else {
           console.log("No new moves");
         };
@@ -193,20 +210,6 @@ Game = {
     });
     setTimeout(Game.poll, 5000);
   },
-
-  // Check to see if pawn promotion and update piece image accordingly
-  // promotion: function() {
-  //   var targetPiece = $('td#' + move['new_y'] + move['new_x']).find(".piece");
-  //   if (new_y == 1 && targetPiece.is("#white-pawn")) {
-  //     targetPiece.empty();
-  //     targetPiece.append("White Queen");
-  //     targetPiece.attr("id", "#white-queen");
-  //   } else if (new_y == 8 && targetPiece.is("#black-pawn")) {
-  //     targetPiece.empty();
-  //     targetPiece.append("Black Queen");
-  //     targetPiece.attr("id", "#black-queen");
-  //   };
-  // }
 }
 
 
