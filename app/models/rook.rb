@@ -86,6 +86,24 @@ class Rook < Piece
         end
       end
 
+      # Check for castling:
+      friendly_pieces = []
+      for n in 2..7
+        if n != 5
+          friendly_pieces += [game.pieces.where(:color => "white", :x_position => n, :y_position => 8, :captured => nil).first]
+        end
+      end
+      king = game.pieces.where(:color => "white", :type => "King", :captured => nil).first
+      # Clear path to the left of the king:
+      if self.moves.count == 0 && king.moves.count == 0 && friendly_pieces[0] == nil && friendly_pieces[1] == nil && friendly_pieces[2] == nil
+        possible_moves += [[self.x_position + 3, self.y_position]]
+      end
+      # Clear path to the right of the king:
+      if self.moves.count == 0 && king.moves.count == 0 && friendly_pieces[3] == nil && friendly_pieces[4] == nil
+        possible_moves += [[self.x_position - 2, self.y_position]]
+      end
+
+
     else
     # Black rooks
 
@@ -158,6 +176,23 @@ class Rook < Piece
             possible_moves += [[self.x_position, self.y_position - m]]
           end
         end
+      end
+
+      # Check for castling:
+      friendly_pieces = []
+      for n in 2..7
+        if n != 5
+          friendly_pieces += [game.pieces.where(:color => "black", :x_position => n, :y_position => 1, :captured => nil).first]
+        end
+      end
+      king = game.pieces.where(:color => "black", :type => "King", :captured => nil).first
+      # Clear path to the left of the king:
+      if self.moves.count == 0 && king.moves.count == 0 && friendly_pieces[0] == nil && friendly_pieces[1] == nil && friendly_pieces[2] == nil
+        possible_moves += [[self.x_position + 3, self.y_position]]
+      end
+      # Clear path to the right of the king:
+      if self.moves.count == 0 && king.moves.count == 0 && friendly_pieces[3] == nil && friendly_pieces[4] == nil
+        possible_moves += [[self.x_position - 2, self.y_position]]
       end
     end
 
