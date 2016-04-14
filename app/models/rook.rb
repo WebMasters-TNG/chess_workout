@@ -95,11 +95,11 @@ class Rook < Piece
       end
       king = game.pieces.where(:color => "white", :type => "King", :captured => nil).first
       # Clear path to the left of the king:
-      if self.moves.count == 0 && king.moves.count == 0 && friendly_pieces[0] == nil && friendly_pieces[1] == nil && friendly_pieces[2] == nil
+      if self.moves.count == 0 && king.moves.count == 0 && friendly_pieces[0] == nil && friendly_pieces[1] == nil && friendly_pieces[2] == nil && self.x_position + 3 < 9
         possible_moves += [[self.x_position + 3, self.y_position]]
       end
       # Clear path to the right of the king:
-      if self.moves.count == 0 && king.moves.count == 0 && friendly_pieces[3] == nil && friendly_pieces[4] == nil
+      if self.moves.count == 0 && king.moves.count == 0 && friendly_pieces[3] == nil && friendly_pieces[4] == nil && self.x_position - 2 > 0
         possible_moves += [[self.x_position - 2, self.y_position]]
       end
 
@@ -187,11 +187,11 @@ class Rook < Piece
       end
       king = game.pieces.where(:color => "black", :type => "King", :captured => nil).first
       # Clear path to the left of the king:
-      if self.moves.count == 0 && king.moves.count == 0 && friendly_pieces[0] == nil && friendly_pieces[1] == nil && friendly_pieces[2] == nil
+      if self.moves.count == 0 && king.moves.count == 0 && friendly_pieces[0] == nil && friendly_pieces[1] == nil && friendly_pieces[2] == nil && self.x_position + 3 < 9
         possible_moves += [[self.x_position + 3, self.y_position]]
       end
       # Clear path to the right of the king:
-      if self.moves.count == 0 && king.moves.count == 0 && friendly_pieces[3] == nil && friendly_pieces[4] == nil
+      if self.moves.count == 0 && king.moves.count == 0 && friendly_pieces[3] == nil && friendly_pieces[4] == nil && self.x_position - 2 > 0
         possible_moves += [[self.x_position - 2, self.y_position]]
       end
     end
