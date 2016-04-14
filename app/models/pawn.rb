@@ -36,7 +36,16 @@ class Pawn < Piece
       if enemy_to_upper_left != nil && self.x_position - 1 > 0 && self.y_position - 1 > 0
         possible_moves += [[self.x_position - 1, self.y_position - 1]]
       end
-    # binding.pry
+
+      # En passant
+      enemy_pawn_to_left = game.pieces.where(:game_id => game.id, :type => "Pawn", :color => "black", :x_position => self.x_position - 1, :y_position => self.y_position).first
+      enemy_pawn_to_right = game.pieces.where(:game_id => game.id, :type => "Pawn", :color => "black", :x_position => self.x_position + 1, :y_position => self.y_position).first
+      if enemy_pawn_to_left != nil && enemy_pawn_to_left.moves.count <= 1
+        possible_moves += [[self.x_position - 1, self.y_position - 1]]
+      end
+      if enemy_pawn_to_right != nil && enemy_pawn_to_right.moves.count <= 1
+        possible_moves += [[self.x_position + 1, self.y_position - 1]]
+      end
 
     # Black pawn:
     else
@@ -58,7 +67,17 @@ class Pawn < Piece
       if enemy_to_upper_left != nil && self.x_position - 1 > 0 && self.y_position + 1 < 9
         possible_moves += [[self.x_position - 1, self.y_position + 1]]
       end
+
+      enemy_pawn_to_left = game.pieces.where(:game_id => game.id, :type => "Pawn", :color => "white", :x_position => self.x_position - 1, :y_position => self.y_position).first
+      enemy_pawn_to_right = game.pieces.where(:game_id => game.id, :type => "Pawn", :color => "white", :x_position => self.x_position + 1, :y_position => self.y_position).first
+      if enemy_pawn_to_left != nil && enemy_pawn_to_left.moves.count <= 1
+        possible_moves += [[self.x_position - 1, self.y_position + 1]]
+      end
+      if enemy_pawn_to_right != nil && enemy_pawn_to_right.moves.count <= 1
+        possible_moves += [[self.x_position + 1, self.y_position + 1]]
+      end
     end
+
     return possible_moves
   end
 
