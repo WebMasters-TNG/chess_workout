@@ -10,16 +10,18 @@
 <br />
 <div class="text-center">
   <h1>Game ID: <%= @game.id %>, Turn <span class="game_turn"><%= @game.turn %></span>,
-    <span class="player_move">
-      <% if @game.turn % 2 == 1 %>
-        White
-      <% else %>
-        Black
-      <% end %>
-    </span> Player's Move</h1> 
+    <span class="move_info">
+      <span class="player_move">
+        <% if @game.turn % 2 == 1 %>
+          White
+        <% else %>
+          Black
+        <% end %>
+      </span> Player's Move</h1>
+    </span>
 </div>
 <br class='clr' />
-<div class="game_message">
+<div class="game_message text-center">
 </div>
 <div class="gameboard col-xs-6">
   <table class="board" id="chessboard">
