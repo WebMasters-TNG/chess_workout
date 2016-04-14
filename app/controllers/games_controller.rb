@@ -29,8 +29,13 @@ class GamesController < ApplicationController
     move_id = params[:move_id].to_i
     game_id = params[:game_id]
     @game = Game.find(session[:current_game])
-    new_moves = @game.moves.where("moves.id >= ?", move_id + 1)
-    render json: {new_move: new_moves, turn: @game.turn, status: @game.status}  # Return last move, turn, and game status data to client side
+    # if move_id == 0
+    #   new_moves = @game.moves.first
+    # else
+    #   # new_moves = @game.moves.where(id: (move_id + 1)..Float::INFINITY)   # Check the server for a move id greater than the last known value
+    # end
+    new_moves = @game.moves.where("moves.id >= ?", move_id + 1) 
+    render json: {new_move: new_moves, turn: @game.turn}  # Return last move and turn data to client side
   end
 
   def create
