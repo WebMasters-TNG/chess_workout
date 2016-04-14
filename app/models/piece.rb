@@ -8,6 +8,7 @@ class Piece < ActiveRecord::Base
     set_coords(params)
     return false unless legal_move?
     return false if pinned?
+    opponent_in_check?
     true
   end
 
@@ -42,30 +43,51 @@ class Piece < ActiveRecord::Base
   # This will return true if there is no piece along the chosen movement path that has not been captured.
   def path_clear?
     clear = true
-    if @x0 != @x1 && @y0 == @y1
-      @x1 > @x0 ? x = @x1 - 1 : x = @x1 + 1
-      until x == @x0 do
-        clear = false if game.pieces.where(x_position: x, y_position: @y0, captured: nil).first != nil
-        x > @x0 ? x -= 1 : x += 1
+    piece_coords = game.piece_map
+    if @x0 != @x1 && @y0 == @y1   # Check horizontal path
+      @x1 > @x0 ? x = @x0 + 1 : x = @x0 - 1
+      until x == @x1 do
+        if piece_coords.include?([x, @y0])
+          clear = false
+          break
+        end
+        x > @x1 ? x -= 1 : x += 1
       end
-    elsif @x0 == @x1 && @y0 != @y1
-      @y1 > @y0 ? y = @y1 - 1 : y = @y1 + 1
-      until y == @y0 do
-        clear = false if game.pieces.where(x_position: @x0, y_position: y, captured: nil).first != nil
-        y > @y0 ? y -= 1 : y += 1
+    elsif @x0 == @x1 && @y0 != @y1    # Check vertical path
+      @y1 > @y0 ? y = @y0 + 1 : y = @y0 - 1
+      until y == @y1 do
+        if piece_coords.include?([@x0, y])
+          clear = false
+          break
+        end
+        y > @y1 ? y -= 1 : y += 1
       end
-    elsif @x0 != @x1 && @y0 != @y1
-      @x1 > @x0 ? x = @x1 - 1 : x = @x1 + 1
-      @y1 > @y0 ? y = @y1 - 1 : y = @y1 + 1
-      until x == @x0 && y == @y0 do
-        clear = false if game.pieces.where(x_position: x, y_position: y, captured: nil).first != nil
-        x > @x0 ? x -= 1 : x += 1
-        y > @y0 ? y -= 1 : y += 1
+    elsif @x0 != @x1 && @y0 != @y1    # Check diagonal path
+      @x1 > @x0 ? x = @x0 + 1 : x = @x0 - 1
+      @y1 > @y0 ? y = @y0 + 1 : y = @y0 - 1
+      until x == @x1 && y == @y1 do
+        if piece_coords.include?([x, y])
+          clear = false
+          break
+        end
+        x > @x1 ? x -= 1 : x += 1
+        y > @y1 ? y -= 1 : y += 1
       end
     end
     clear
   end
 
+  # Create arrays of X,Y coordinates for every piece still in play on board for each color
+  # def piece_map
+  #   @white_pieces_map = []
+  #   @black_pieces_map = []
+  #   active_pieces = pieces.where(captured: nil)
+  #   active_pieces.each do |piece|
+  #     @white_pieces_map << [piece.x_position, piece.y_position] if piece.color == "white"
+  #     @black_pieces_map << [piece.x_position, piece.y_position] if piece.color == "black"
+  #   end
+  #   @all_pieces_map = @white_pieces_map + @black_pieces_map
+  # end
 
   # Check the piece currently at the destination square. If there is no piece, return nil.
   def destination_piece
@@ -83,44 +105,66 @@ class Piece < ActiveRecord::Base
   # Check to see if destination square is occupied by a piece, returning false if it is friendly or true if it is an opponent
   def capture_piece?
     return false if destination_piece && destination_piece.color == color
-    Move.create(game_id: game.id, piece_id: destination_piece.id, old_x: @x1, old_y: @y1, captured_piece: true) if destination_piece
-    destination_piece.update_attributes(captured: true) if destination_piece
-    # Check for checkmate if the destination square has the king of the opposite color.
-    # binding.pry
-    if self.color == "white"
-      @black_king = game.pieces.where(:type => "King", :color => "black").first
-      # binding.pry
-      # checkmate? if @black_king.x_position == @x1 && @black_king.y_position == @y1
-    else
-      @white_king = game.pieces.where(:type => "King", :color => "white").first
-      # checkmate? if @white_king.x_position == @x1 && @white_king.y_position == @y1
-    end
     true
   end
 
-  # def demo_check?(player_color)
-  #   player_color == "white" ? opponent_color = "black" : opponent_color = "white"
-  #   opponent_king = game.pieces.where(type: "King", color: opponent_color).first
-  #   friendly_pieces = game.pieces.where(color: player_color, captured: nil).to_a
-  #   in_check = false
-  #   @threatening_pieces = []
-  #   friendly_pieces.each do |piece|
-  #     piece.set_coords({x_position: opponent_king.x_position, y_position: opponent_king.y_position})
-  #     if piece.legal_move?
-  #       in_check = true
-  #       @threatening_pieces << piece
-  #     end
-  #   end
-  #   in_check
-  # end
+  # ***********************************************************
+  # Check & Checkmate needs specific attention!!
+  # => It involves all potentially threatening pieces
+  # => Three moves allowed under check
+  # => 1) Capture threatening pieces
+  # => 2) Block threatening pieces
+  # => 3) Move King to unchecking position
+  # ***********************************************************
 
-  # def demo_checkmate?
-  #   if check?(color)
+  # Use to determine if opposing king in check.
+  def demo_check?(player_color)
+    binding.pry
+    player_color == "white" ? opponent_color = "black" : opponent_color = "white"
+    @opponent_king = game.pieces.where(type: "King", color: opponent_color).first
+    friendly_pieces = game.pieces.where(color: player_color, captured: nil).to_a
+    in_check = false
+    @threatening_pieces = []
+    friendly_pieces.each do |piece|
+      piece.set_coords({x_position: @opponent_king.x_position, y_position: @opponent_king.y_position})
+      if piece.legal_move?
+        in_check = true
+        @threatening_pieces << piece
+      end
+    end
+    in_check
+  end
 
-  #   else
-  #     return false
-  #   end
-  # end
+  # Determine if opponent is in check or checkmate. 
+  def opponent_in_check?
+    binding.pry
+    if demo_check?(color)
+      if demo_checkmate?
+        game.status = "checkmate"
+        game.winner = color
+      else
+        game.status = "check"
+      end
+    else
+      game.status = nil
+      return false
+    end
+  end
+
+  # Determine if checkmate has occurred.
+  def demo_checkmate?
+    checkmate = false
+    can_escape = false
+    can_block = false
+    escape_moves = @opponent_king.possible_moves
+    color == "white" ? opponent_possible_moves = black_pieces_moves : opponent_possible_moves = white_pieces_moves
+    escape_moves.each do |move|
+      can_escape = true if !opponent_possible_moves.include?(move)
+    end
+    # Check if can block threatening piece(s)
+    checkmate = true if !can_escape && !can_block
+    return checkmate
+  end
 
   # ***********************************************************
   # Pinning needs specific attention!!
@@ -129,35 +173,69 @@ class Piece < ActiveRecord::Base
   # => AND!! This method MUST be called BEFORE capture_destination_piece?
   # or otherwise an innocent piece will be captured.
   # ***********************************************************
-
-  ## ***********************************************************
-  # Check & Checkmate needs specific attention!!
-  # => It involves all potentially threatening pieces
-  # => Three moves allowed under check
-  # => 1) Capture threatening pieces
-  # => 2) Block threatening pieces
-  # => 3) Move King to unchecking position
-  # ***********************************************************
   def pinned?
-    # Determine possible moves of all pieces that would put the king in check.
-    # color == "white" ? opponent_color = "black" : opponent_color = "white"
-    # update_attributes(x_position: @x1, y_position: @y1)
-    # return true if demo_check?(opponent_color)
-    false # Placeholder value. Assume this current piece is not pinned.
+    pinned = false
+    color == "white" ? opponent_color = "black" : opponent_color = "white"
+    update_attributes(x_position: @x1, y_position: @y1)
+    if demo_check?(opponent_color)
+      update_attributes(x_position: @x0, y_position: @y0)
+      pinned = true
+    end
+    pinned
   end
 
-  def possible_moves
+  # Find the diagonal paths for a piece given the starting X and Y coordinates of that piece.
+  def diagonal_range(x_coord, y_coord)
+    range = []
+    x = x_coord - 1
+    y = y_coord - 1
+
+    until x == 0 || y == 0 do
+      range << [x, y]
+      x -= 1
+      y -= 1
+    end
+
+    x = x_coord + 1
+    y = y_coord - 1
+    until x == 8 || y == 0 do
+      range << [x, y]
+      x += 1
+      y -= 1
+    end
+
+    x = x_coord + 1
+    y = y_coord + 1
+    until x == 8 || y == 8 do
+      range << [x, y]
+      x += 1
+      y += 1
+    end
+
+    x = x_coord - 1
+    y = y_coord + 1
+    until x == 0 || y == 8 do
+      range << [x, y]
+      x += 1
+      y -= 1
+    end
+
+    return range
+  end
+
+
+  def all_possible_moves
     @possible_moves ||= white_pieces_moves + black_pieces_moves
   end
 
   def white_pieces_moves
-    @possible_moves ||= self.game.white_pieces.map do |piece|
+    @possible_moves ||= self.game.white_pieces.where(captured: nil).map do |piece|
       piece.possible_moves
     end
   end
 
   def black_pieces_moves
-    @possible_moves ||= self.game.black_pieces.map do |piece|
+    @possible_moves ||= self.game.black_pieces.where(captured: nil).map do |piece|
       piece.possible_moves
     end
   end
