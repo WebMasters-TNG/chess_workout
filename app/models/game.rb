@@ -71,25 +71,25 @@ class Game < ActiveRecord::Base
     return black_pieces_map
   end
 
-  def join_as_black(user)
-    self.update_attributes(black_player_id: user.id)
-    self.pieces.where(color: "black").join_as_black(user)
-  end
+	def join_as_black(user)
+		self.update_attributes(black_player_id: user.id)
+		self.pieces.where(color: "black").join_as_black(user)
+	end
 
-  def next_turn
-    increment_turn = self.turn + 1
-    self.update_attributes(turn: increment_turn)
-  end
+	def next_turn
+		increment_turn = self.turn + 1
+		self.update_attributes(turn: increment_turn)
+	end
 
-  def your_turn?(piece)
-    case self.turn % 2
-    when 1
-      return true if piece.color == "white"
-    when 0
-      return true if piece.color == "black"
-    end
-    false
-  end
+	def your_turn?(piece)
+		case self.turn % 2
+		when 1
+			return true if piece.color == "white"
+		when 0
+			return true if piece.color == "black"
+		end
+		false
+	end
 
 #
   # def next_move

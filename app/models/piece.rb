@@ -135,7 +135,7 @@ class Piece < ActiveRecord::Base
     in_check
   end
 
-  # Determine if opponent is in check or checkmate.
+  # Determine if opponent is in check or checkmate. 
   def opponent_in_check?
     # binding.pry
     if demo_check?(color)

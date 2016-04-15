@@ -141,10 +141,10 @@ function initPage() {
 // }
 }
 
-Game = {
+Game = {  
   // Long polling function to check for new moves
   poll: function() {
-    $.ajax({
+    $.ajax({ 
       type: 'GET',
       dataType: 'json',
       url: game,

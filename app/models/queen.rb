@@ -12,7 +12,7 @@ class Queen < Piece
     # check horizontal moves
     (1..8).each do |n|
       next if n == x
-      set_coords({x_position: n, y_position: y})
+      set_coords({x_position: n, y_position: y}) 
       possible_moves << [@x1, @y1] if legal_move?
     end
 

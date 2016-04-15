@@ -29,7 +29,7 @@ class GamesController < ApplicationController
     move_id = params[:move_id].to_i
     game_id = params[:game_id]
     @game = Game.find(session[:current_game])
-    new_moves = @game.moves.where("moves.id >= ?", move_id + 1)
+    new_moves = @game.moves.where("moves.id >= ?", move_id + 1) 
     render json: {new_move: new_moves, turn: @game.turn, status: @game.status}  # Return last move, turn, and game status data to client side
   end
 
