@@ -119,7 +119,7 @@ class Piece < ActiveRecord::Base
 
   # Use to determine if opposing king in check.
   def demo_check?(player_color)
-    binding.pry
+    # binding.pry
     player_color == "white" ? opponent_color = "black" : opponent_color = "white"
     @opponent_king = game.pieces.where(type: "King", color: opponent_color).first
     friendly_pieces = game.pieces.where(color: player_color, captured: nil).to_a
@@ -137,7 +137,7 @@ class Piece < ActiveRecord::Base
 
   # Determine if opponent is in check or checkmate.
   def opponent_in_check?
-    binding.pry
+    # binding.pry
     if demo_check?(color)
       if demo_checkmate?
         game.status = "checkmate"
