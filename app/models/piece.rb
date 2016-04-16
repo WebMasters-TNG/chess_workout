@@ -5,11 +5,14 @@ class Piece < ActiveRecord::Base
 
   # Check if move is valid for selected piece
   def valid_move?(params)
+    binding.pry
     set_coords(params)
     return false unless legal_move?
     return false if pinned?
     opponent_in_check?
+    update_attributes(x_position: @x0, y_position: @y0)
     true
+    binding.pry
   end
 
   def set_coords(params)
@@ -19,6 +22,7 @@ class Piece < ActiveRecord::Base
     @y1 = params[:y_position].to_i
     @sx = @x1 - @x0 # sx = displacement_x
     @sy = @y1 - @y0 # sy = displacement_y
+    binding.pry
   end
 
   # Check to see if the movement path is a valid diagonal move
@@ -104,6 +108,7 @@ class Piece < ActiveRecord::Base
 
   # Check to see if destination square is occupied by a piece, returning false if it is friendly or true if it is an opponent
   def capture_piece?
+    binding.pry
     return false if destination_piece && destination_piece.color == color
     true
   end
@@ -119,7 +124,6 @@ class Piece < ActiveRecord::Base
 
   # Use to determine if opposing king in check.
   def demo_check?(player_color)
-    # binding.pry
     player_color == "white" ? opponent_color = "black" : opponent_color = "white"
     @opponent_king = game.pieces.where(type: "King", color: opponent_color).first
     friendly_pieces = game.pieces.where(color: player_color, captured: nil).to_a
@@ -135,9 +139,8 @@ class Piece < ActiveRecord::Base
     in_check
   end
 
-  # Determine if opponent is in check or checkmate. 
+  # Determine if opponent is in check or checkmate.
   def opponent_in_check?
-    # binding.pry
     if demo_check?(color)
       if demo_checkmate?
         game.status = "checkmate"
