@@ -173,6 +173,8 @@ class Piece < ActiveRecord::Base
     # Code to determine if opponent can
     # block threatening piece(s) goes here
 
+    can_block?
+
     checkmate = true if !can_escape && !can_block && !can_capture_threat
     return checkmate
   end
@@ -346,6 +348,8 @@ class Piece < ActiveRecord::Base
 
     # # Change in_check into an instance variable?
     # in_check = false if threatening_pieces.size == 0
+
+    return can_block
   end
 
 
