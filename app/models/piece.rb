@@ -5,14 +5,12 @@ class Piece < ActiveRecord::Base
 
   # Check if move is valid for selected piece
   def valid_move?(params)
-    binding.pry
     set_coords(params)
     return false unless legal_move?
     return false if pinned?
     opponent_in_check?
     update_attributes(x_position: @x0, y_position: @y0)
     true
-    binding.pry
   end
 
   def set_coords(params)
@@ -22,7 +20,6 @@ class Piece < ActiveRecord::Base
     @y1 = params[:y_position].to_i
     @sx = @x1 - @x0 # sx = displacement_x
     @sy = @y1 - @y0 # sy = displacement_y
-    binding.pry
   end
 
   # Check to see if the movement path is a valid diagonal move
@@ -108,7 +105,6 @@ class Piece < ActiveRecord::Base
 
   # Check to see if destination square is occupied by a piece, returning false if it is friendly or true if it is an opponent
   def capture_piece?
-    binding.pry
     return false if destination_piece && destination_piece.color == color
     true
   end
@@ -159,15 +155,101 @@ class Piece < ActiveRecord::Base
     checkmate = false
     can_escape = false
     can_block = false
+    can_capture_threat = false
+    escape_moves = @opponent_king.possible_moves
+    if color == "white"
+      opponent_possible_moves = black_pieces_moves
+      friendly_possible_moves = white_pieces_moves
+    else
+      opponent_possible_moves = white_pieces_moves
+      friendly_possible_moves = black_pieces_moves
+    end
+    # Determine if king in check can escape
+    escape_moves.each do |move|
+      can_escape = true if !friendly_possible_moves.include?(move)
+    end
+    # Determine if threating piece can be captured by opposing player. Can only be true if a singular piece has opposing king in check.
+    can_capture_threat = true if opponent_possible_moves.include?([@x1, @y1]) && @threatening_pieces.length == 1
+    # Code to determine if opponent can
+    # block threatening piece(s) goes here
+
+    checkmate = true if !can_escape && !can_block && !can_capture_threat
+    return checkmate
+  end
+
+
+  def can_escape?
+    can_escape = false
+    threatening_pieces = @threatening_pieces
     escape_moves = @opponent_king.possible_moves
     color == "white" ? opponent_possible_moves = black_pieces_moves : opponent_possible_moves = white_pieces_moves
     escape_moves.each do |move|
       can_escape = true if !opponent_possible_moves.include?(move)
+      # threatening_pieces.delete_at() ... if can_escape
     end
-    # Check if can block threatening piece(s)
-    checkmate = true if !can_escape && !can_block
-    return checkmate
   end
+
+
+  def can_block?
+    can_block = false
+    white_possible_moves
+    black_possible_moves
+    threatening_pieces = @threatening_pieces
+    threatening_pieces.each do |threatening_piece|
+      if self.color == "white"
+        case threatening_pieces.type
+        when "Pawn"
+          # There can be up to 8 pawns on the board
+            for m in 0..7
+              # The pawn exists:
+              if @all_white_possible_moves[0][m] != nil
+                # Each piece has up to 8 pairs of possible move coordinates returned.
+                for o in 0..7
+                  # The oth move of the pawn exists:
+                  if @all_white_possible_moves[0][m][o] != nil
+                    # e.g. all_white_possible_moves[0][0][0] == [x, y] of first possible move of the first pawn
+                    if @all_white_possible_moves[0][m][o][0] == black_pieces_moves. [][][0] && @all_white_possible_moves[0][m][o][1] == black_pieces_moves. [][][1]
+                      can_block = true
+                    end
+                  end
+                end
+              end
+            end
+        when "Rook" || "Knight" || "Bishop"
+        when "Queen"
+        when "King"
+
+        end
+
+      else
+        case threatening_pieces.type
+        when "Pawn"
+        when "Rook" || "Knight" || "Bishop"
+        when "Queen"
+        when "King"
+        end
+      end
+    end
+
+    # 1) A friendly piece (the threatening piece) has a path to the enemy king.
+    # 2) An enemy piece (excluding the enemy king) has a possible move within the path of the threatening piece.
+    if threatening_pieces.size > 0
+      # It must be possible to block all threatening pieces.
+      threatening_pieces.possible_moves.each do |move|
+        if opponent_possible_moves.include?(move) && move != opponent_possible_moves
+          can_block = true
+          # Take out this threatening piece, so that you can determine if there are any remaining threatening pieces as a way to remove check.
+          # threatening_pieces.delete_at() ...
+        else
+          can_block = false
+        end
+      end
+    end
+
+    # # Change in_check into an instance variable?
+    # in_check = false if threatening_pieces.size == 0
+  end
+
 
   # ***********************************************************
   # Pinning needs specific attention!!
@@ -181,10 +263,24 @@ class Piece < ActiveRecord::Base
     color == "white" ? opponent_color = "black" : opponent_color = "white"
     update_attributes(x_position: @x1, y_position: @y1)
     if demo_check?(opponent_color)
-      update_attributes(x_position: @x0, y_position: @y0)
-      pinned = true
+      if capture_threat?
+        pinned = false
+      else
+        update_attributes(x_position: @x0, y_position: @y0)
+        pinned = true
+      end
     end
     pinned
+  end
+
+  # Determine if current move will capture the threatening piece
+  def capture_threat?
+    if @threatening_pieces.length == 1
+      return true if @x1 == @threatening_pieces.first.x_position && @y1 == @threatening_pieces.first.y_position
+      return false
+    elsif @threatening_pieces.length > 1
+      return false
+    end
   end
 
   # Find the diagonal paths for a piece given the starting X and Y coordinates of that piece.
@@ -232,15 +328,19 @@ class Piece < ActiveRecord::Base
   end
 
   def white_pieces_moves
-    @possible_moves ||= self.game.white_pieces.where(captured: nil).map do |piece|
-      piece.possible_moves
+    @possible_moves = []
+    self.game.white_pieces.where(captured: nil).map do |piece|
+      @possible_moves += piece.possible_moves
     end
+    return @possible_moves
   end
 
   def black_pieces_moves
-    @possible_moves ||= self.game.black_pieces.where(captured: nil).map do |piece|
-      piece.possible_moves
+    @possible_moves = []
+    self.game.black_pieces.where(captured: nil).map do |piece|
+      @possible_moves += piece.possible_moves
     end
+    return @possible_moves
   end
 
   def check?
