@@ -1,9 +1,9 @@
 class Bishop < Piece
   def legal_move?
-    binding.pry
+    # binding.pry
     return false unless diagonal_move? && path_clear?
     capture_piece?
-    binding.pry
+    # binding.pry
   end
 
   def rectangle_move?

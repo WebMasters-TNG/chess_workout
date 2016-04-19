@@ -8,7 +8,7 @@ class PiecesController < ApplicationController
 
   def update
     # current_piece.set_coords(piece_params)
-    binding.pry
+    # binding.pry
     current_piece.capture_destination_piece # Capture the opponent piece on destination square if one exists.
     Piece.find_by_id(params[:id]).update_attributes(piece_params)
     current_piece.update_move
@@ -46,7 +46,7 @@ class PiecesController < ApplicationController
   end
 
   def valid?
-    binding.pry
+    # binding.pry
     if current_game.status == "checkmate" || !current_game.your_turn?(current_piece) || !current_piece.valid_move?(piece_params)
       render text: 'Unauthorized', status: :unauthorized
     end

@@ -5,14 +5,14 @@ class Piece < ActiveRecord::Base
 
   # Check if move is valid for selected piece
   def valid_move?(params)
-    binding.pry
+    # binding.pry
     set_coords(params)
     return false unless legal_move?
     return false if pinned?
     opponent_in_check?
     update_attributes(x_position: @x0, y_position: @y0)
     true
-    binding.pry
+    # binding.pry
   end
 
   def set_coords(params)
@@ -22,7 +22,7 @@ class Piece < ActiveRecord::Base
     @y1 = params[:y_position].to_i
     @sx = @x1 - @x0 # sx = displacement_x
     @sy = @y1 - @y0 # sy = displacement_y
-    binding.pry
+    # binding.pry
   end
 
   # Check to see if the movement path is a valid diagonal move
@@ -108,7 +108,7 @@ class Piece < ActiveRecord::Base
 
   # Check to see if destination square is occupied by a piece, returning false if it is friendly or true if it is an opponent
   def capture_piece?
-    binding.pry
+    # binding.pry
     return false if destination_piece && destination_piece.color == color
     true
   end
@@ -154,19 +154,127 @@ class Piece < ActiveRecord::Base
     end
   end
 
+
+  def can_escape?
+    can_escape = false
+    threatening_pieces = @threatening_pieces
+    escape_moves = @opponent_king.possible_moves
+    color == "white" ? opponent_possible_moves = black_pieces_moves : opponent_possible_moves = white_pieces_moves
+    escape_moves.each do |move|
+      can_escape = true if !opponent_possible_moves.include?(move)
+      # threatening_pieces.delete_at() ... if can_escape
+    end
+  end
+
+
+  def can_block?
+    can_block = false
+    white_possible_moves
+    black_possible_moves
+    threatening_pieces = @threatening_pieces
+    threatening_pieces.each do |threatening_piece|
+      if self.color == "white"
+        case threatening_pieces.type
+        when "Pawn"
+          # There can be up to 8 pawns on the board
+            for m in 0..7
+              # The pawn exists:
+              if @all_white_possible_moves[0][m] != nil
+                # Each piece has up to 8 pairs of possible move coordinates returned.
+                for o in 0..7
+                  # The oth move of the pawn exists:
+                  if @all_white_possible_moves[0][m][o] != nil
+                    # e.g. all_white_possible_moves[0][0][0] == [x, y] of first possible move of the first pawn
+                    if @all_white_possible_moves[0][m][o][0] == black_pieces_moves. [][][0] && @all_white_possible_moves[0][m][o][1] == black_pieces_moves. [][][1]
+                      can_block = true
+                    end
+                  end
+                end
+              end
+            end
+        when "Rook" || "Knight" || "Bishop"
+        when "Queen"
+        when "King"
+
+        end
+
+      else
+        case threatening_pieces.type
+        when "Pawn"
+        when "Rook" || "Knight" || "Bishop"
+        when "Queen"
+        when "King"
+        end
+      end
+    end
+
+    # 1) A friendly piece (the threatening piece) has a path to the enemy king.
+    # 2) An enemy piece (excluding the enemy king) has a possible move within the path of the threatening piece.
+    if threatening_pieces.size > 0
+      # It must be possible to block all threatening pieces.
+      threatening_pieces.possible_moves.each do |move|
+        if opponent_possible_moves.include?(move) && move != opponent_possible_moves
+          can_block = true
+          # Take out this threatening piece, so that you can determine if there are any remaining threatening pieces as a way to remove check.
+          # threatening_pieces.delete_at() ...
+        else
+          can_block = false
+        end
+      end
+    end
+
+    # # Change in_check into an instance variable?
+    # in_check = false if threatening_pieces.size == 0
+  end
+
+
   # Determine if checkmate has occurred.
   def demo_checkmate?
     checkmate = false
     can_escape = false
     can_block = false
+    threatening_pieces = @threatening_pieces
     escape_moves = @opponent_king.possible_moves
     color == "white" ? opponent_possible_moves = black_pieces_moves : opponent_possible_moves = white_pieces_moves
     escape_moves.each do |move|
       can_escape = true if !opponent_possible_moves.include?(move)
+      # threatening_pieces.delete_at() ... if can_escape
     end
+
+
     # Check if can block threatening piece(s)
+    # Required conditions:
+    # 1) A friendly piece (the threatening piece) has a path to the enemy king.
+
+    binding.pry
+
+    if threatening_pieces.size > 0
+      # It must be possible to block all threatening pieces.
+      #
+      # *** Undefined method ".possible_moves" on line 217 (threatening pieces is a multi-dimensional array)***
+      threatening_pieces.possible_moves.each do |move|
+        if opponent_possible_moves.include?(move)
+          can_block = true
+          # Take out this threatening piece, so that you can determine if there are any remaining threatening pieces as a way to remove check.
+          # threatening_pieces.delete_at()
+        else
+          can_block = false
+        end
+      end
+    end
+
+    # Change in_check into an instance variable?
+    in_check = false if threatening_pieces.size == 0
+
+    # 2) An enemy piece (excluding the enemy king) has a possible move within the path of the threatening piece (exclude the location of the enemy king).
+
+
     checkmate = true if !can_escape && !can_block
     return checkmate
+
+    # Hey man, I believe I know the cause of the problem you described above: we don't have logic to allow the capturing of pieces to take a friendly king out of check. Right now, the only way we allow getting out of check is by moving the king to a safe square. We need to finish the logic to allow blocking and capturing of threatening pieces for those moves you described to be valid.
+
+    # There may be more going on than that, but that's my initial diagnosis. I'll be working on refining the code again today. Since you had talked about tackling the blocking of threatening pieces, I'll take a look at capturing threatening pieces and work that into the check/checkmate logic. Probably have to tweak the pinned method to accomodate as well.
   end
 
   # ***********************************************************
