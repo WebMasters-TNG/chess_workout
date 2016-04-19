@@ -197,7 +197,6 @@ class Piece < ActiveRecord::Base
     can_block = false
     white_possible_moves
     black_possible_moves
-    @threatening_pieces
     @threatening_pieces.each do |threatening_piece|
       # If one threatening piece remains that cannot be blocked, you can't escape check via blocking:
       can_block = false
