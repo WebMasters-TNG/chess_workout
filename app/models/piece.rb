@@ -194,13 +194,13 @@ class Piece < ActiveRecord::Base
     can_block = false
     white_possible_moves
     black_possible_moves
-    threatening_pieces = @threatening_pieces
-    threatening_pieces.each do |threatening_piece|
+    @threatening_pieces
+    @threatening_pieces.each do |threatening_piece|
       # If one threatening piece remains that cannot be blocked, you can't escape check via blocking:
       can_block = false
       if self.color == "white"
         for n in 0..5
-          case threatening_pieces.type
+          case threatening_piece.type
           when "Pawn"
             # Can't block a pawn's attack on a king.
             can_block = false
@@ -275,7 +275,7 @@ class Piece < ActiveRecord::Base
         end
 
       else
-        case threatening_pieces.type
+        case threatening_piece.type
         when "Pawn"
         when "Rook" || "Knight" || "Bishop"
         when "Queen"
