@@ -196,29 +196,82 @@ class Piece < ActiveRecord::Base
     black_possible_moves
     threatening_pieces = @threatening_pieces
     threatening_pieces.each do |threatening_piece|
+      # If one threatening piece remains that cannot be blocked, you can't escape check via blocking:
+      can_block = false
       if self.color == "white"
-        case threatening_pieces.type
-        when "Pawn"
-          # There can be up to 8 pawns on the board
-            for m in 0..7
-              # The pawn exists:
-              if @all_white_possible_moves[0][m] != nil
-                # Each piece has up to 8 pairs of possible move coordinates returned.
-                for o in 0..7
-                  # The oth move of the pawn exists:
-                  if @all_white_possible_moves[0][m][o] != nil
-                    # e.g. all_white_possible_moves[0][0][0] == [x, y] of first possible move of the first pawn
-                    if @all_white_possible_moves[0][m][o][0] == black_pieces_moves. [][][0] && @all_white_possible_moves[0][m][o][1] == black_pieces_moves. [][][1]
+        for n in 0..5
+          case threatening_pieces.type
+          when "Pawn"
+            # Can't block a pawn's attack on a king.
+            can_block = false
+          when "Rook"
+            # There are rooks on the board
+            if @all_white_possible_moves[1] != nil
+              # Rooks come in pairs
+              # Up to 8 pawns exist as potential blocking pieces:
+              for m in 0..7
+                # The specific piece exists:
+                if @all_white_possible_moves[1][m] != nil
+                  # Up to 14 possible moves exist for a threateningrook.
+                  # Up to 27 possible moves exist for a blocking queen.
+                  for o in 0..27
+                    # The oth move of the specific piece exists:
+                    if @all_white_possible_moves[1][m][o] != nil
+                      # e.g. all_white_possible_moves[n][0][0] == [x, y] of first possible move of the first rook
+                      # black_pieces_moves[piece][x], black_pieces[piece][y]
+                      # Left to right --> rook, knight, bishop, queen, king, bishop, knight, rook, pawns
+
+                      # Scan through all of the threatening piece's moves (in this case, a rook) and compare for overlap with the other player's possible moves, excluding the king's position and the threatening piece's current position.  Any overlap of possible moves here means that the threatening piece's path to the king can be blocked.
+                      if @all_white_possible_moves[1][m][o][0] == @all_black_possible_moves[n][m][o][0] && @all_white_possible_moves[1][m][o][1] == @all_black_possible_moves[n][m][o][1] && @all_black_possible_moves[n][m][o][0] != @opponent_king.x_position && @all_black_possible_moves[n][m][o][1] != @opponent_king.y_position
+                        can_block = true
+                      end
+                    end
+                  end
+                end
+              end
+            end
+          when "Knight"
+            # Knights cannot be blocked.
+            can_block = false
+          when "Bishop"
+            # There are bishops on the board
+            if @all_white_possible_moves[3] != nil
+              # Bishops come in pairs
+              # Up to 8 pawns exist as potential blocking pieces:
+              for m in 0..7
+                # The specific piece exists:
+                if @all_white_possible_moves[3][m] != nil
+                  # Up to 13 possible moves exist for the threatening bishop.
+                  # Up to 27 possible moves exist for a blocking queen.
+                  for o in 0..27
+                    if @all_white_possible_moves[3][m][o] != nil
+                      if @all_white_possible_moves[3][m][o][0] == @all_black_possible_moves[n][m][o][0] && @all_white_possible_moves[3][m][o][1] == @all_black_possible_moves[n][m][o][1] && @all_black_possible_moves[n][m][o][0] != @opponent_king.x_position && @all_black_possible_moves[n][m][o][1] != @opponent_king.y_position
+                        can_block = true
+                      end
+                    end
+                  end
+                end
+              end
+            end
+          when "Queen"
+            # The single threatening queen exists:
+            if @all_white_possible_moves[4][0] != nil
+              # Up to 8 pawns exist as potential blocking pieces:
+              for m in 0..7
+                # Up to 27 possible moves exist for a blocking or threatening queen.
+                for o in 0..26
+                  if @all_white_possible_moves[4][0][o] != nil
+                    if @all_white_possible_moves[4][0][o][0] == @all_black_possible_moves[n][m][o][0] && @all_white_possible_moves[4][0][o][1] == @all_black_possible_moves[n][m][o][1] && @all_black_possible_moves[n][0][o][0] != @opponent_king.x_position && @all_black_possible_moves[n][m][o][1] != @opponent_king.y_position
                       can_block = true
                     end
                   end
                 end
               end
             end
-        when "Rook" || "Knight" || "Bishop"
-        when "Queen"
-        when "King"
-
+          when "King"
+            # Can't block a king's attack.
+            can_block = false
+          end
         end
 
       else
@@ -233,18 +286,20 @@ class Piece < ActiveRecord::Base
 
     # 1) A friendly piece (the threatening piece) has a path to the enemy king.
     # 2) An enemy piece (excluding the enemy king) has a possible move within the path of the threatening piece.
-    if threatening_pieces.size > 0
-      # It must be possible to block all threatening pieces.
-      threatening_pieces.possible_moves.each do |move|
-        if opponent_possible_moves.include?(move) && move != opponent_possible_moves
-          can_block = true
-          # Take out this threatening piece, so that you can determine if there are any remaining threatening pieces as a way to remove check.
-          # threatening_pieces.delete_at() ...
-        else
-          can_block = false
-        end
-      end
-    end
+    #
+    # Alternative approach???
+    # if threatening_pieces.size > 0
+    #   # It must be possible to block all threatening pieces.
+    #   threatening_pieces.possible_moves.each do |move|
+    #     if opponent_possible_moves.include?(move) && move != opponent_possible_moves
+    #       can_block = true
+    #       # Take out this threatening piece, so that you can determine if there are any remaining threatening pieces as a way to remove check.
+    #       # threatening_pieces.delete_at() ...
+    #     else
+    #       can_block = false
+    #     end
+    #   end
+    # end
 
     # # Change in_check into an instance variable?
     # in_check = false if threatening_pieces.size == 0
