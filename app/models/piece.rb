@@ -191,6 +191,9 @@ class Piece < ActiveRecord::Base
 
 
   def can_block?
+    # 1) A friendly piece (the threatening piece) has a path to the enemy king.
+    # 2) An enemy piece (excluding the enemy king) has a possible move within the path of the threatening piece.
+
     can_block = false
     white_possible_moves
     black_possible_moves
@@ -352,9 +355,6 @@ class Piece < ActiveRecord::Base
       end
     end
 
-    # 1) A friendly piece (the threatening piece) has a path to the enemy king.
-    # 2) An enemy piece (excluding the enemy king) has a possible move within the path of the threatening piece.
-    #
     # Alternative approach???
     # if threatening_pieces.size > 0
     #   # It must be possible to block all threatening pieces.
