@@ -7,8 +7,6 @@ class PiecesController < ApplicationController
   before_action :valid?, only: [:update]
 
   def update
-    # current_piece.set_coords(piece_params)
-    # binding.pry
     current_piece.capture_destination_piece # Capture the opponent piece on destination square if one exists.
     Piece.find_by_id(params[:id]).update_attributes(piece_params)
     current_piece.update_move
