@@ -150,18 +150,30 @@ class Piece < ActiveRecord::Base
     end
   end
 
-  # Determine if checkmate has occurred.
+  # Determine if checkmate on opposing king has occurred.
   def demo_checkmate?
     checkmate = false
     can_escape = false
     can_block = false
+    can_capture_threat = false
     escape_moves = @opponent_king.possible_moves
-    color == "white" ? opponent_possible_moves = black_pieces_moves : opponent_possible_moves = white_pieces_moves
-    escape_moves.each do |move|
-      can_escape = true if !opponent_possible_moves.include?(move)
+    if color == "white"
+      opponent_possible_moves = black_pieces_moves
+      friendly_possible_moves = white_pieces_moves
+    else
+      opponent_possible_moves = white_pieces_moves
+      friendly_possible_moves = black_pieces_moves
     end
-    # Check if can block threatening piece(s)
-    checkmate = true if !can_escape && !can_block
+    # Determine if king in check can escape
+    escape_moves.each do |move|
+      can_escape = true if !friendly_possible_moves.include?(move)
+    end
+    # Determine if threating piece can be captured by opposing player. Can only be true if a singular piece has opposing king in check. 
+    can_capture_threat = true if opponent_possible_moves.include?([@x1, @y1]) && @threatening_pieces.length == 1
+    # Code to determine if opponent can
+    # block threatening piece(s) goes here
+
+    checkmate = true if !can_escape && !can_block && !can_capture_threat
     return checkmate
   end
 
@@ -177,10 +189,24 @@ class Piece < ActiveRecord::Base
     color == "white" ? opponent_color = "black" : opponent_color = "white"
     update_attributes(x_position: @x1, y_position: @y1)
     if demo_check?(opponent_color)
-      update_attributes(x_position: @x0, y_position: @y0)
-      pinned = true
+      if capture_threat?
+        pinned = false
+      else
+        update_attributes(x_position: @x0, y_position: @y0)
+        pinned = true
+      end
     end
     pinned
+  end
+
+  # Determine if current move will capture the threatening piece
+  def capture_threat?
+    if @threatening_pieces.length == 1
+      return true if @x1 == @threatening_pieces.first.x_position && @y1 == @threatening_pieces.first.y_position
+      return false
+    elsif @threatening_pieces.length > 1
+      return false
+    end
   end
 
   # Find the diagonal paths for a piece given the starting X and Y coordinates of that piece.
@@ -228,15 +254,19 @@ class Piece < ActiveRecord::Base
   end
 
   def white_pieces_moves
-    @possible_moves ||= self.game.white_pieces.where(captured: nil).map do |piece|
-      piece.possible_moves
+    @possible_moves = []
+    self.game.white_pieces.where(captured: nil).map do |piece|
+      @possible_moves += piece.possible_moves
     end
+    return @possible_moves
   end
 
   def black_pieces_moves
-    @possible_moves ||= self.game.black_pieces.where(captured: nil).map do |piece|
-      piece.possible_moves
+    @possible_moves = []
+    self.game.black_pieces.where(captured: nil).map do |piece|
+      @possible_moves += piece.possible_moves
     end
+    return @possible_moves
   end
 
   def check?
