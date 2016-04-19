@@ -228,18 +228,18 @@ class Piece < ActiveRecord::Base
     # 2) An enemy piece (excluding the enemy king) has a possible move within the path of the threatening piece.
     #
     # Alternative approach???
-    if threatening_pieces.size > 0
-      # It must be possible to block all threatening pieces.
-      threatening_pieces.possible_moves.each do |move|
-        if opponent_possible_moves.include?(move) && move != opponent_possible_moves
-          can_block = true
-          # Take out this threatening piece, so that you can determine if there are any remaining threatening pieces as a way to remove check.
-          # threatening_pieces.delete_at() ...
-        else
-          can_block = false
-        end
-      end
-    end
+    # if threatening_pieces.size > 0
+    #   # It must be possible to block all threatening pieces.
+    #   threatening_pieces.possible_moves.each do |move|
+    #     if opponent_possible_moves.include?(move) && move != opponent_possible_moves
+    #       can_block = true
+    #       # Take out this threatening piece, so that you can determine if there are any remaining threatening pieces as a way to remove check.
+    #       # threatening_pieces.delete_at() ...
+    #     else
+    #       can_block = false
+    #     end
+    #   end
+    # end
 
     # # Change in_check into an instance variable?
     # in_check = false if threatening_pieces.size == 0
