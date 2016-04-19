@@ -178,16 +178,16 @@ class Piece < ActiveRecord::Base
   end
 
 
-  def can_escape?
-    can_escape = false
-    threatening_pieces = @threatening_pieces
-    escape_moves = @opponent_king.possible_moves
-    color == "white" ? opponent_possible_moves = black_pieces_moves : opponent_possible_moves = white_pieces_moves
-    escape_moves.each do |move|
-      can_escape = true if !opponent_possible_moves.include?(move)
-      # threatening_pieces.delete_at() ... if can_escape
-    end
-  end
+  # def can_escape?
+  #   can_escape = false
+  #   threatening_pieces = @threatening_pieces
+  #   escape_moves = @opponent_king.possible_moves
+  #   color == "white" ? opponent_possible_moves = black_pieces_moves : opponent_possible_moves = white_pieces_moves
+  #   escape_moves.each do |move|
+  #     can_escape = true if !opponent_possible_moves.include?(move)
+  #     # threatening_pieces.delete_at() ... if can_escape
+  #   end
+  # end
 
 
   def can_block?
