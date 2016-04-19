@@ -173,7 +173,9 @@ class Piece < ActiveRecord::Base
     # Code to determine if opponent can
     # block threatening piece(s) goes here
 
-    can_block?
+    # for n in 0..27
+    can_block = true if opponent_possible_moves.include?([self.possible_moves[n][0], self.possible_moves[n][1]]) && @threatening_pieces.length == 1
+    # end
 
     checkmate = true if !can_escape && !can_block && !can_capture_threat
     return checkmate
@@ -191,6 +193,8 @@ class Piece < ActiveRecord::Base
   #   end
   # end
 
+
+  # Write a method to create an array of the path, as an alternative to using all_possible_moves and scanning through a deep multi-dimensional array.
 
   def can_block?
     # 1) A friendly piece (the threatening piece) has a path to the enemy king.
@@ -217,8 +221,8 @@ class Piece < ActiveRecord::Base
                 # The specific piece exists:
                 if @all_white_possible_moves[1][m] != nil
                   # Up to 14 possible moves exist for a threateningrook.
-                  # Up to 27 possible moves exist for a blocking queen.
-                  for o in 0..27
+                  # Up to 28 possible moves exist for a blocking queen.
+                  for o in 0..28
                     # The oth move of the specific piece exists:
                     if @all_white_possible_moves[1][m][o] != nil
                       # e.g. all_white_possible_moves[n][0][0] == [x, y] of first possible move of the first rook
@@ -246,8 +250,8 @@ class Piece < ActiveRecord::Base
                 # The specific piece exists:
                 if @all_white_possible_moves[3][m] != nil
                   # Up to 13 possible moves exist for the threatening bishop.
-                  # Up to 27 possible moves exist for a blocking queen.
-                  for o in 0..27
+                  # Up to 28 possible moves exist for a blocking queen.
+                  for o in 0..28
                     if @all_white_possible_moves[3][m][o] != nil
                       if @all_white_possible_moves[3][m][o][0] == @all_black_possible_moves[n][m][o][0] && @all_white_possible_moves[3][m][o][1] == @all_black_possible_moves[n][m][o][1] && (@all_black_possible_moves[n][m][o][0] != @opponent_king.x_position && @all_black_possible_moves[n][m][o][1] != @opponent_king.y_position) && (@all_white_possible_moves[3][m][o][0] != @all_black_possible_moves[5][m][o][0] && @all_white_possible_moves[3][m][o][1] != @all_black_possible_moves[5][m][o][1])
                         can_block = true
@@ -262,8 +266,8 @@ class Piece < ActiveRecord::Base
             if @all_white_possible_moves[4][0] != nil
               # Up to 8 pawns exist as potential blocking pieces:
               for m in 0..7
-                # Up to 27 possible moves exist for a blocking or threatening queen.
-                for o in 0..26
+                # Up to 28 possible moves exist for a blocking or threatening queen.
+                for o in 0..27
                   if @all_white_possible_moves[4][0][o] != nil
                     if @all_white_possible_moves[4][0][o][0] == @all_black_possible_moves[n][m][o][0] && @all_white_possible_moves[4][0][o][1] == @all_black_possible_moves[n][m][o][1] && (@all_black_possible_moves[n][m][o][0] != @opponent_king.x_position && @all_black_possible_moves[n][m][o][1] != @opponent_king.y_position) && (@all_white_possible_moves[4][m][o][0] != @all_black_possible_moves[5][m][o][0] && @all_white_possible_moves[4][m][o][1] != @all_black_possible_moves[5][m][o][1])
                       can_block = true
@@ -316,7 +320,7 @@ class Piece < ActiveRecord::Base
           when "Queen"
             if @all_black_possible_moves[4][0] != nil
               for m in 0..7
-                for o in 0..26
+                for o in 0..27
                   if @all_black_possible_moves[4][0][o] != nil
                     if @all_black_possible_moves[4][0][o][0] == @all_white_possible_moves[n][m][o][0] && @all_black_possible_moves[4][0][o][1] == @all_white_possible_moves[n][m][o][1] && (@all_white_possible_moves[n][m][o][0] != @opponent_king.x_position && @all_white_possible_moves[n][m][o][1] != @opponent_king.y_position) && (@all_black_possible_moves[4][m][o][0] != @all_white_possible_moves[5][m][o][0] && @all_black_possible_moves[4][m][o][1] != @all_white_possible_moves[5][m][o][1])
                       can_block = true
