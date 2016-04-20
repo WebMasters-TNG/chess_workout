@@ -178,7 +178,6 @@ class Piece < ActiveRecord::Base
     # end
 
     checkmate = true if !can_escape && !can_block? && !can_capture_threat
-    binding.pry
     return checkmate
   end
 
@@ -211,6 +210,7 @@ class Piece < ActiveRecord::Base
         can_block = false
         if self.color == "white"
           for n in 0..5
+            puts "n == #{n}"
             case threatening_piece.type
             when "Pawn"
               # Can't block a pawn's attack on a king.
@@ -227,11 +227,13 @@ class Piece < ActiveRecord::Base
                 # Rooks come in pairs
                 # Up to 8 pawns exist as potential blocking pieces:
                 for m in 0..7
+                  puts "m == #{m}"
                   # The specific piece exists:
                   if @all_white_possible_moves[1][m] != nil && @all_black_possible_moves[n][m] != nil
                     # Up to 14 possible moves exist for a threateningrook.
                     # Up to 28 possible moves exist for a blocking queen.
                     for o in 0..28
+                      puts "o == #{o}"
                       # The oth move of the specific piece exists:
                       if @all_white_possible_moves[1][m][o] != nil && @all_black_possible_moves[n][m][o] != nil
                         # e.g. all_white_possible_moves[n][0][0] == [x, y] of first possible move of the first rook
@@ -241,6 +243,7 @@ class Piece < ActiveRecord::Base
                         # Scan through all of the threatening piece's moves (in this case, a rook) and compare for overlap with the other player's possible moves, excluding the king's position and the threatening piece's current position.  Any overlap of possible moves here means that the threatening piece's path to the king can be blocked.  You cannot block an attack on the king with the king itself, of course (@all_black_possible_moves[5]).
                         if @all_white_possible_moves[1][m][o][0] == @all_black_possible_moves[n][m][o][0] && @all_white_possible_moves[1][m][o][1] == @all_black_possible_moves[n][m][o][1] && (@all_black_possible_moves[n][m][o][0] != @opponent_king.x_position && @all_black_possible_moves[n][m][o][1] != @opponent_king.y_position) && (@all_white_possible_moves[1][m][o][0] != @all_black_possible_moves[5][m][o][0] && @all_white_possible_moves[1][m][o][1] != @all_black_possible_moves[5][m][o][1])
                           can_block = true
+                          puts "Blocking the white rook!"
                         end
                       end
                     end
@@ -253,14 +256,18 @@ class Piece < ActiveRecord::Base
                 # Bishops come in pairs
                 # Up to 8 pawns exist as potential blocking pieces:
                 for m in 0..7
+                  puts "m == #{m}"
                   # The specific piece exists:
                   if @all_white_possible_moves[3][m] != nil && @all_black_possible_moves[n][m] != nil
                     # Up to 13 possible moves exist for the threatening bishop.
                     # Up to 28 possible moves exist for a blocking queen.
+                    binding.pry
                     for o in 0..28
+                      puts "o == #{o}"
                       if @all_white_possible_moves[3][m][o] != nil && @all_black_possible_moves[n][m][o] != nil
                         if @all_white_possible_moves[3][m][o][0] == @all_black_possible_moves[n][m][o][0] && @all_white_possible_moves[3][m][o][1] == @all_black_possible_moves[n][m][o][1] && (@all_black_possible_moves[n][m][o][0] != @opponent_king.x_position && @all_black_possible_moves[n][m][o][1] != @opponent_king.y_position) && (@all_white_possible_moves[3][m][o][0] != @all_black_possible_moves[5][m][o][0] && @all_white_possible_moves[3][m][o][1] != @all_black_possible_moves[5][m][o][1])
                           can_block = true
+                          puts "Blocking the white bishop!"
                         end
                       end
                     end
@@ -272,12 +279,15 @@ class Piece < ActiveRecord::Base
               if @all_white_possible_moves[4][0] != nil && @all_black_possible_moves[n] != nil
                 # Up to 8 pawns exist as potential blocking pieces:
                 for m in 0..7
+                  puts "m == #{m}"
                   if @all_black_possible_moves[n][m] != nil
                     # Up to 28 possible moves exist for a blocking or threatening queen.
                     for o in 0..27
+                      puts "o == #{o}"
                       if @all_white_possible_moves[4][0][o] != nil && @all_black_possible_moves[n][m][o] != nil
                         if @all_white_possible_moves[4][0][o][0] == @all_black_possible_moves[n][m][o][0] && @all_white_possible_moves[4][0][o][1] == @all_black_possible_moves[n][m][o][1] && (@all_black_possible_moves[n][m][o][0] != @opponent_king.x_position && @all_black_possible_moves[n][m][o][1] != @opponent_king.y_position) && (@all_white_possible_moves[4][m][o][0] != @all_black_possible_moves[5][m][o][0] && @all_white_possible_moves[4][m][o][1] != @all_black_possible_moves[5][m][o][1])
                           can_block = true
+                          puts "Blocking the white queen!"
                         end
                       end
                     end
@@ -289,6 +299,7 @@ class Piece < ActiveRecord::Base
 
         else
           for n in 0..5
+            puts "n == #{n}"
             case threatening_piece.type
             when "Pawn"
               # can_block = false
@@ -299,12 +310,14 @@ class Piece < ActiveRecord::Base
             when "Rook"
               if @all_black_possible_moves[1] != nil && @all_white_possible_moves[n] != nil
                 for m in 0..7
+                  puts "m == #{m}"
                   if @all_black_possible_moves[1][m] != nil && @all_white_possible_moves[n][m] != nil
                     for o in 0..27
+                      puts "o == #{o}"
                       if @all_black_possible_moves[1][m][o] != nil && @all_white_possible_moves[n][m][o] != nil
-                        binding.pry
                         if @all_black_possible_moves[1][m][o][0] == @all_white_possible_moves[n][m][o][0] && @all_black_possible_moves[1][m][o][1] == @all_white_possible_moves[n][m][o][1] && (@all_white_possible_moves[n][m][o][0] != @opponent_king.x_position && @all_white_possible_moves[n][m][o][1] != @opponent_king.y_position) && (@all_black_possible_moves[1][m][o][0] != @all_white_possible_moves[5][m][o][0] && @all_black_possible_moves[1][m][o][1] != @all_white_possible_moves[5][m][o][1])
                           can_block = true
+                          puts "Blocking the black rook!"
                         end
                       end
                     end
@@ -314,11 +327,15 @@ class Piece < ActiveRecord::Base
             when "Bishop"
               if @all_black_possible_moves[3] != nil && @all_white_possible_moves[n] != nil
                 for m in 0..7
+                  puts "m == #{m}"
+                  binding.pry
                   if @all_black_possible_moves[3][m] != nil && @all_white_possible_moves[n][m] != nil
                     for o in 0..27
+                      puts "o == #{o}"
                       if @all_black_possible_moves[3][m][o] != nil && @all_white_possible_moves[n][m][o] != nil
                         if @all_black_possible_moves[3][m][o][0] == @all_white_possible_moves[n][m][o][0] && @all_black_possible_moves[3][m][o][1] == @all_white_possible_moves[n][m][o][1] && (@all_white_possible_moves[n][m][o][0] != @opponent_king.x_position && @all_white_possible_moves[n][m][o][1] != @opponent_king.y_position) && (@all_black_possible_moves[3][m][o][0] != @all_white_possible_moves[5][m][o][0] && @all_black_possible_moves[3][m][o][1] != @all_white_possible_moves[5][m][o][1])
                           can_block = true
+                          puts "Blocking the black bishop!"
                         end
                       end
                     end
@@ -328,11 +345,14 @@ class Piece < ActiveRecord::Base
             when "Queen"
               if @all_black_possible_moves[4][0] != nil && @all_white_possible_moves[n] != nil
                 for m in 0..7
+                  puts "m == #{m}"
                   if @all_white_possible_moves[n][m] != nil
                     for o in 0..27
+                      puts "o == #{o}"
                       if @all_black_possible_moves[4][0][o] != nil && @all_white_possible_moves[n][m][o] != nil
                         if @all_black_possible_moves[4][0][o][0] == @all_white_possible_moves[n][m][o][0] && @all_black_possible_moves[4][0][o][1] == @all_white_possible_moves[n][m][o][1] && (@all_white_possible_moves[n][m][o][0] != @opponent_king.x_position && @all_white_possible_moves[n][m][o][1] != @opponent_king.y_position) && (@all_black_possible_moves[4][m][o][0] != @all_white_possible_moves[5][m][o][0] && @all_black_possible_moves[4][m][o][1] != @all_white_possible_moves[5][m][o][1])
                           can_block = true
+                          puts "Blocking the black queen!"
                         end
                       end
                     end
@@ -361,7 +381,7 @@ class Piece < ActiveRecord::Base
     # # Change in_check into an instance variable?
     # in_check = false if threatening_pieces.size == 0
 
-    binding.pry
+    # binding.pry
     return can_block
   end
 
@@ -625,7 +645,6 @@ class Piece < ActiveRecord::Base
     white_king_possible_moves = [white_king.possible_moves] if white_king != nil
 
     @all_white_possible_moves = [white_pawn_possible_moves, white_rook_possible_moves, white_knight_possible_moves, white_bishop_possible_moves, white_queen_possible_moves, white_king_possible_moves]
-    binding.pry
   end
 
 
@@ -665,7 +684,6 @@ class Piece < ActiveRecord::Base
     black_king_possible_moves = [black_king.possible_moves] if black_king != nil
 
     @all_black_possible_moves = [black_pawn_possible_moves, black_rook_possible_moves, black_knight_possible_moves, black_bishop_possible_moves, black_queen_possible_moves, black_king_possible_moves]
-    binding.pry
   end
 
 # *** Checkmate isn't when the king is captured.  It is when the king can be captured and there is no way to prevent it. ***
