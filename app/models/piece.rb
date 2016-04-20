@@ -214,7 +214,13 @@ class Piece < ActiveRecord::Base
             case threatening_piece.type
             when "Pawn"
               # Can't block a pawn's attack on a king.
-              can_block = false
+              # can_block = false
+            when "Knight"
+              # Knights cannot be blocked.
+              # can_block = false
+            when "King"
+              # Can't block a king's attack.
+              # can_block = false
             when "Rook"
               # There are rooks on the board
               if @all_white_possible_moves[1] != nil && @all_black_possible_moves[n] != nil
@@ -241,9 +247,6 @@ class Piece < ActiveRecord::Base
                   end
                 end
               end
-            when "Knight"
-              # Knights cannot be blocked.
-              can_block = false
             when "Bishop"
               # There are bishops on the board
               if @all_white_possible_moves[3] != nil && @all_black_possible_moves[n] != nil
@@ -281,9 +284,6 @@ class Piece < ActiveRecord::Base
                   end
                 end
               end
-            when "King"
-              # Can't block a king's attack.
-              can_block = false
             end
           end
 
@@ -291,7 +291,11 @@ class Piece < ActiveRecord::Base
           for n in 0..5
             case threatening_piece.type
             when "Pawn"
-              can_block = false
+              # can_block = false
+            when "King"
+              # can_block = false
+            when "Knight"
+              # can_block = false
             when "Rook"
               if @all_black_possible_moves[1] != nil && @all_white_possible_moves[n] != nil
                 for m in 0..7
@@ -307,10 +311,8 @@ class Piece < ActiveRecord::Base
                   end
                 end
               end
-            when "Knight"
-              can_block = false
             when "Bishop"
-              if @all_black_possible_moves[3] != nil @all_white_possible_moves[n] != nil
+              if @all_black_possible_moves[3] != nil && @all_white_possible_moves[n] != nil
                 for m in 0..7
                   if @all_black_possible_moves[3][m] != nil && @all_white_possible_moves[n][m] != nil
                     for o in 0..27
@@ -324,7 +326,7 @@ class Piece < ActiveRecord::Base
                 end
               end
             when "Queen"
-              if @all_black_possible_moves[4][0] != nil @all_white_possible_moves[n] != nil
+              if @all_black_possible_moves[4][0] != nil && @all_white_possible_moves[n] != nil
                 for m in 0..7
                   if @all_white_possible_moves[n][m] != nil
                     for o in 0..27
@@ -337,8 +339,6 @@ class Piece < ActiveRecord::Base
                   end
                 end
               end
-            when "King"
-              can_block = false
             end
           end
         end
