@@ -70,12 +70,16 @@ class King < Piece
       left_rook = game.pieces.where(:color => "white", :type => "Rook", :x_position => 1, :y_position => 8, :captured => nil).first
       right_rook = game.pieces.where(:color => "white", :type => "Rook", :x_position => 8, :y_position => 8, :captured => nil).first
       # Clear path to the left of the king:
-      if self.moves.count == 0 && left_rook.moves.count == 0 && friendly_pieces[0] == nil && friendly_pieces[1] == nil && friendly_pieces[2] == nil
-        possible_moves += [[self.x_position - 2, self.y_position]]
+      if self != nil && left_rook != nil
+        if self.moves.count == 0 && left_rook.moves.count == 0 && friendly_pieces[0] == nil && friendly_pieces[1] == nil && friendly_pieces[2] == nil
+          possible_moves += [[self.x_position - 2, self.y_position]]
+        end
       end
       # Clear path to the right of the king:
-      if self.moves.count == 0 && right_rook.moves.count == 0 && friendly_pieces[3] == nil && friendly_pieces[4] == nil
-        possible_moves += [[self.x_position + 2, self.y_position]]
+      if self != nil && right_rook != nil
+        if self.moves.count == 0 && right_rook.moves.count == 0 && friendly_pieces[3] == nil && friendly_pieces[4] == nil
+          possible_moves += [[self.x_position + 2, self.y_position]]
+        end
       end
 
     else
@@ -138,12 +142,16 @@ class King < Piece
       left_rook = game.pieces.where(:color => "black", :type => "Rook", :x_position => 1, :y_position => 1, :captured => nil).first
       right_rook = game.pieces.where(:color => "black", :type => "Rook", :x_position => 8, :y_position => 1, :captured => nil).first
       # Clear path to the left of the king:
-      if self.moves.count == 0 && left_rook.moves.count == 0 && friendly_pieces[0] == nil && friendly_pieces[1] == nil && friendly_pieces[2] == nil
-        possible_moves += [[self.x_position - 2, self.y_position]]
+      if self != nil && left_rook != nil
+        if self.moves.count == 0 && left_rook.moves.count == 0 && friendly_pieces[0] == nil && friendly_pieces[1] == nil && friendly_pieces[2] == nil
+          possible_moves += [[self.x_position - 2, self.y_position]]
+        end
       end
       # Clear path to the right of the king:
-      if self.moves.count == 0 && right_rook.moves.count == 0 && friendly_pieces[3] == nil && friendly_pieces[4] == nil
-        possible_moves += [[self.x_position + 2, self.y_position]]
+      if self != nil && right_rook != nil
+        if self.moves.count == 0 && right_rook.moves.count == 0 && friendly_pieces[3] == nil && friendly_pieces[4] == nil
+          possible_moves += [[self.x_position + 2, self.y_position]]
+        end
       end
     end
 
