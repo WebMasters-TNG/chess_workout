@@ -5,12 +5,20 @@ class Piece < ActiveRecord::Base
 
   # Check if move is valid for selected piece
   def valid_move?(params)
+<<<<<<< HEAD
+=======
+    # binding.pry
+>>>>>>> master
     set_coords(params)
     return false unless legal_move?
     return false if pinned?
     opponent_in_check?
     update_attributes(x_position: @x0, y_position: @y0)
     true
+<<<<<<< HEAD
+=======
+    # binding.pry
+>>>>>>> master
   end
 
   def set_coords(params)
@@ -20,6 +28,10 @@ class Piece < ActiveRecord::Base
     @y1 = params[:y_position].to_i
     @sx = @x1 - @x0 # sx = displacement_x
     @sy = @y1 - @y0 # sy = displacement_y
+<<<<<<< HEAD
+=======
+    # binding.pry
+>>>>>>> master
   end
 
   # Check to see if the movement path is a valid diagonal move
@@ -105,6 +117,10 @@ class Piece < ActiveRecord::Base
 
   # Check to see if destination square is occupied by a piece, returning false if it is friendly or true if it is an opponent
   def capture_piece?
+<<<<<<< HEAD
+=======
+    # binding.pry
+>>>>>>> master
     return false if destination_piece && destination_piece.color == color
     true
   end
@@ -150,12 +166,14 @@ class Piece < ActiveRecord::Base
     end
   end
 
-  # Determine if checkmate has occurred.
-  def demo_checkmate?
-    checkmate = false
+  def can_escape?
     can_escape = false
+<<<<<<< HEAD
     can_block = false
     can_capture_threat = false
+=======
+    threatening_pieces = @threatening_pieces
+>>>>>>> master
     escape_moves = @opponent_king.possible_moves
     if color == "white"
       opponent_possible_moves = black_pieces_moves
@@ -166,8 +184,144 @@ class Piece < ActiveRecord::Base
     end
     # Determine if king in check can escape
     escape_moves.each do |move|
+<<<<<<< HEAD
       can_escape = true if !friendly_possible_moves.include?(move)
     end
+=======
+      can_escape = true if !opponent_possible_moves.include?(move)
+      # threatening_pieces.delete_at() ... if can_escape
+    end
+  end
+
+
+  def can_block?
+    can_block = false
+    white_possible_moves
+    black_possible_moves
+    threatening_pieces = @threatening_pieces
+    threatening_pieces.each do |threatening_piece|
+      # If one threatening piece remains that cannot be blocked, you can't escape check via blocking:
+      can_block = false
+      if self.color == "white"
+        for n in 0..5
+          case threatening_pieces.type
+          when "Pawn"
+            can_block = false
+          when "Rook"
+            # There are rooks, knights, or bishops on the board
+            if @all_white_possible_moves[1] != nil
+              # Rooks, knights, and bishops come in pairs
+              for m in 0..1
+                # The specific piece exists:
+                if @all_white_possible_moves[1][m] != nil
+                  # Up to 14 possible moves exist for a rook.
+                  for o in 0..13
+                    # The oth move of the specific piece exists:
+                    if @all_white_possible_moves[1][m][o] != nil
+                      # e.g. all_white_possible_moves[n][0][0] == [x, y] of first possible move of the first rook
+                      # black_pieces_moves[piece][x], black_pieces[piece][y]
+                      # Left to right --> rook, knight, bishop, queen, king, bishop, knight, rook, pawns
+                      # if @all_white_possible_moves[0][m][o][0] == black_pieces_moves[][0] && @all_white_possible_moves[0][m][o][1] == black_pieces_moves[][1]
+                      if @all_white_possible_moves[1][m][o][0] == @all_black_possible_moves[n][m][o][0] && @all_white_possible_moves[1][m][o][1] == @all_black_possible_moves[n][m][o][1] && @all_black_possible_moves[n][m][o][0] != @opponent_king.x_position && @all_black_possible_moves[n][m][o][1] != @opponent_king.y_position
+                        can_block = true
+                      end
+                    end
+                  end
+                end
+              end
+            end
+          when "Knight"
+
+          when "Bishop"
+            # Up to 13 possible moves exist for a bishop.
+          when "Queen"
+
+            # Up to 27 possible moves exist for a queen.
+          when "King"
+            can_block = false
+          end
+        end
+
+      else
+        case threatening_pieces.type
+        when "Pawn"
+        when "Rook" || "Knight" || "Bishop"
+        when "Queen"
+        when "King"
+        end
+      end
+    end
+
+    # 1) A friendly piece (the threatening piece) has a path to the enemy king.
+    # 2) An enemy piece (excluding the enemy king) has a possible move within the path of the threatening piece.
+    #
+    # Alternative approach???
+    # if threatening_pieces.size > 0
+    #   # It must be possible to block all threatening pieces.
+    #   threatening_pieces.possible_moves.each do |move|
+    #     if opponent_possible_moves.include?(move) && move != opponent_possible_moves
+    #       can_block = true
+    #       # Take out this threatening piece, so that you can determine if there are any remaining threatening pieces as a way to remove check.
+    #       # threatening_pieces.delete_at() ...
+    #     else
+    #       can_block = false
+    #     end
+    #   end
+    # end
+
+    # # Change in_check into an instance variable?
+    # in_check = false if threatening_pieces.size == 0
+  end
+
+  # Determine if checkmate on opposing king has occurred.
+  def demo_checkmate?
+    checkmate = false
+    can_escape = false
+    can_block = false
+    threatening_pieces = @threatening_pieces
+    can_capture_threat = false
+    escape_moves = @opponent_king.possible_moves
+    if color == "white"
+      opponent_possible_moves = black_pieces_moves
+      friendly_possible_moves = white_pieces_moves
+    else
+      opponent_possible_moves = white_pieces_moves
+      friendly_possible_moves = black_pieces_moves
+    end
+
+    # Check if can block threatening piece(s)
+    # Required conditions:
+    # 1) A friendly piece (the threatening piece) has a path to the enemy king.
+
+    binding.pry
+
+    if threatening_pieces.size > 0
+      # It must be possible to block all threatening pieces.
+      #
+      # *** Undefined method ".possible_moves" on line 217 (threatening pieces is a multi-dimensional array)***
+      threatening_pieces.possible_moves.each do |move|
+        if opponent_possible_moves.include?(move)
+          can_block = true
+          # Take out this threatening piece, so that you can determine if there are any remaining threatening pieces as a way to remove check.
+          # threatening_pieces.delete_at()
+        else
+          can_block = false
+        end
+      end
+    end
+
+    # Change in_check into an instance variable?
+    in_check = false if threatening_pieces.size == 0
+
+    # 2) An enemy piece (excluding the enemy king) has a possible move within the path of the threatening piece (exclude the location of the enemy king).
+
+
+    # Determine if king in check can escape
+      escape_moves.each do |move|
+        can_escape = true if !friendly_possible_moves.include?(move)
+      end
+
+
     # Determine if threating piece can be captured by opposing player. Can only be true if a singular piece has opposing king in check.
     can_capture_threat = true if opponent_possible_moves.include?([@x1, @y1]) && @threatening_pieces.length == 1
     # Code to determine if opponent can
