@@ -5,20 +5,12 @@ class Piece < ActiveRecord::Base
 
   # Check if move is valid for selected piece
   def valid_move?(params)
-<<<<<<< HEAD
-=======
-    # binding.pry
->>>>>>> master
     set_coords(params)
     return false unless legal_move?
     return false if pinned?
     opponent_in_check?
     update_attributes(x_position: @x0, y_position: @y0)
     true
-<<<<<<< HEAD
-=======
-    # binding.pry
->>>>>>> master
   end
 
   def set_coords(params)
@@ -28,10 +20,6 @@ class Piece < ActiveRecord::Base
     @y1 = params[:y_position].to_i
     @sx = @x1 - @x0 # sx = displacement_x
     @sy = @y1 - @y0 # sy = displacement_y
-<<<<<<< HEAD
-=======
-    # binding.pry
->>>>>>> master
   end
 
   # Check to see if the movement path is a valid diagonal move
@@ -117,10 +105,6 @@ class Piece < ActiveRecord::Base
 
   # Check to see if destination square is occupied by a piece, returning false if it is friendly or true if it is an opponent
   def capture_piece?
-<<<<<<< HEAD
-=======
-    # binding.pry
->>>>>>> master
     return false if destination_piece && destination_piece.color == color
     true
   end
@@ -168,12 +152,9 @@ class Piece < ActiveRecord::Base
 
   def can_escape?
     can_escape = false
-<<<<<<< HEAD
     can_block = false
     can_capture_threat = false
-=======
     threatening_pieces = @threatening_pieces
->>>>>>> master
     escape_moves = @opponent_king.possible_moves
     if color == "white"
       opponent_possible_moves = black_pieces_moves
@@ -184,12 +165,8 @@ class Piece < ActiveRecord::Base
     end
     # Determine if king in check can escape
     escape_moves.each do |move|
-<<<<<<< HEAD
       can_escape = true if !friendly_possible_moves.include?(move)
     end
-=======
-      can_escape = true if !opponent_possible_moves.include?(move)
-      # threatening_pieces.delete_at() ... if can_escape
     end
   end
 
@@ -292,8 +269,6 @@ class Piece < ActiveRecord::Base
     # Check if can block threatening piece(s)
     # Required conditions:
     # 1) A friendly piece (the threatening piece) has a path to the enemy king.
-
-    binding.pry
 
     if threatening_pieces.size > 0
       # It must be possible to block all threatening pieces.
@@ -415,7 +390,7 @@ class Piece < ActiveRecord::Base
                   if @all_white_possible_moves[3][m] != nil && @all_black_possible_moves[n][m] != nil
                     # Up to 13 possible moves exist for the threatening bishop.
                     # Up to 28 possible moves exist for a blocking queen.
-                    # binding.pry
+                    #
                     for o in 0..28
                       puts "o == #{o}"
                       if @all_white_possible_moves[3][m][o] != nil && @all_black_possible_moves[n][m][o] != nil
@@ -482,7 +457,7 @@ class Piece < ActiveRecord::Base
               if @all_black_possible_moves[3] != nil && @all_white_possible_moves[n] != nil
                 for m in 0..7
                   puts "m == #{m}"
-                  # binding.pry
+                  #
                   if @all_black_possible_moves[3][m] != nil && @all_white_possible_moves[n][m] != nil
                     for o in 0..27
                       puts "o == #{o}"
@@ -535,7 +510,6 @@ class Piece < ActiveRecord::Base
     # # Change in_check into an instance variable?
     # in_check = false if threatening_pieces.size == 0
 
-    binding.pry
     return can_block
   end
 

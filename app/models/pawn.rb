@@ -112,12 +112,12 @@ class Pawn < Piece
         # && self.old_y == self.new_y
         Move.create(game_id: game.id, piece_id: black_pawn.id, old_x: @x0 + 1, old_y: @y0, captured_piece: true)
         black_pawn.update_attributes(captured: true)
-        # binding.pry
+        #
         return true
       elsif !black_pawn2.nil? && black_pawn2.moves.count <= 1 && (y1 - y0).abs == (x1 - x0).abs && (y1 - y0).abs == 1 && destination_piece.nil? && x1 == black_pawn2.x_position
         Move.create(game_id: game.id, piece_id: black_pawn2.id, old_x: @x0 - 1, old_y: @y0, captured_piece: true)
         black_pawn2.update_attributes(captured: true)
-        # binding.pry
+        #
         return true
       end
     elsif self.color == "black" && y0 == 5
@@ -126,12 +126,12 @@ class Pawn < Piece
       if !white_pawn.nil? && white_pawn.moves.count <= 1 && (y1 - y0).abs == (x1 - x0).abs && (y1 - y0).abs == 1 && destination_piece.nil? && x1 == white_pawn.x_position
         Move.create(game_id: game.id, piece_id: white_pawn.id, old_x: @x0 + 1, old_y: @y0, captured_piece: true)
         white_pawn.update_attributes(captured: true)
-        # binding.pry
+        #
         return true
       elsif !white_pawn2.nil? && white_pawn2.moves.count <= 1 && (y1 - y0).abs == (x1 - x0).abs && (y1 - y0).abs == 1 && destination_piece.nil? && x1 == white_pawn2.x_position
         Move.create(game_id: game.id, piece_id: white_pawn2.id, old_x: @x0 - 1, old_y: @y0, captured_piece: true)
         white_pawn2.update_attributes(captured: true)
-        # binding.pry
+        #
         return true
       end
     else

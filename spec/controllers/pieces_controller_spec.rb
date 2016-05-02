@@ -1032,7 +1032,7 @@ RSpec.describe PiecesController, type: :controller do
         black_king.update_attributes(:x_position => 5, :y_position => 6)
         black_king.reload
 
-        binding.pry
+
 
         # Capture the black king with the white pawn from [4, 7]:
         white_pawn = game.pieces.where(:type => "Pawn", :color => "white", :x_position => 4).first
