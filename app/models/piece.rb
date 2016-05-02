@@ -394,7 +394,7 @@ class Piece < ActiveRecord::Base
                     for o in 0..28
                       puts "o == #{o}"
                       if @all_white_possible_moves[3][m][o] != nil && @all_black_possible_moves[n][m][o] != nil
-                        if @all_white_possible_moves[3][m][o][0] == @all_black_possible_moves[n][m][o][0] && @all_white_possible_moves[3][m][o][1] == @all_black_possible_moves[n][m][o][1] && (@all_black_possible_moves[n][m][o][0] != @opponent_king.x_position && @all_black_possible_moves[n][m][o][1] != @opponent_king.y_position) (@all_white_possible_moves[3][m][o][0] != @all_black_possible_moves[5][m][o][0] && @all_white_possible_moves[3][m][o][1] != @all_black_possible_moves[5][m][o][1])
+                        if @all_white_possible_moves[3][m][o][0] == @all_black_possible_moves[n][m][o][0] && @all_white_possible_moves[3][m][o][1] == @all_black_possible_moves[n][m][o][1] && (@all_black_possible_moves[n][m][o][0] != @opponent_king.x_position && @all_black_possible_moves[n][m][o][1] != @opponent_king.y_position) && @all_white_possible_moves[3][m][o][0] != @all_black_possible_moves[5][m][o][0] && @all_white_possible_moves[3][m][o][1] != @all_black_possible_moves[5][m][o][1]
                           can_block = true
                           puts "Blocking the white bishop!"
                         end
@@ -958,4 +958,3 @@ class Piece < ActiveRecord::Base
     end
   end
 
-end
